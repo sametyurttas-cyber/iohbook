@@ -19,7 +19,7 @@ export function BookInfoTabs({ book, variants }: BookInfoTabsProps) {
         <TabsTrigger value="delivery">Teslimat</TabsTrigger>
       </TabsList>
       <TabsContent className="pt-4" value="summary">
-        <p className="text-sm leading-7 text-muted-foreground">
+        <p className="whitespace-pre-line text-sm leading-7 text-muted-foreground">
           {book.description ??
             book.short_description ??
             "Bu kitap için editoryal açıklama yakında eklenecek."}

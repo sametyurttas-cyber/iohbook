@@ -27,16 +27,19 @@ const homeBlocks: ContentBlock[] = [
     eyebrow: "Kampanya bloklari",
     items: [
       {
-        description: "Altin isik, yaratici zeka ve kodun kutsal duzeni uzerine.",
-        title: "CODE GOD"
+        description: "Hafizasini kaybeden Algus'un System icindeki uyanisi.",
+        imageUrl: "/media/books/ioh-godcode-cover.jpeg",
+        title: "GODCODE"
       },
       {
-        description: "Sistemlerin hafizasi, mavi cekirdek ve sessiz mimari.",
-        title: "SYS GOD"
+        description: "Guvenlik, kontrol ve insan bilincinin mavi mimarisi.",
+        imageUrl: "/media/books/ioh-sysgod-cover.jpeg",
+        title: "SYSGOD"
       },
       {
-        description: "Kirmizi cephe, carpisan protokoller ve savasin dili.",
-        title: "CODE WAR"
+        description: "Centrium, Iohcoin core ve kirmizi operasyon hatti.",
+        imageUrl: "/media/books/ioh-codewar-cover.jpeg",
+        title: "CODEWAR"
       }
     ],
     title: "Uc ana hat",
@@ -54,7 +57,7 @@ export const fallbackContent: Record<RequiredContentSlug, ContentBody & { title:
         type: "hero"
       },
       {
-        text: "IOH evreni; CODE GOD, SYS GOD ve CODE WAR kitaplariyla yapay zeka, sistem mimarisi ve catismayi tek bir editoryal hatta toplar.",
+        text: "IOH evreni; GODCODE, SYSGOD ve CODEWAR kitaplariyla yapay zeka, sistem mimarisi ve catismayi tek bir editoryal hatta toplar.",
         title: "Yazar notu",
         type: "text"
       }

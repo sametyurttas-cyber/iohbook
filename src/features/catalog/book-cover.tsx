@@ -22,6 +22,7 @@ export function BookCover({ alt, className, priority = false, title, url }: Book
           alt={alt}
           className="h-full w-full object-cover"
           fill
+          loading={priority ? undefined : "eager"}
           priority={priority}
           sizes="(min-width: 1024px) 420px, 100vw"
           src={url}

@@ -1,7 +1,11 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { getSignInRedirectError, getSignUpRedirectPath } from "@/features/auth/error-utils";
+import {
+  getSignInRedirectError,
+  getSignUpRedirectError,
+  getSignUpRedirectPath
+} from "@/features/auth/error-utils";
 import { sendAccountSecurityEmail, sendPasswordResetEmail } from "@/features/email/events";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/service-role";
@@ -47,20 +51,29 @@ export async function signUpWithPassword(formData: FormData) {
     redirect("/sign-up?error=missing-credentials");
   }
 
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.auth.signUp({
+  if (password.length < 8) {
+    redirect("/sign-up?error=weak-password");
+  }
+
+  const serviceSupabase = createSupabaseServiceRoleClient();
+  const { error: createError } = await serviceSupabase.auth.admin.createUser({
     email,
-    options: {
-      data: {
-        full_name: fullName || null
-      },
-      emailRedirectTo: `${buildSiteUrl()}/sign-in?confirmed=1`
-    },
-    password
+    email_confirm: true,
+    password,
+    user_metadata: {
+      full_name: fullName || null
+    }
   });
 
+  if (createError) {
+    redirect(`/sign-up?error=${getSignUpRedirectError(createError)}`);
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
   if (error) {
-    redirect("/sign-up?error=signup-failed");
+    redirect(`/sign-in?error=${getSignInRedirectError(error)}`);
   }
 
   redirect(

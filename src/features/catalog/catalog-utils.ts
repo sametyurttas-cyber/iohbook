@@ -12,7 +12,15 @@ export function getCoverMedia(book: StorefrontBook) {
 }
 
 export function getMediaUrl(media: StorefrontMedia | null) {
-  if (!media || media.storage_bucket !== "public-media") {
+  if (!media) {
+    return null;
+  }
+
+  if (media.storage_bucket === "local-public") {
+    return media.storage_path;
+  }
+
+  if (media.storage_bucket !== "public-media") {
     return null;
   }
 

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/layout/container";
+import { getCurrentUser } from "@/features/auth/queries";
 import { MiniCart } from "@/features/cart/mini-cart";
 
 const navItems = [
@@ -16,6 +17,8 @@ const navItems = [
 ];
 
 export async function SiteHeader() {
+  const user = await getCurrentUser();
+
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-ink/88 backdrop-blur-xl">
       <Container className="flex h-20 items-center justify-between gap-6">
@@ -46,6 +49,9 @@ export async function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <Button asChild size="sm" variant="outline">
+            <Link href={user ? "/account" : "/sign-in"}>{user ? "Hesap" : "Giris"}</Link>
+          </Button>
           <Button asChild className="hidden sm:inline-flex" size="sm">
             <Link href="/books">Kitaplari Incele</Link>
           </Button>

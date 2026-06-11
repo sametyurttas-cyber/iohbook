@@ -63,7 +63,7 @@ export default async function CollectionsPage() {
               <article className="rounded-lg border border-border bg-card p-6 shadow-panel">
                 <h2 className="font-display text-title-lg text-paper">IOH Universe</h2>
                 <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                  CODE GOD, SYS GOD ve CODE WAR cizgisini ayni evren altinda
+                  GODCODE, SYSGOD ve CODEWAR cizgisini ayni evren altinda
                   toparlayan ana koleksiyon.
                 </p>
                 <Button asChild className="mt-5" variant="secondary">
