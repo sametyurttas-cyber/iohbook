@@ -1,0 +1,149 @@
+import { formatMoney } from "@/features/products/product-utils";
+
+export type OrderEmailLine = {
+  quantity: number;
+  title: string;
+  totalMinor: number;
+  variantTitle: string;
+};
+
+export type OrderEmailData = {
+  customerName: string | null;
+  lines: OrderEmailLine[];
+  orderNumber: string;
+  orderUrl: string;
+  totalMinor: number;
+  trackingNumber?: string | null;
+  trackingUrl?: string | null;
+  currency: string;
+};
+
+function shell(input: { body: string; preview: string; title: string }) {
+  return `<!doctype html>
+<html>
+  <body style="margin:0;background:#0d0d0f;color:#f6f0e8;font-family:Arial,sans-serif;">
+    <div style="display:none;max-height:0;overflow:hidden;">${input.preview}</div>
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:#0d0d0f;padding:32px 16px;">
+      <tr>
+        <td align="center">
+          <table width="100%" cellpadding="0" cellspacing="0" style="max-width:640px;border:1px solid #2a2826;background:#151417;border-radius:8px;overflow:hidden;">
+            <tr>
+              <td style="padding:28px 28px 18px;border-bottom:1px solid #2a2826;">
+                <div style="font-size:12px;letter-spacing:0.22em;text-transform:uppercase;color:#c9a75d;">IOH Book</div>
+                <h1 style="margin:12px 0 0;font-size:28px;line-height:1.2;color:#f6f0e8;">${input.title}</h1>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:28px;color:#d8d0c8;font-size:15px;line-height:1.65;">
+                ${input.body}
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:20px 28px;border-top:1px solid #2a2826;color:#8f8780;font-size:12px;line-height:1.6;">
+                Bu e-posta IOH Book islemiyle ilgili otomatik bir bildirimdir. Kart bilgileriniz sitede saklanmaz.
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`;
+}
+
+function orderLines(lines: OrderEmailLine[], currency: string) {
+  return lines
+    .map(
+      (line) => `
+        <tr>
+          <td style="padding:10px 0;border-bottom:1px solid #2a2826;">
+            <strong style="color:#f6f0e8;">${line.title}</strong><br />
+            <span style="color:#8f8780;">${line.variantTitle} x ${line.quantity}</span>
+          </td>
+          <td align="right" style="padding:10px 0;border-bottom:1px solid #2a2826;color:#c9a75d;">
+            ${formatMoney(line.totalMinor, currency)}
+          </td>
+        </tr>`
+    )
+    .join("");
+}
+
+function orderSummary(data: OrderEmailData) {
+  return `
+    <p>Merhaba ${data.customerName ?? "IOH okuru"},</p>
+    <p><strong style="color:#f6f0e8;">${data.orderNumber}</strong> numarali siparisinizin ozeti asagidadir.</p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin:18px 0;">
+      ${orderLines(data.lines, data.currency)}
+      <tr>
+        <td style="padding:14px 0;color:#f6f0e8;"><strong>Toplam</strong></td>
+        <td align="right" style="padding:14px 0;color:#c9a75d;"><strong>${formatMoney(data.totalMinor, data.currency)}</strong></td>
+      </tr>
+    </table>
+    <p><a href="${data.orderUrl}" style="display:inline-block;background:#c9a75d;color:#0d0d0f;text-decoration:none;padding:12px 16px;border-radius:6px;font-weight:bold;">Siparisi goruntule</a></p>`;
+}
+
+export function renderOrderReceivedEmail(data: OrderEmailData) {
+  return {
+    html: shell({
+      body: `${orderSummary(data)}<p>Odeme dogrulamasi tamamlandiginda sizi ayrica bilgilendirecegiz.</p>`,
+      preview: `${data.orderNumber} numarali siparisiniz alindi.`,
+      title: "Siparisiniz alindi"
+    }),
+    subject: `Siparisiniz alindi: ${data.orderNumber}`,
+    text: `Siparisiniz alindi: ${data.orderNumber}\nToplam: ${formatMoney(data.totalMinor, data.currency)}\n${data.orderUrl}`
+  };
+}
+
+export function renderPaymentConfirmedEmail(data: OrderEmailData) {
+  return {
+    html: shell({
+      body: `${orderSummary(data)}<p>Odemeniz backend dogrulamasi ile onaylandi. Siparisiniz hazirlik asamasina alinacak.</p>`,
+      preview: `${data.orderNumber} odemesi onaylandi.`,
+      title: "Odemeniz onaylandi"
+    }),
+    subject: `Odemeniz onaylandi: ${data.orderNumber}`,
+    text: `Odemeniz onaylandi: ${data.orderNumber}\n${data.orderUrl}`
+  };
+}
+
+export function renderOrderShippedEmail(data: OrderEmailData) {
+  const tracking = data.trackingUrl
+    ? `<p><a href="${data.trackingUrl}" style="color:#c9a75d;">Kargo takibini ac</a></p>`
+    : data.trackingNumber
+      ? `<p>Kargo takip kodu: <strong style="color:#f6f0e8;">${data.trackingNumber}</strong></p>`
+      : "<p>Kargo takip bilgisi henuz girilmedi.</p>";
+
+  return {
+    html: shell({
+      body: `${orderSummary(data)}<p>Siparisiniz kargoya verildi.</p>${tracking}`,
+      preview: `${data.orderNumber} kargoya verildi.`,
+      title: "Siparisiniz kargoda"
+    }),
+    subject: `Siparisiniz kargoya verildi: ${data.orderNumber}`,
+    text: `Siparisiniz kargoya verildi: ${data.orderNumber}\nTakip: ${data.trackingUrl ?? data.trackingNumber ?? "-"}`
+  };
+}
+
+export function renderPasswordResetEmail(input: { email: string; resetUrl: string }) {
+  return {
+    html: shell({
+      body: `<p>${input.email} hesabi icin sifre sifirlama talebi aldik.</p><p><a href="${input.resetUrl}" style="display:inline-block;background:#c9a75d;color:#0d0d0f;text-decoration:none;padding:12px 16px;border-radius:6px;font-weight:bold;">Sifremi sifirla</a></p><p>Bu talebi siz yapmadiysaniz bu e-postayi yok sayabilirsiniz.</p>`,
+      preview: "IOH Book sifre sifirlama baglantiniz.",
+      title: "Sifre sifirlama"
+    }),
+    subject: "IOH Book sifre sifirlama",
+    text: `Sifre sifirlama baglantisi: ${input.resetUrl}`
+  };
+}
+
+export function renderSecurityNoticeEmail(input: { email: string; message: string }) {
+  return {
+    html: shell({
+      body: `<p>${input.email} hesabi icin guvenlik bildirimi:</p><p>${input.message}</p><p>Bu islemi siz yapmadiysaniz lutfen sifrenizi degistirin.</p>`,
+      preview: "IOH Book hesap guvenligi bildirimi.",
+      title: "Hesap guvenligi"
+    }),
+    subject: "IOH Book hesap guvenligi bildirimi",
+    text: `Hesap guvenligi bildirimi: ${input.message}`
+  };
+}

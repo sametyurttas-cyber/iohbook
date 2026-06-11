@@ -1,0 +1,53 @@
+{
+  "name": "iohbook",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "test:integration": "vitest run src/features/checkout/payment-state.test.ts src/features/checkout/payment-confirmation.test.ts src/features/checkout/iyzico-webhook.test.ts src/features/checkout/iyzico-types.test.ts src/features/checkout/delivery-options.test.ts src/features/checkout/providers/index.test.ts",
+    "admin:bootstrap": "node scripts/bootstrap-admin.mjs",
+    "test:unit": "vitest run src/features/cart/cart-rules.test.ts src/features/pricing/pricing-rules.test.ts"
+  },
+  "dependencies": {
+    "@radix-ui/react-dialog": "latest",
+    "@radix-ui/react-dropdown-menu": "latest",
+    "@radix-ui/react-select": "latest",
+    "@radix-ui/react-slot": "latest",
+    "@radix-ui/react-tabs": "latest",
+    "@radix-ui/react-toast": "latest",
+    "@sentry/nextjs": "^10.57.0",
+    "@supabase/ssr": "latest",
+    "@supabase/supabase-js": "latest",
+    "@vercel/analytics": "^2.0.1",
+    "@vercel/speed-insights": "^2.0.0",
+    "@walletconnect/ethereum-provider": "^2.23.9",
+    "class-variance-authority": "latest",
+    "clsx": "latest",
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "tailwind-merge": "latest",
+    "viem": "^2.52.2"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "latest",
+    "@playwright/test": "^1.60.0",
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "autoprefixer": "latest",
+    "eslint": "latest",
+    "eslint-config-next": "latest",
+    "postcss": "latest",
+    "tailwindcss": "^3.4.17",
+    "tailwindcss-animate": "latest",
+    "typescript": "latest",
+    "vitest": "latest"
+  }
+}
