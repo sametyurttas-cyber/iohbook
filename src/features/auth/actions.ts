@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { getSignInRedirectError, getSignUpRedirectPath } from "@/features/auth/error-utils";
 import { sendAccountSecurityEmail, sendPasswordResetEmail } from "@/features/email/events";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/service-role";
@@ -26,7 +27,7 @@ export async function signInWithPassword(formData: FormData) {
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
-    redirect("/sign-in?error=invalid-credentials");
+    redirect(`/sign-in?error=${getSignInRedirectError(error)}`);
   }
 
   await sendAccountSecurityEmail({
@@ -47,12 +48,13 @@ export async function signUpWithPassword(formData: FormData) {
   }
 
   const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     options: {
       data: {
         full_name: fullName || null
-      }
+      },
+      emailRedirectTo: `${buildSiteUrl()}/sign-in?confirmed=1`
     },
     password
   });
@@ -61,7 +63,12 @@ export async function signUpWithPassword(formData: FormData) {
     redirect("/sign-up?error=signup-failed");
   }
 
-  redirect("/account");
+  redirect(
+    getSignUpRedirectPath({
+      email,
+      hasSession: Boolean(data.session)
+    })
+  );
 }
 
 export async function signOut() {

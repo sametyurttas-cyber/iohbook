@@ -5,8 +5,11 @@ import { signInWithPassword } from "@/features/auth/actions";
 
 type SignInPageProps = {
   searchParams?: Promise<{
+    confirmed?: string;
+    email?: string;
     error?: string;
     next?: string;
+    "pending-confirmation"?: string;
   }>;
 };
 
@@ -19,9 +22,22 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
       <div className="w-full max-w-md rounded-lg border border-border bg-card p-6 shadow-panel">
         <p className="text-eyebrow uppercase text-muted-foreground">Customer access</p>
         <h1 className="mt-3 font-display text-title-lg text-paper">Giris yap</h1>
+        {params?.["pending-confirmation"] ? (
+          <p className="mt-3 rounded-md border border-gold/30 bg-gold/10 p-3 text-sm text-gold">
+            Kayit olusturuldu. {params?.email ? `${params.email} adresini kontrol edip ` : ""}
+            e-posta dogrulamasini tamamladiktan sonra giris yap.
+          </p>
+        ) : null}
+        {params?.confirmed ? (
+          <p className="mt-3 rounded-md border border-gold/30 bg-gold/10 p-3 text-sm text-gold">
+            E-posta dogrulandi. Artik giris yapabilirsin.
+          </p>
+        ) : null}
         {params?.error ? (
           <p className="mt-3 rounded-md border border-burgundy-bright/30 bg-burgundy-bright/10 p-3 text-sm text-burgundy-soft">
-            Giris bilgilerini kontrol et.
+            {params.error === "email-not-confirmed"
+              ? "Bu hesap icin e-posta dogrulamasi gerekiyor."
+              : "Giris bilgilerini kontrol et."}
           </p>
         ) : null}
         <form action={signInWithPassword} className="mt-6 grid gap-4">
