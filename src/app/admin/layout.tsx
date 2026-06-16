@@ -27,7 +27,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
     redirect("/unauthorized");
   }
 
-  const navItems: AdminNavItem[] = [
+  const navItems = [
     { href: "/admin/products", label: "Urunler" },
     { href: "/admin/nft-orders", label: "NFT Siparisleri" },
     { href: "/admin/token-campaigns", label: "Token Kampanyalari" },
@@ -40,7 +40,8 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
     },
     { href: "/admin/content", label: "Icerik" },
     { href: "/admin/media", label: "Medya" }
-  ].filter(
+  ] satisfies AdminNavItem[];
+  const visibleNavItems = navItems.filter(
     (item) => !item.allowedRoles || item.allowedRoles.some((role) => staff.roles.includes(role))
   );
 
@@ -57,7 +58,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
           </p>
         </div>
         <nav className="mx-auto mt-4 flex max-w-7xl flex-wrap gap-2">
-          {navItems.map((item) => (
+          {visibleNavItems.map((item) => (
             <Link
               className="rounded-md border border-border px-3 py-2 text-sm text-muted-foreground transition-colors hover:border-gold/40 hover:text-gold"
               href={item.href}
