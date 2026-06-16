@@ -7,6 +7,7 @@ import {
   getVariantAvailableStock,
   getVariantLabel
 } from "@/features/catalog/catalog-utils";
+import { requiresPhysicalDelivery } from "@/features/checkout/fulfillment-utils";
 import type { StorefrontVariant } from "@/features/catalog/queries";
 import { formatMoney } from "@/features/products/product-utils";
 
@@ -30,11 +31,11 @@ export function VariantSelector({ variants }: VariantSelectorProps) {
       <div className="grid gap-4 rounded-lg border border-border bg-card p-5 shadow-panel">
         <div>
           <p className="text-eyebrow uppercase text-muted-foreground">Varyant secimi</p>
-          <h2 className="mt-2 font-display text-title-md text-paper">Baski hazirlaniyor</h2>
+          <h2 className="mt-2 font-display text-title-md text-paper">Dijital format hazirlaniyor</h2>
         </div>
         <p className="text-sm leading-6 text-muted-foreground">
-          Bu kitap su an katalog on izlemesi olarak gorunuyor. Satin alma acilmasi
-          icin admin panelinden gercek urun ve varyant kaydi yayinlanmali.
+          Bu kitap su an katalog on izlemesi olarak gorunuyor. Dijital satin alma
+          icin admin panelinden gercek PDF veya EPUB varyanti yayinlanmali.
         </p>
         <div className="grid gap-3 sm:grid-cols-[8rem_1fr_1fr]">
           <Input defaultValue={1} disabled min={1} name="quantity" type="number" />
@@ -51,38 +52,41 @@ export function VariantSelector({ variants }: VariantSelectorProps) {
 
   const firstAvailableIndex = variants.findIndex((variant) => {
     const stock = getVariantAvailableStock(variant);
+    const physicalUnavailable = requiresPhysicalDelivery(variant.fulfillment_type);
+
     return (
-      stock > 0 ||
-      variant.stock_policy === "continue" ||
-      variant.stock_policy === "unlimited"
+      !physicalUnavailable &&
+      (stock > 0 || variant.stock_policy === "continue" || variant.stock_policy === "unlimited")
     );
   });
 
   return (
     <form action={addToCart} className="grid gap-4 rounded-lg border border-border bg-card p-5 shadow-panel">
       <div>
-        <p className="text-eyebrow uppercase text-muted-foreground">Varyant seçimi</p>
-        <h2 className="mt-2 font-display text-title-md text-paper">Baskı seç</h2>
+        <p className="text-eyebrow uppercase text-muted-foreground">Dijital format</p>
+        <h2 className="mt-2 font-display text-title-md text-paper">PDF / EPUB sec</h2>
       </div>
 
       <div className="grid gap-3">
         {variants.map((variant, index) => {
           const stock = getVariantAvailableStock(variant);
+          const physicalUnavailable = requiresPhysicalDelivery(variant.fulfillment_type);
           const outOfStock =
             stock <= 0 &&
             variant.stock_policy !== "continue" &&
             variant.stock_policy !== "unlimited";
+          const disabled = physicalUnavailable || outOfStock;
 
           return (
             <label
-              className="grid cursor-pointer gap-3 rounded-md border border-border bg-ink-soft p-4 transition-colors hover:border-gold/50"
+              className="grid cursor-pointer gap-3 rounded-md border border-border bg-ink-soft p-4 transition-colors hover:border-gold/50 has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-60"
               key={variant.id}
             >
               <div className="flex items-start gap-3">
                 <input
                   className="mt-1 h-4 w-4 accent-gold"
-                  defaultChecked={index === Math.max(0, firstAvailableIndex)}
-                  disabled={outOfStock}
+                  defaultChecked={index === firstAvailableIndex}
+                  disabled={disabled}
                   name="variant_id"
                   type="radio"
                   value={variant.id}
@@ -100,14 +104,19 @@ export function VariantSelector({ variants }: VariantSelectorProps) {
                     </p>
                   </div>
                   <div className="mt-3 flex flex-wrap items-center gap-2">
-                    <Badge variant={outOfStock ? "red" : "gold"}>
-                      {getStockLabel(variant)}
+                    <Badge variant={disabled ? "red" : "gold"}>
+                      {physicalUnavailable ? "Yakinda" : getStockLabel(variant)}
                     </Badge>
+                    {physicalUnavailable ? (
+                      <Badge variant="outline">Fiziksel satis MVP'de kapali</Badge>
+                    ) : null}
                     {variant.edition_label ? (
                       <Badge variant="outline">{variant.edition_label}</Badge>
                     ) : null}
                     {variant.lead_time_days > 0 ? (
                       <Badge variant="outline">{variant.lead_time_days} gün hazırlık</Badge>
+                    ) : variant.fulfillment_type === "digital" ? (
+                      <Badge variant="outline">Hesabimda indirme</Badge>
                     ) : null}
                   </div>
                 </div>

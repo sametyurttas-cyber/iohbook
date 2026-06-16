@@ -1,6 +1,10 @@
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getCurrentProfile, requireUser } from "@/features/auth/queries";
+import {
+  getIohPointBalanceForProfile,
+  listIohPointLedgerForProfile
+} from "@/features/points/queries";
 import type {
   Address,
   Entitlement,
@@ -57,6 +61,45 @@ export async function requireAccountUser() {
 export async function getAccountProfile() {
   await requireAccountUser();
   return getCurrentProfile();
+}
+
+export async function getAccountPointBalance() {
+  const user = await requireAccountUser();
+  return getIohPointBalanceForProfile(user.id);
+}
+
+export async function listAccountPointLedger(limit = 5) {
+  const user = await requireAccountUser();
+  return listIohPointLedgerForProfile(user.id, limit);
+}
+
+export async function getAccountOrderCount() {
+  const user = await requireAccountUser();
+  const supabase = await createSupabaseServerClient();
+  const { count, error } = await supabase
+    .from("orders")
+    .select("id", { count: "exact", head: true })
+    .eq("profile_id", user.id);
+
+  if (error) {
+    throw error;
+  }
+
+  return count ?? 0;
+}
+
+export async function getOrderCountForProfile(profileId: string) {
+  const supabase = await createSupabaseServerClient();
+  const { count, error } = await supabase
+    .from("orders")
+    .select("id", { count: "exact", head: true })
+    .eq("profile_id", profileId);
+
+  if (error) {
+    throw error;
+  }
+
+  return count ?? 0;
 }
 
 export async function listAccountOrders() {
@@ -120,6 +163,7 @@ export async function listAccountDownloads() {
       "*, order_items(id, order_id, product_snapshot, quantity, variant_snapshot, orders(id, order_number, created_at))"
     )
     .eq("profile_id", user.id)
+    .in("kind", ["digital", "hybrid"])
     .order("created_at", { ascending: false });
 
   if (error) {

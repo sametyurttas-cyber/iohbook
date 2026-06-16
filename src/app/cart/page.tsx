@@ -10,6 +10,7 @@ import { CartLineControls } from "@/features/cart/cart-line-controls";
 import { getActiveCartSnapshot } from "@/features/cart/queries";
 import { BookCover } from "@/features/catalog/book-cover";
 import { getMediaUrl } from "@/features/catalog/catalog-utils";
+import { isDigitalOnlyOrder } from "@/features/checkout/fulfillment-utils";
 import { formatMoney, VARIANT_FORMAT_LABELS } from "@/features/products/product-utils";
 
 type CartPageProps = {
@@ -26,12 +27,15 @@ const cartErrorMessages: Record<string, string> = {
     "Sepetindeki urunlerden biri icin yeterli stok kalmadi. Devam etmeden once sepeti kontrol et.",
   "price-changed":
     "Sepetindeki urunlerden birinin fiyati guncellendi. Devam etmeden once sepeti kontrol et.",
+  "physical-unavailable":
+    "Fiziksel kitap satisi bu MVP'de kapali. Lutfen PDF veya EPUB dijital formatini sec.",
   "product-unavailable":
     "Sepetindeki urunlerden biri artik satista degil. Devam etmeden once sepeti kontrol et."
 };
 
 export default async function CartPage({ searchParams }: CartPageProps) {
   const [cart, notices] = await Promise.all([getActiveCartSnapshot(), searchParams]);
+  const digitalOnlyOrder = isDigitalOnlyOrder(cart.lines);
 
   return (
     <>
@@ -44,8 +48,8 @@ export default async function CartPage({ searchParams }: CartPageProps) {
               <Badge variant="gold">Cart</Badge>
               <h1 className="mt-5 font-display text-display-sm text-paper">Sepet</h1>
               <p className="mt-4 max-w-2xl text-body text-muted-foreground">
-                Sectiginiz baskilari checkout oncesi kontrol edin. Stok dogrulamasi
-                her degisiklikte server tarafinda yeniden yapilir.
+                Sectiginiz dijital kitap formatlarini checkout oncesi kontrol edin.
+                Fiziksel kitap satisi sonraki faz icin kapali tutulur.
               </p>
             </div>
           </Container>
@@ -69,7 +73,7 @@ export default async function CartPage({ searchParams }: CartPageProps) {
                 <div className="rounded-lg border border-border bg-card p-8 text-center shadow-panel">
                   <h2 className="font-display text-title-lg text-paper">Sepet bos</h2>
                   <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-muted-foreground">
-                    IOH katalogundan bir baski secerek sepete ekleyebilirsiniz.
+                    IOH katalogundan PDF veya EPUB dijital kitap secerek sepete ekleyebilirsiniz.
                   </p>
                   <Button asChild className="mt-6">
                     <Link href="/books">Kitaplari Incele</Link>
@@ -143,7 +147,9 @@ export default async function CartPage({ searchParams }: CartPageProps) {
                   </dd>
                 </div>
                 <div className="border-t border-border pt-3 text-xs leading-5 text-muted-foreground">
-                  Kargo ve yasal bilgilendirme checkout adiminda hesaplanacak.
+                  {digitalOnlyOrder
+                    ? "Dijital teslimat: odeme onayindan sonra kitabiniz hesabinizdaki Indirmelerim alanindan acilir."
+                    : "Kargo ve yasal bilgilendirme checkout adiminda hesaplanacak."}
                 </div>
               </dl>
               <Button asChild className="mt-5 w-full">

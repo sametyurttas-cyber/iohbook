@@ -105,14 +105,14 @@ export const fallbackContent: Record<RequiredContentSlug, ContentBody & { title:
     blocks: [
       {
         eyebrow: "SSS",
-        text: "Siparis, teslimat ve koleksiyon baskilari hakkinda sik sorulan sorular.",
+        text: "Siparis, dijital teslimat ve koleksiyon fazlari hakkinda sik sorulan sorular.",
         title: "Merak edilenler",
         type: "hero"
       },
       {
         items: [
           {
-            answer: "MVP fazinda fiziksel kitap ve varyant satisi hedeflenir.",
+            answer: "MVP fazinda kitaplar PDF ve/veya EPUB dijital format olarak satilir. Fiziksel baskilar sonraki faz icin saklanir.",
             question: "Dijital urunler var mi?"
           },
           {

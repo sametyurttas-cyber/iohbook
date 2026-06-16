@@ -2,9 +2,16 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { getCurrentUser, requireStaff } from "@/features/auth/queries";
+import type { StaffRole } from "@/types/database";
 
 type AdminLayoutProps = {
   children: ReactNode;
+};
+
+type AdminNavItem = {
+  allowedRoles?: StaffRole[];
+  href: string;
+  label: string;
 };
 
 export default async function AdminLayout({ children }: AdminLayoutProps) {
@@ -20,6 +27,23 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
     redirect("/unauthorized");
   }
 
+  const navItems: AdminNavItem[] = [
+    { href: "/admin/products", label: "Urunler" },
+    { href: "/admin/nft-orders", label: "NFT Siparisleri" },
+    { href: "/admin/token-campaigns", label: "Token Kampanyalari" },
+    { href: "/admin/token-sales", label: "Token Satislari" },
+    { href: "/admin/orders", label: "Siparisler" },
+    {
+      allowedRoles: ["owner", "admin_ops", "fulfillment"],
+      href: "/admin/users",
+      label: "Kullanicilar"
+    },
+    { href: "/admin/content", label: "Icerik" },
+    { href: "/admin/media", label: "Medya" }
+  ].filter(
+    (item) => !item.allowedRoles || item.allowedRoles.some((role) => staff.roles.includes(role))
+  );
+
   return (
     <div className="min-h-screen bg-charcoal/40">
       <header className="border-b border-border bg-ink px-6 py-4">
@@ -33,15 +57,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
           </p>
         </div>
         <nav className="mx-auto mt-4 flex max-w-7xl flex-wrap gap-2">
-          {[
-            { href: "/admin/products", label: "Urunler" },
-            { href: "/admin/nft-orders", label: "NFT Siparisleri" },
-            { href: "/admin/token-campaigns", label: "Token Kampanyalari" },
-            { href: "/admin/token-sales", label: "Token Satislari" },
-            { href: "/admin/orders", label: "Siparisler" },
-            { href: "/admin/content", label: "Icerik" },
-            { href: "/admin/media", label: "Medya" }
-          ].map((item) => (
+          {navItems.map((item) => (
             <Link
               className="rounded-md border border-border px-3 py-2 text-sm text-muted-foreground transition-colors hover:border-gold/40 hover:text-gold"
               href={item.href}

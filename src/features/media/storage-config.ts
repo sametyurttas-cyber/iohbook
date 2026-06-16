@@ -16,13 +16,26 @@ export const IMAGE_MIME_TYPES = [
 
 export const ADMIN_UPLOAD_MIME_TYPES = [
   ...IMAGE_MIME_TYPES,
-  "application/pdf"
+  "application/pdf",
+  "application/epub+zip"
+] as const;
+
+export const DIGITAL_DELIVERY_MIME_TYPES = [
+  "application/pdf",
+  "application/epub+zip",
+  "application/zip"
 ] as const;
 
 export const PUBLIC_MEDIA_MAX_BYTES = 10 * 1024 * 1024;
 
 export function isPublicImageMimeType(type: string) {
   return IMAGE_MIME_TYPES.includes(type as (typeof IMAGE_MIME_TYPES)[number]);
+}
+
+export function isDigitalDeliveryMimeType(type: string) {
+  return DIGITAL_DELIVERY_MIME_TYPES.includes(
+    type as (typeof DIGITAL_DELIVERY_MIME_TYPES)[number]
+  );
 }
 
 export function sanitizeFilename(filename: string) {
@@ -52,4 +65,13 @@ export function buildMediaStoragePath(input: {
   const unique = crypto.randomUUID();
 
   return `${prefix}/${yyyy}/${mm}/${unique}-${safeName}`;
+}
+
+export function buildDigitalDeliveryStoragePath(input: {
+  filename: string;
+  productId: string;
+  variantId: string;
+}) {
+  const safeName = sanitizeFilename(input.filename);
+  return `ebooks/${input.productId}/${input.variantId}/${safeName}`;
 }

@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createEntitlementsForPaidOrder } from "@/features/entitlements/service";
 import { sendPaymentConfirmedEmail } from "@/features/email/events";
+import { awardBookOrderRewardForPaidOrder } from "@/features/points/service";
+import { captureError } from "@/lib/observability";
 import { confirmIyzicoCheckoutPayment } from "./payment-confirmation";
 
 vi.mock("@/features/email/events", () => ({
@@ -9,6 +11,10 @@ vi.mock("@/features/email/events", () => ({
 
 vi.mock("@/features/entitlements/service", () => ({
   createEntitlementsForPaidOrder: vi.fn()
+}));
+
+vi.mock("@/features/points/service", () => ({
+  awardBookOrderRewardForPaidOrder: vi.fn()
 }));
 
 vi.mock("@/lib/observability", () => ({
@@ -154,6 +160,67 @@ function createPaymentOptimisticLockMissSupabaseMock() {
   };
 }
 
+function createSuccessfulPaidSupabaseMock() {
+  return {
+    from(table: string) {
+      return {
+        eq() {
+          return this;
+        },
+        maybeSingle: async () => ({
+          data:
+            table === "payment_attempts"
+              ? {
+                  amount_minor: 1000,
+                  currency: "TRY",
+                  id: "attempt-id",
+                  order_id: "order-id",
+                  provider_reference: "checkout-token",
+                  provider_transaction_id: null,
+                  status: "pending"
+                }
+              : null,
+          error: null
+        }),
+        select() {
+          return this;
+        },
+        single: async () => ({
+          data: {
+            cart_id: "cart-id",
+            id: "order-id",
+            status: "pending_payment"
+          },
+          error: null
+        }),
+        update() {
+          const updateResult = {
+            eq() {
+              return this;
+            },
+            select: async () => ({
+              data: table === "payment_attempts" ? [{ id: "attempt-id" }] : [{ id: `${table}-id` }],
+              error: null
+            }),
+            then(resolve: (value: { data: { id: string }[]; error: null }) => void) {
+              return Promise.resolve({
+                data: [{ id: `${table}-id` }],
+                error: null
+              }).then(resolve);
+            }
+          };
+
+          return updateResult;
+        }
+      };
+    },
+    rpc: vi.fn(async () => ({
+      data: null,
+      error: null
+    }))
+  };
+}
+
 describe("payment confirmation idempotency", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -195,6 +262,7 @@ describe("payment confirmation idempotency", () => {
     ).rejects.toThrow("payment update failed");
 
     expect(createEntitlementsForPaidOrder).not.toHaveBeenCalled();
+    expect(awardBookOrderRewardForPaidOrder).not.toHaveBeenCalled();
     expect(sendPaymentConfirmedEmail).not.toHaveBeenCalled();
   });
 
@@ -223,6 +291,7 @@ describe("payment confirmation idempotency", () => {
     expect(supabase.orderUpdate).not.toHaveBeenCalled();
     expect(supabase.cartUpdate).not.toHaveBeenCalled();
     expect(createEntitlementsForPaidOrder).not.toHaveBeenCalled();
+    expect(awardBookOrderRewardForPaidOrder).not.toHaveBeenCalled();
     expect(sendPaymentConfirmedEmail).not.toHaveBeenCalled();
   });
 
@@ -243,6 +312,7 @@ describe("payment confirmation idempotency", () => {
     ).rejects.toThrow("iyzico paid price does not match payment attempt");
 
     expect(createEntitlementsForPaidOrder).not.toHaveBeenCalled();
+    expect(awardBookOrderRewardForPaidOrder).not.toHaveBeenCalled();
     expect(sendPaymentConfirmedEmail).not.toHaveBeenCalled();
   });
 
@@ -263,6 +333,77 @@ describe("payment confirmation idempotency", () => {
     ).rejects.toThrow("iyzico currency does not match payment attempt");
 
     expect(createEntitlementsForPaidOrder).not.toHaveBeenCalled();
+    expect(awardBookOrderRewardForPaidOrder).not.toHaveBeenCalled();
     expect(sendPaymentConfirmedEmail).not.toHaveBeenCalled();
+  });
+
+  it("keeps payment successful when IOH point reward fails after a paid book order", async () => {
+    vi.mocked(awardBookOrderRewardForPaidOrder).mockRejectedValueOnce(new Error("points failed"));
+
+    const result = await confirmIyzicoCheckoutPayment({
+      retrievePayment: async () => ({
+        currency: "TRY",
+        paidPrice: 10,
+        paymentId: "payment-id",
+        paymentStatus: "SUCCESS",
+        status: "success"
+      }),
+      source: "callback",
+      supabase: createSuccessfulPaidSupabaseMock() as never,
+      token: "checkout-token"
+    });
+
+    expect(result).toEqual({
+      idempotent: false,
+      orderId: "order-id",
+      paid: true,
+      providerTransactionId: "payment-id"
+    });
+    expect(createEntitlementsForPaidOrder).toHaveBeenCalledWith({
+      orderId: "order-id",
+      supabase: expect.anything()
+    });
+    expect(awardBookOrderRewardForPaidOrder).toHaveBeenCalledWith({
+      orderId: "order-id",
+      supabase: expect.anything()
+    });
+    expect(captureError).toHaveBeenCalledWith(expect.any(Error), {
+      operation: "points.book_order_reward",
+      order_id: "order-id",
+      provider: "iyzico",
+      source: "callback"
+    });
+    expect(sendPaymentConfirmedEmail).toHaveBeenCalledWith("order-id");
+  });
+
+  it("keeps payment successful when payment confirmation email fails", async () => {
+    vi.mocked(sendPaymentConfirmedEmail).mockRejectedValueOnce(new Error("email failed"));
+
+    const result = await confirmIyzicoCheckoutPayment({
+      retrievePayment: async () => ({
+        currency: "TRY",
+        paidPrice: 10,
+        paymentId: "payment-id",
+        paymentStatus: "SUCCESS",
+        status: "success"
+      }),
+      source: "callback",
+      supabase: createSuccessfulPaidSupabaseMock() as never,
+      token: "checkout-token"
+    });
+
+    expect(result).toEqual({
+      idempotent: false,
+      orderId: "order-id",
+      paid: true,
+      providerTransactionId: "payment-id"
+    });
+    expect(sendPaymentConfirmedEmail).toHaveBeenCalledWith("order-id");
+    expect(captureError).toHaveBeenCalledWith(expect.any(Error), {
+      operation: "email.payment_confirmed",
+      order_id: "order-id",
+      provider: "iyzico",
+      source: "callback"
+    });
   });
 });

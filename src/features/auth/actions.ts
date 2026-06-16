@@ -8,6 +8,8 @@ import {
 } from "@/features/auth/error-utils";
 import { mergeAnonymousCartIntoProfileCart } from "@/features/cart/merge";
 import { sendAccountSecurityEmail, sendPasswordResetEmail } from "@/features/email/events";
+import { awardSignupBonus } from "@/features/points/service";
+import { captureError } from "@/lib/observability";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/service-role";
 
@@ -87,6 +89,17 @@ export async function signUpWithPassword(formData: FormData) {
 
   if (data.user) {
     await mergeAnonymousCartIntoProfileCart(data.user.id);
+    try {
+      await awardSignupBonus({
+        profileId: data.user.id,
+        supabase: serviceSupabase
+      });
+    } catch (error) {
+      captureError(error, {
+        operation: "points.signup_bonus",
+        profile_id: data.user.id
+      });
+    }
   }
 
   redirect(

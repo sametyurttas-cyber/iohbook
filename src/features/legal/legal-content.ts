@@ -37,22 +37,22 @@ export const legalDocuments: Record<string, LegalDocument> = {
     sections: [
       {
         body: [
-          "Bu sozlesme, alicinin elektronik ortamda siparis verdigi fiziksel kitap satislarinda taraflarin hak ve yukumluluklerini duzenler.",
+          "Bu sozlesme, alicinin elektronik ortamda siparis verdigi dijital kitap satislarinda taraflarin hak ve yukumluluklerini duzenler.",
           "Satici unvani, adresi, MERSIS/vergi bilgileri ve destek kanallari canliya cikmadan once resmi sirket bilgileriyle doldurulmalidir."
         ],
         title: "Taraflar ve konu"
       },
       {
         body: [
-          "Urunun temel nitelikleri, varyant bilgisi, adet, satis bedeli, teslimat ucreti ve toplam bedel siparis oncesinde checkout ozetinde gosterilir.",
+          "Urunun temel nitelikleri, dijital format bilgisi, adet, satis bedeli ve toplam bedel siparis oncesinde checkout ozetinde gosterilir.",
           "Odeme iyzico CheckoutForm uzerinden baslatilir; kart bilgileri bu site tarafindan saklanmaz."
         ],
         title: "Urun, bedel ve odeme"
       },
       {
         body: [
-          "Fiziksel kitaplar teslimat adresine gonderilir. Kargo sureleri stok ve teslimat bolgesine gore degisebilir.",
-          "Cayma hakki, istisnalar, iade kosullari ve hasar bildirim sureleri avukat tarafindan son metne islenmelidir."
+          "Dijital kitaplar odeme onayindan sonra kullanici hesabindaki Indirmelerim alaninda guvenli indirme linkiyle sunulur.",
+          "Dijital icerikte cayma hakki, istisnalar, iade kosullari ve erisim sureleri avukat tarafindan son metne islenmelidir."
         ],
         title: "Teslimat ve cayma"
       }
@@ -66,21 +66,21 @@ export const legalDocuments: Record<string, LegalDocument> = {
     sections: [
       {
         body: [
-          "Alici, siparis oncesinde urunun temel niteliklerini, varyantini, stok ve teslimat bilgisini, toplam fiyatini ve odeme adimini gorur.",
-          "Bu metin fiziksel kitap MVP'si icindir. Dijital urun, NFT, token/coin satisi veya claimable urun canliya alinmadan once ayri hukuki inceleme gerekir."
+          "Alici, siparis oncesinde urunun temel niteliklerini, dijital formatini, erisim bilgisini, toplam fiyatini ve odeme adimini gorur.",
+          "Bu metin dijital kitap MVP'si icin teknik placeholder'dir. NFT, token/coin satisi veya claimable urun canliya alinmadan once ayri hukuki inceleme gerekir."
         ],
         title: "Kapsam"
       },
       {
         body: [
-          "Fiyatlar checkout ozetinde gosterilir. Varsayilan teslimat secenegi ek ucret dogurmaz; ucretli teslimat secenekleri ancak kullanici tarafindan secilirse toplam bedele eklenir.",
+          "Fiyatlar checkout ozetinde gosterilir. Dijital-only sipariste kargo/adres adimi ve teslimat ucreti uygulanmaz.",
           "Odeme sayfasina yonlendirme basarili olsa bile siparisin kesinlesmesi backend odeme dogrulamasina baglidir."
         ],
         title: "Fiyat, teslimat ve odeme"
       },
       {
         body: [
-          "Kisisel veriler siparisin alinmasi, odemenin dogrulanmasi, teslimat ve destek surecleri icin islenir.",
+          "Kisisel veriler siparisin alinmasi, odemenin dogrulanmasi, dijital erisim ve destek surecleri icin islenir.",
           "Ticari elektronik ileti izni zorunlu degildir ve ayri acik riza alanlariyla alinmalidir."
         ],
         title: "Kisisel veri ve iletisim izni"
@@ -95,7 +95,7 @@ export const legalDocuments: Record<string, LegalDocument> = {
     sections: [
       {
         body: [
-          "Siparis, uyelik, odeme, teslimat ve destek surecleri icin ad soyad, e-posta, telefon, adres, siparis ve odeme islem bilgileri islenebilir.",
+          "Siparis, uyelik, odeme, dijital erisim ve destek surecleri icin ad soyad, e-posta, telefon, siparis ve odeme islem bilgileri islenebilir.",
           "Odeme kart verileri iyzico tarafindan islenir; bu site kart numarasi veya CVV saklamaz."
         ],
         title: "Islenen veri kategorileri"
@@ -129,7 +129,7 @@ export const checkoutLegalSummaries = [
     purpose: "checkout_pre_information",
     required: true,
     summary:
-      "Urun nitelikleri, varyant, toplam bedel, teslimat ve odeme dogrulama akisi siparis oncesinde gosterilir."
+      "Urun nitelikleri, dijital format, toplam bedel, erisim ve odeme dogrulama akisi siparis oncesinde gosterilir."
   },
   {
     documentSlug: "distance-sales",
@@ -139,7 +139,7 @@ export const checkoutLegalSummaries = [
     purpose: "distance_sales_contract",
     required: true,
     summary:
-      "Fiziksel kitap satisi, teslimat, cayma/iade basliklari ve taraf yukumlulukleri bu sozlesme kapsamindadir."
+      "Dijital kitap satisi, erisim, cayma/iade basliklari ve taraf yukumlulukleri bu sozlesme kapsamindadir."
   },
   {
     documentSlug: "privacy",
@@ -149,7 +149,7 @@ export const checkoutLegalSummaries = [
     purpose: "privacy_notice",
     required: true,
     summary:
-      "Siparis, odeme, teslimat ve destek icin gerekli kisisel veriler islenir; pazarlama izni ayrica alinir."
+      "Siparis, odeme, dijital erisim ve destek icin gerekli kisisel veriler islenir; pazarlama izni ayrica alinir."
   }
 ] as const;
 

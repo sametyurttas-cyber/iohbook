@@ -22,6 +22,14 @@ function readSnapshotText(snapshot: Record<string, unknown>, key: string) {
   return typeof value === "string" && value.length > 0 ? value : "-";
 }
 
+function orderHasDigitalItems(order: Awaited<ReturnType<typeof getAccountOrderDetail>>) {
+  return Boolean(
+    order?.order_items.some(
+      (item) => item.fulfillment_type === "digital" || item.fulfillment_type === "hybrid"
+    )
+  );
+}
+
 export default async function AccountOrderDetailPage({
   params
 }: AccountOrderDetailPageProps) {
@@ -31,6 +39,8 @@ export default async function AccountOrderDetailPage({
   if (!order) {
     notFound();
   }
+
+  const hasDigitalItems = orderHasDigitalItems(order);
 
   return (
     <div className="grid gap-5">
@@ -65,6 +75,18 @@ export default async function AccountOrderDetailPage({
 
       <section className="rounded-lg border border-border bg-card p-5 shadow-panel">
         <h3 className="font-display text-title-md text-paper">Items</h3>
+        {hasDigitalItems && (order.status === "paid" || order.status === "fulfilled" || order.status === "completed") ? (
+          <div className="mt-4 rounded-md border border-gold/25 bg-gold/10 p-4 text-sm text-muted-foreground">
+            <p className="font-medium text-paper">Dijital kitabiniz hazir.</p>
+            <p className="mt-1 leading-6">
+              PDF/EPUB dosyalari mail eki olarak gonderilmez. Guvenli indirme linkleri
+              hesabinizdaki Indirmelerim sayfasinda uretilir.
+            </p>
+            <Button asChild className="mt-4" size="sm">
+              <Link href="/account/downloads">Indirmelerime git</Link>
+            </Button>
+          </div>
+        ) : null}
         <div className="mt-5 grid gap-3">
           {order.order_items.map((item) => (
             <div

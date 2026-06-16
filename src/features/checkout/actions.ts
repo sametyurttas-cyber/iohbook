@@ -10,6 +10,10 @@ import {
   createOrderNumber,
   type CheckoutAddress
 } from "@/features/checkout/checkout-utils";
+import {
+  isDigitalOnlyOrder,
+  requiresPhysicalDelivery
+} from "@/features/checkout/fulfillment-utils";
 import { getPaymentProvider } from "@/features/checkout/providers";
 import { commitCheckoutPaymentStart } from "@/features/checkout/persistence";
 import {
@@ -99,17 +103,17 @@ function requiresWalletDelivery(fulfillmentType: FulfillmentType) {
 }
 
 function validateCheckoutDetails(input: {
-  billingAddress: CheckoutAddress;
+  billingAddress: CheckoutAddress | null;
   customerEmail: string;
   customerName: string;
   customerPhone: string;
-  shippingAddress: CheckoutAddress;
+  shippingAddress: CheckoutAddress | null;
 }) {
   const result = z
     .object({
-      billingAddress: checkoutAddressSchema,
       contact: checkoutContactSchema,
-      shippingAddress: checkoutAddressSchema
+      billingAddress: checkoutAddressSchema.nullable(),
+      shippingAddress: checkoutAddressSchema.nullable()
     })
     .safeParse({
       billingAddress: input.billingAddress,
@@ -124,6 +128,19 @@ function validateCheckoutDetails(input: {
   if (!result.success) {
     redirect("/checkout?error=invalid-checkout-details");
   }
+}
+
+function buildDigitalProviderAddress(): CheckoutAddress {
+  return {
+    city: "Istanbul",
+    companyName: null,
+    country: "Turkiye",
+    countryCode: "TR",
+    line1: "Dijital teslimat - Hesabim Indirmelerim",
+    line2: null,
+    postalCode: "00000",
+    region: null
+  };
 }
 
 type CheckoutInventory = { on_hand: number; reserved: number; safety_stock: number };
@@ -152,6 +169,14 @@ export async function startCheckoutPayment(formData: FormData) {
   }
 
   const supabase = createSupabaseServiceRoleClient();
+
+  if (
+    cart.lines.some((line) =>
+      requiresPhysicalDelivery(line.product_variants.fulfillment_type)
+    )
+  ) {
+    redirect("/cart?error=physical-unavailable");
+  }
 
   for (const line of cart.lines) {
     const inventory = getFirstInventory(line.product_variants.inventory_items);
@@ -201,15 +226,18 @@ export async function startCheckoutPayment(formData: FormData) {
     }
   }
 
-  const delivery = getDeliveryOption(formData.get("delivery_option"));
+  const digitalOnlyOrder = isDigitalOnlyOrder(cart.lines);
   const customerName = requireText(formData, "customer_name");
   const customerEmail = requireText(formData, "customer_email");
   const customerPhone = requireText(formData, "customer_phone");
-  const shippingAddress = buildAddress(formData, "shipping");
+  const delivery = digitalOnlyOrder ? null : getDeliveryOption(formData.get("delivery_option"));
+  const shippingAddress = digitalOnlyOrder ? null : buildAddress(formData, "shipping");
   const billingSameAsShipping = formData.get("billing_same_as_shipping") === "on";
-  const billingAddress = billingSameAsShipping
-    ? shippingAddress
-    : buildAddress(formData, "billing");
+  const billingAddress = digitalOnlyOrder
+    ? null
+    : billingSameAsShipping
+      ? shippingAddress
+      : buildAddress(formData, "billing");
   validateCheckoutDetails({
     billingAddress,
     customerEmail,
@@ -284,17 +312,19 @@ export async function startCheckoutPayment(formData: FormData) {
     }
   }
 
-  const totalMinor = cart.subtotalMinor + delivery.priceMinor;
+  const shippingMinor = delivery?.priceMinor ?? 0;
+  const totalMinor = cart.subtotalMinor + shippingMinor;
   const orderId = crypto.randomUUID();
   const orderNumber = createOrderNumber();
   const order = {
     currency: cart.cart.currency,
     id: orderId,
     order_number: orderNumber,
-    shipping_minor: delivery.priceMinor,
+    shipping_minor: shippingMinor,
     subtotal_minor: cart.subtotalMinor,
     total_minor: totalMinor
   };
+  const providerAddress = shippingAddress ?? buildDigitalProviderAddress();
 
   const consentEvents = [
     ...checkoutLegalSummaries.map((summary) => ({
@@ -366,7 +396,7 @@ export async function startCheckoutPayment(formData: FormData) {
       ? `${buildSiteUrl()}/api/iyzico/callback`
       : `${buildSiteUrl()}/api/payments/${provider.id}/callback`;
   const paymentResult = await provider.startPayment({
-    billingAddress,
+    billingAddress: billingAddress ?? providerAddress,
     buyerId: user?.id ?? cart.cart.anonymous_id ?? cart.cart.id,
     callbackUrl,
     cartLines: cart.lines,
@@ -375,7 +405,7 @@ export async function startCheckoutPayment(formData: FormData) {
     customerName,
     customerPhone,
     order,
-    shippingAddress
+    shippingAddress: providerAddress
   });
 
   if (paymentResult.status === "failed") {
@@ -401,11 +431,14 @@ export async function startCheckoutPayment(formData: FormData) {
         },
         order_number: orderNumber,
         profile_id: user?.id ?? null,
-        shipping_address: {
-          ...shippingAddress,
-          delivery_option: delivery
-        },
-        shipping_minor: delivery.priceMinor,
+        shipping_address:
+          shippingAddress && delivery
+            ? {
+                ...shippingAddress,
+                delivery_option: delivery
+              }
+            : null,
+        shipping_minor: shippingMinor,
         subtotal_minor: cart.subtotalMinor,
         tax_minor: 0,
         total_minor: totalMinor

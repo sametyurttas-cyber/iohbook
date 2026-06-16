@@ -6,17 +6,19 @@ import {
   getCoverMedia,
   getLowestPriceLabel,
   getMediaUrl,
-  getSortedVariants
+  getPublicDigitalVariants
 } from "@/features/catalog/catalog-utils";
 import { listPublishedBooks } from "@/features/catalog/queries";
 import { IohIndexStyles } from "@/features/home/ioh-index-landing";
+import { getCurrentProfile, getCurrentUser } from "@/features/auth/queries";
+import { getIohPointBalanceForProfile } from "@/features/points/queries";
 import { absoluteUrl, buildPageMetadata } from "@/lib/seo";
 
 export const revalidate = 300;
 
 export const metadata: Metadata = buildPageMetadata({
   description:
-    "Samet Yurttas IOH evrenindeki fiziksel kitaplari, imzali baskilari ve koleksiyon varyantlarini kesfedin.",
+    "Samet Yurttas IOH evrenindeki PDF ve EPUB dijital kitaplari kesfedin.",
   path: "/books",
   title: "Kitaplar"
 });
@@ -67,12 +69,18 @@ function getBookAccent(title: string, index: number) {
 }
 
 export default async function BooksPage() {
-  const books = await listPublishedBooks();
+  const user = await getCurrentUser();
+  const [books, profile, points] = await Promise.all([
+    listPublishedBooks(),
+    user ? getCurrentProfile() : Promise.resolve(null),
+    user ? getIohPointBalanceForProfile(user.id) : Promise.resolve(null)
+  ]);
+  const displayName = profile?.full_name || profile?.email || user?.email || "Hesabim";
   const visibleBooks =
     books.length > 0
       ? books.map((book, index) => {
           const cover = getCoverMedia(book);
-          const variants = getSortedVariants(book);
+          const variants = getPublicDigitalVariants(book);
 
           return {
             accent: getBookAccent(book.title, index),
@@ -80,7 +88,7 @@ export default async function BooksPage() {
             description:
               book.short_description ??
               book.subtitle ??
-              "IOH evreninden fiziksel baski, limitli varyant ve koleksiyon hissi.",
+              "IOH evreninden PDF ve EPUB dijital kitap deneyimi.",
             href: `/books/${book.slug}`,
             label: `${String(index + 1).padStart(2, "0")} / ${book.title}`,
             price: getLowestPriceLabel(book),
@@ -131,9 +139,25 @@ export default async function BooksPage() {
           <Link href="/contact">Iletisim</Link>
         </nav>
         <div className="head-actions">
-          <Link className="head-cta" href="/sign-in" data-hover="" data-magnet="">
-            Giris
-          </Link>
+          {user ? (
+            <>
+              <Link className="head-cta" href="/account" data-hover="" data-magnet="">
+                {displayName}
+              </Link>
+              <Link className="head-cta" href="/account/profile" data-hover="" data-magnet="">
+                IOH Puan: {points?.balance ?? 0}
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link className="head-cta" href="/sign-in" data-hover="" data-magnet="">
+                Giris
+              </Link>
+              <Link className="head-cta" href="/sign-up" data-hover="" data-magnet="">
+                Uye Ol
+              </Link>
+            </>
+          )}
           <Link className="head-cta" href="/collections" data-hover="" data-magnet="">
             Koleksiyona Gir
           </Link>
@@ -189,7 +213,7 @@ export default async function BooksPage() {
             <p className="m-note">
               GODCODE altin cekirdegi, SYSGOD mavi sistem katmanini, CODEWAR ise
               kirmizi catisma hattini tasir. Her baski, anlatinin fiziksel bir
-              parcasi gibi konumlanir.
+              parcasi gibi konumlanir; MVP'de erisim PDF ve EPUB dijital teslimatla baslar.
             </p>
           </div>
         </section>
@@ -241,7 +265,7 @@ export default async function BooksPage() {
             <p className="kicker mono">Katalog rotalari</p>
             <h2 className="coin-title no-split">IOH PATHS</h2>
             <p className="coin-lead">
-              Katalog yalnizca kitap listesi degil. Baski, koleksiyon ve dijital
+              Katalog yalnizca kitap listesi degil. Dijital kitap, koleksiyon ve
               evren ayni cekirdegin farkli erisim katmanlari olarak okunur.
             </p>
             <div className="coin-cards">
@@ -249,7 +273,7 @@ export default async function BooksPage() {
                 <span className="c-no">/ 01</span>
                 <span className="c-soon">Butik</span>
                 <h3>Koleksiyonlar</h3>
-                <p>Imzali baskilar, limitli nesneler ve evren odakli setler.</p>
+                <p>Fiziksel baskilar ve butik nesneler sonraki faz icin hazir tutulur.</p>
               </Link>
               <Link className="c-card" href="/nft">
                 <span className="c-no">/ 02</span>
@@ -270,7 +294,7 @@ export default async function BooksPage() {
         <section className="outro">
           <div className="shell">
             <h2 id="outroTitle">
-              Kitaplar <em>evrenin</em> ilk fiziksel kapisidir.
+              Kitaplar <em>evrenin</em> ilk dijital kapisidir.
             </h2>
             <Link className="btn btn-fill" href="/cart">
               Sepete git

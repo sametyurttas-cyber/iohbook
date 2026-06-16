@@ -1,8 +1,10 @@
 import { createHmac } from "node:crypto";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { sendPaymentConfirmedEmail } from "@/features/email/events";
 import { createEntitlementsForPaidOrder } from "@/features/entitlements/service";
+import { awardBookOrderRewardForPaidOrder } from "@/features/points/service";
 import { approveTokenAllocationsForPaidOrder } from "@/features/token-sale/service";
+import { captureError } from "@/lib/observability";
 import { confirmShopierPayment } from "./shopier-confirmation";
 
 vi.mock("@/features/email/events", () => ({
@@ -13,8 +15,16 @@ vi.mock("@/features/entitlements/service", () => ({
   createEntitlementsForPaidOrder: vi.fn()
 }));
 
+vi.mock("@/features/points/service", () => ({
+  awardBookOrderRewardForPaidOrder: vi.fn()
+}));
+
 vi.mock("@/features/token-sale/service", () => ({
   approveTokenAllocationsForPaidOrder: vi.fn()
+}));
+
+vi.mock("@/lib/observability", () => ({
+  captureError: vi.fn()
 }));
 
 vi.mock("@/features/checkout/shopier", async (importOriginal) => {
@@ -100,7 +110,69 @@ function createOrderUpdateFailureSupabaseMock() {
   };
 }
 
+function createSuccessfulShopierSupabaseMock() {
+  return {
+    from(table: string) {
+      return {
+        eq() {
+          return this;
+        },
+        maybeSingle: async () => ({
+          data:
+            table === "payment_attempts"
+              ? {
+                  amount_minor: 1000,
+                  currency: "TRY",
+                  id: "attempt-id",
+                  order_id: "order-id",
+                  provider_reference: "IOH-1",
+                  status: "pending"
+                }
+              : null,
+          error: null
+        }),
+        select() {
+          return this;
+        },
+        single: async () => ({
+          data: {
+            cart_id: "cart-id",
+            id: "order-id",
+            status: "pending_payment"
+          },
+          error: null
+        }),
+        update() {
+          return {
+            eq() {
+              return this;
+            },
+            select: async () => ({
+              data: table === "payment_attempts" ? [{ id: "attempt-id" }] : [{ id: `${table}-id` }],
+              error: null
+            }),
+            then(resolve: (value: { data: { id: string }[]; error: null }) => void) {
+              return Promise.resolve({
+                data: [{ id: `${table}-id` }],
+                error: null
+              }).then(resolve);
+            }
+          };
+        }
+      };
+    },
+    rpc: vi.fn(async () => ({
+      data: null,
+      error: null
+    }))
+  };
+}
+
 describe("shopier confirmation persistence", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("stops before entitlement, allocation, and email side effects when order update fails", async () => {
     await expect(
       confirmShopierPayment({
@@ -110,6 +182,7 @@ describe("shopier confirmation persistence", () => {
     ).rejects.toThrow("order update failed");
 
     expect(createEntitlementsForPaidOrder).not.toHaveBeenCalled();
+    expect(awardBookOrderRewardForPaidOrder).not.toHaveBeenCalled();
     expect(approveTokenAllocationsForPaidOrder).not.toHaveBeenCalled();
     expect(sendPaymentConfirmedEmail).not.toHaveBeenCalled();
   });
@@ -131,6 +204,7 @@ describe("shopier confirmation persistence", () => {
     ).rejects.toThrow("Shopier callback amount does not match payment attempt");
 
     expect(createEntitlementsForPaidOrder).not.toHaveBeenCalled();
+    expect(awardBookOrderRewardForPaidOrder).not.toHaveBeenCalled();
     expect(approveTokenAllocationsForPaidOrder).not.toHaveBeenCalled();
     expect(sendPaymentConfirmedEmail).not.toHaveBeenCalled();
   });
@@ -147,7 +221,65 @@ describe("shopier confirmation persistence", () => {
     ).rejects.toThrow("Shopier callback currency does not match payment attempt");
 
     expect(createEntitlementsForPaidOrder).not.toHaveBeenCalled();
+    expect(awardBookOrderRewardForPaidOrder).not.toHaveBeenCalled();
     expect(approveTokenAllocationsForPaidOrder).not.toHaveBeenCalled();
     expect(sendPaymentConfirmedEmail).not.toHaveBeenCalled();
+  });
+
+  it("keeps Shopier payment successful when IOH point reward fails", async () => {
+    vi.mocked(awardBookOrderRewardForPaidOrder).mockRejectedValueOnce(new Error("points failed"));
+
+    const result = await confirmShopierPayment({
+      payload: signedShopierPayload(),
+      supabase: createSuccessfulShopierSupabaseMock() as never
+    });
+
+    expect(result).toEqual({
+      idempotent: false,
+      orderId: "order-id",
+      paid: true,
+      providerTransactionId: "PAY-1"
+    });
+    expect(createEntitlementsForPaidOrder).toHaveBeenCalledWith({
+      orderId: "order-id",
+      supabase: expect.anything()
+    });
+    expect(awardBookOrderRewardForPaidOrder).toHaveBeenCalledWith({
+      orderId: "order-id",
+      supabase: expect.anything()
+    });
+    expect(captureError).toHaveBeenCalledWith(expect.any(Error), {
+      operation: "points.book_order_reward",
+      order_id: "order-id",
+      provider: "shopier"
+    });
+    expect(approveTokenAllocationsForPaidOrder).toHaveBeenCalledWith({
+      orderId: "order-id",
+      paymentAttemptId: "attempt-id",
+      supabase: expect.anything()
+    });
+    expect(sendPaymentConfirmedEmail).toHaveBeenCalledWith("order-id");
+  });
+
+  it("keeps Shopier payment successful when payment confirmation email fails", async () => {
+    vi.mocked(sendPaymentConfirmedEmail).mockRejectedValueOnce(new Error("email failed"));
+
+    const result = await confirmShopierPayment({
+      payload: signedShopierPayload(),
+      supabase: createSuccessfulShopierSupabaseMock() as never
+    });
+
+    expect(result).toEqual({
+      idempotent: false,
+      orderId: "order-id",
+      paid: true,
+      providerTransactionId: "PAY-1"
+    });
+    expect(sendPaymentConfirmedEmail).toHaveBeenCalledWith("order-id");
+    expect(captureError).toHaveBeenCalledWith(expect.any(Error), {
+      operation: "email.payment_confirmed",
+      order_id: "order-id",
+      provider: "shopier"
+    });
   });
 });

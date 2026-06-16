@@ -12,6 +12,18 @@ type DownloadsPageProps = {
   }>;
 };
 
+const downloadErrorMessages: Record<string, string> = {
+  "download-bucket-invalid": "Dosya guvenli dijital teslimat bucket alaninda degil.",
+  "download-file-missing": "Bu dijital hakka henuz dosya baglanmamis.",
+  "download-limit-reached": "Indirme limitine ulasildi.",
+  "download-log-failed": "Indirme kaydi olusturulamadi.",
+  "download-not-active": "Bu indirme hakki aktif degil.",
+  "download-not-found": "Bu indirme hakki bulunamadi veya size ait degil.",
+  "download-order-not-paid": "Odeme dogrulanmadan indirme acilamaz.",
+  "download-url-failed": "Guvenli indirme linki uretilemedi.",
+  "missing-entitlement": "Indirme hakki secilemedi."
+};
+
 function readSnapshotText(snapshot: Record<string, unknown> | undefined, key: string) {
   const value = snapshot?.[key];
   return typeof value === "string" && value.length > 0 ? value : "-";
@@ -53,7 +65,7 @@ export default async function AccountDownloadsPage({ searchParams }: DownloadsPa
 
       {params?.error ? (
         <div className="rounded-md border border-burgundy-bright/30 bg-burgundy-bright/10 p-3 text-sm text-burgundy-soft">
-          Indirme baslatilamadi: {params.error}
+          Indirme baslatilamadi: {downloadErrorMessages[params.error] ?? params.error}
         </div>
       ) : null}
 
@@ -107,6 +119,9 @@ export default async function AccountDownloadsPage({ searchParams }: DownloadsPa
                   <p className="mt-1 text-sm text-muted-foreground">
                     {readSnapshotText(item?.variant_snapshot, "title")} - SKU{" "}
                     {readSnapshotText(item?.variant_snapshot, "sku")}
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Format: {readSnapshotText(item?.variant_snapshot, "format")}
                   </p>
                   <p className="mt-2 text-xs text-muted-foreground">
                     Indirme: {download.download_count}

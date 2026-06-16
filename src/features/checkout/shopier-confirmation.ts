@@ -15,6 +15,7 @@ import {
 import { updateOrThrow } from "@/features/checkout/persistence";
 import { sendPaymentConfirmedEmail } from "@/features/email/events";
 import { createEntitlementsForPaidOrder } from "@/features/entitlements/service";
+import { awardBookOrderRewardForPaidOrder } from "@/features/points/service";
 import { approveTokenAllocationsForPaidOrder } from "@/features/token-sale/service";
 import { captureError } from "@/lib/observability";
 import type { Database } from "@/types/database";
@@ -178,12 +179,32 @@ export async function confirmShopierPayment(input: {
       orderId: attempt.order_id,
       supabase: input.supabase
     });
+    try {
+      await awardBookOrderRewardForPaidOrder({
+        orderId: attempt.order_id,
+        supabase: input.supabase
+      });
+    } catch (error) {
+      captureError(error, {
+        operation: "points.book_order_reward",
+        order_id: attempt.order_id,
+        provider: "shopier"
+      });
+    }
     await approveTokenAllocationsForPaidOrder({
       orderId: attempt.order_id,
       paymentAttemptId: attempt.id,
       supabase: input.supabase
     });
-    await sendPaymentConfirmedEmail(attempt.order_id);
+    try {
+      await sendPaymentConfirmedEmail(attempt.order_id);
+    } catch (error) {
+      captureError(error, {
+        operation: "email.payment_confirmed",
+        order_id: attempt.order_id,
+        provider: "shopier"
+      });
+    }
   }
 
   return {

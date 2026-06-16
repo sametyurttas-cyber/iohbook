@@ -15,7 +15,9 @@ import {
   getCoverMedia,
   getLowestPriceLabel,
   getMediaUrl,
+  getPublicDigitalVariants,
   getSortedVariants,
+  hasPhysicalStorefrontVariants,
   getStockLabel
 } from "@/features/catalog/catalog-utils";
 import {
@@ -54,7 +56,7 @@ export async function generateMetadata({
       description:
         book.seo_description ??
         book.short_description ??
-        "Samet Yurttas IOH evreninden fiziksel kitap.",
+        "Samet Yurttas IOH evreninden dijital kitap.",
       image: getMediaUrl(cover),
       path: `/books/${book.slug}`,
       title: book.seo_title ?? book.title,
@@ -79,8 +81,10 @@ export default async function BookDetailPage({ params }: BookDetailPageProps) {
     notFound();
   }
 
-  const variants = getSortedVariants(book);
+  const allVariants = getSortedVariants(book);
+  const variants = getPublicDigitalVariants(book);
   const firstVariant = variants[0];
+  const hasPhysicalComingSoon = hasPhysicalStorefrontVariants(book);
   const cover = getCoverMedia(book);
   const coverUrl = getMediaUrl(cover);
   const lowestVariant = variants.reduce<typeof firstVariant | undefined>((current, variant) => {
@@ -91,7 +95,7 @@ export default async function BookDetailPage({ params }: BookDetailPageProps) {
     return current;
   }, undefined);
   const productKindLabel =
-    book.type === "nft" || book.type === "claimable" ? "NFT / claimable" : "Fiziksel kitap";
+    book.type === "nft" || book.type === "claimable" ? "NFT / claimable" : "Dijital kitap";
 
   return (
     <>
@@ -170,8 +174,11 @@ export default async function BookDetailPage({ params }: BookDetailPageProps) {
                     {book.collections ? (
                       <Badge variant="outline">{book.collections.title}</Badge>
                     ) : null}
-                    {book.is_limited ? <Badge variant="gold">Limitli baski</Badge> : null}
+                    {book.is_limited ? <Badge variant="gold">Limitli seri</Badge> : null}
                     <Badge variant="secondary">{productKindLabel}</Badge>
+                    {hasPhysicalComingSoon ? (
+                      <Badge variant="outline">Fiziksel baski yakinda</Badge>
+                    ) : null}
                   </div>
                   <h1 className="mt-5 font-display text-display-sm text-paper md:text-display-md">
                     {book.title}
@@ -183,7 +190,7 @@ export default async function BookDetailPage({ params }: BookDetailPageProps) {
                   ) : null}
                   <p className="mt-5 max-w-2xl text-body text-muted-foreground">
                     {book.short_description ??
-                      "IOH evreninin karanlik teknoloji hattindan koleksiyon hissi tasiyan fiziksel baski."}
+                      "IOH evreninin karanlik teknoloji hattindan PDF ve EPUB dijital kitap deneyimi."}
                   </p>
                 </div>
 
@@ -201,7 +208,7 @@ export default async function BookDetailPage({ params }: BookDetailPageProps) {
                       Stok
                     </p>
                     <p className="mt-2 text-sm text-paper">
-                      {firstVariant ? getStockLabel(firstVariant) : "Yakinda"}
+                      {firstVariant ? getStockLabel(firstVariant) : "Dijital format yakinda"}
                     </p>
                   </div>
                   <div>
@@ -209,11 +216,9 @@ export default async function BookDetailPage({ params }: BookDetailPageProps) {
                       Teslimat
                     </p>
                     <p className="mt-2 text-sm text-paper">
-                      {firstVariant?.lead_time_days
-                        ? `${firstVariant.lead_time_days} gun hazirlik`
-                        : firstVariant?.fulfillment_type === "claimable"
-                          ? "Wallet dogrulamasi sonrasi manual teslimat"
-                          : "Standart kargo hazirligi"}
+                      {firstVariant
+                        ? "Odeme sonrasi Hesabim > Indirmelerim"
+                        : "Dijital teslimat hazirlaniyor"}
                     </p>
                   </div>
                 </div>
@@ -241,7 +246,7 @@ export default async function BookDetailPage({ params }: BookDetailPageProps) {
 
         <Section tone="muted">
           <Container>
-            <BookInfoTabs book={book} variants={variants} />
+            <BookInfoTabs book={book} variants={variants.length > 0 ? variants : allVariants} />
           </Container>
         </Section>
       </main>

@@ -54,6 +54,7 @@ async function getOrderEmailData(orderId: string): Promise<(OrderEmailData & {
     currency: order.currency,
     customerName: order.customer_name,
     lines: order.order_items.map((item) => ({
+      fulfillmentType: item.fulfillment_type,
       quantity: item.quantity,
       title: snapshotText(item.product_snapshot, "title", "IOH Book"),
       totalMinor: item.total_minor,
@@ -62,6 +63,7 @@ async function getOrderEmailData(orderId: string): Promise<(OrderEmailData & {
     orderId: order.id,
     orderNumber: order.order_number,
     orderUrl: `${buildSiteUrl()}/account/orders/${order.id}`,
+    downloadsUrl: `${buildSiteUrl()}/account/downloads`,
     profileId: order.profile_id,
     to: order.customer_email,
     totalMinor: order.total_minor,

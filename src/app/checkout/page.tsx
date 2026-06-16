@@ -16,6 +16,7 @@ import {
   DEFAULT_DELIVERY_OPTION_ID,
   DELIVERY_OPTIONS
 } from "@/features/checkout/delivery-options";
+import { isDigitalOnlyOrder } from "@/features/checkout/fulfillment-utils";
 import {
   DEFAULT_PAYMENT_PROVIDER_ID,
   PAYMENT_PROVIDERS
@@ -43,6 +44,7 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
     availability: provider.availability(),
     provider
   }));
+  const digitalOnlyOrder = isDigitalOnlyOrder(cart.lines);
   const defaultEnabledPaymentProviderId =
     paymentProviderOptions.find(({ availability }) => availability.enabled)?.provider.id ??
     DEFAULT_PAYMENT_PROVIDER_ID;
@@ -95,6 +97,12 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
 
                 <section className="rounded-lg border border-border bg-card p-5 shadow-panel">
                   <h2 className="font-display text-title-md text-paper">Contact</h2>
+                  {digitalOnlyOrder ? (
+                    <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                      Dijital kitaplar odeme sonrasinda Hesabim &gt; Indirmelerim
+                      alaninda guvenli indirme linkiyle acilir. Kargo adresi gerekmez.
+                    </p>
+                  ) : null}
                   <div className="mt-4 grid gap-4 sm:grid-cols-2">
                     <label className="grid gap-2 text-sm">
                       <span className="text-muted-foreground">Full name</span>
@@ -116,72 +124,84 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
                   </div>
                 </section>
 
-                <section className="rounded-lg border border-border bg-card p-5 shadow-panel">
-                  <h2 className="font-display text-title-md text-paper">Shipping address</h2>
-                  <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                    <label className="grid gap-2 text-sm">
-                      <span className="text-muted-foreground">Country code</span>
-                      <Input maxLength={2} name="shipping_country_code" placeholder="TR" required />
-                    </label>
-                    <label className="grid gap-2 text-sm">
-                      <span className="text-muted-foreground">Country</span>
-                      <Input name="shipping_country" placeholder="Turkiye" required />
-                    </label>
-                    <label className="grid gap-2 text-sm">
-                      <span className="text-muted-foreground">City</span>
-                      <Input name="shipping_city" required />
-                    </label>
-                    <label className="grid gap-2 text-sm">
-                      <span className="text-muted-foreground">State / region</span>
-                      <Input name="shipping_region" />
-                    </label>
-                    <label className="grid gap-2 text-sm sm:col-span-2">
-                      <span className="text-muted-foreground">Address line 1</span>
-                      <Textarea name="shipping_line1" required />
-                    </label>
-                    <label className="grid gap-2 text-sm sm:col-span-2">
-                      <span className="text-muted-foreground">Address line 2</span>
-                      <Input name="shipping_line2" />
-                    </label>
-                    <label className="grid gap-2 text-sm">
-                      <span className="text-muted-foreground">Postal code</span>
-                      <Input name="shipping_postal_code" required />
-                    </label>
-                    <label className="grid gap-2 text-sm">
-                      <span className="text-muted-foreground">Company, optional</span>
-                      <Input name="shipping_company_name" />
-                    </label>
-                  </div>
-                </section>
+                {digitalOnlyOrder ? (
+                  <section className="rounded-lg border border-gold/25 bg-gold/10 p-5 shadow-panel">
+                    <h2 className="font-display text-title-md text-paper">Dijital teslimat</h2>
+                    <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                      Bu sepet sadece dijital kitap iceriyor. Kargo secimi ve adres
+                      adimi atlanir; odeme onayindan sonra indirme hakki hesabina tanimlanir.
+                    </p>
+                  </section>
+                ) : (
+                  <>
+                    <section className="rounded-lg border border-border bg-card p-5 shadow-panel">
+                      <h2 className="font-display text-title-md text-paper">Shipping address</h2>
+                      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                        <label className="grid gap-2 text-sm">
+                          <span className="text-muted-foreground">Country code</span>
+                          <Input maxLength={2} name="shipping_country_code" placeholder="TR" required />
+                        </label>
+                        <label className="grid gap-2 text-sm">
+                          <span className="text-muted-foreground">Country</span>
+                          <Input name="shipping_country" placeholder="Turkiye" required />
+                        </label>
+                        <label className="grid gap-2 text-sm">
+                          <span className="text-muted-foreground">City</span>
+                          <Input name="shipping_city" required />
+                        </label>
+                        <label className="grid gap-2 text-sm">
+                          <span className="text-muted-foreground">State / region</span>
+                          <Input name="shipping_region" />
+                        </label>
+                        <label className="grid gap-2 text-sm sm:col-span-2">
+                          <span className="text-muted-foreground">Address line 1</span>
+                          <Textarea name="shipping_line1" required />
+                        </label>
+                        <label className="grid gap-2 text-sm sm:col-span-2">
+                          <span className="text-muted-foreground">Address line 2</span>
+                          <Input name="shipping_line2" />
+                        </label>
+                        <label className="grid gap-2 text-sm">
+                          <span className="text-muted-foreground">Postal code</span>
+                          <Input name="shipping_postal_code" required />
+                        </label>
+                        <label className="grid gap-2 text-sm">
+                          <span className="text-muted-foreground">Company, optional</span>
+                          <Input name="shipping_company_name" />
+                        </label>
+                      </div>
+                    </section>
 
-                <section className="rounded-lg border border-border bg-card p-5 shadow-panel">
-                  <h2 className="font-display text-title-md text-paper">Delivery</h2>
-                  <div className="mt-4 grid gap-3">
-                    {DELIVERY_OPTIONS.map((option) => (
-                      <label
-                        className="flex items-start gap-3 rounded-md border border-border bg-ink-soft p-4"
-                        key={option.id}
-                      >
-                        <input
-                          className="mt-1 h-4 w-4 accent-gold"
-                          defaultChecked={option.id === DEFAULT_DELIVERY_OPTION_ID}
-                          name="delivery_option"
-                          type="radio"
-                          value={option.id}
-                        />
-                        <span className="grid flex-1 gap-1">
-                          <span className="flex flex-wrap items-center justify-between gap-3 font-medium text-paper">
-                            {option.title}
-                            <span className="text-gold">{formatMoney(option.priceMinor)}</span>
-                          </span>
-                          <span className="text-xs leading-5 text-muted-foreground">
-                            {option.estimatedWindow}. {option.description}
-                          </span>
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                </section>
+                    <section className="rounded-lg border border-border bg-card p-5 shadow-panel">
+                      <h2 className="font-display text-title-md text-paper">Delivery</h2>
+                      <div className="mt-4 grid gap-3">
+                        {DELIVERY_OPTIONS.map((option) => (
+                          <label
+                            className="flex items-start gap-3 rounded-md border border-border bg-ink-soft p-4"
+                            key={option.id}
+                          >
+                            <input
+                              className="mt-1 h-4 w-4 accent-gold"
+                              defaultChecked={option.id === DEFAULT_DELIVERY_OPTION_ID}
+                              name="delivery_option"
+                              type="radio"
+                              value={option.id}
+                            />
+                            <span className="grid flex-1 gap-1">
+                              <span className="flex flex-wrap items-center justify-between gap-3 font-medium text-paper">
+                                {option.title}
+                                <span className="text-gold">{formatMoney(option.priceMinor)}</span>
+                              </span>
+                              <span className="text-xs leading-5 text-muted-foreground">
+                                {option.estimatedWindow}. {option.description}
+                              </span>
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                    </section>
+                  </>
+                )}
 
                 <section className="rounded-lg border border-border bg-card p-5 shadow-panel">
                   <h2 className="font-display text-title-md text-paper">Payment provider</h2>
@@ -224,8 +244,9 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
                   <h2 className="font-display text-title-md text-paper">Billing and legal</h2>
                   <input name="billing_same_as_shipping" type="hidden" value="on" />
                   <p className="mt-4 text-sm leading-6 text-muted-foreground">
-                    Billing address uses the shipping address for MVP checkout. Separate
-                    billing profiles can be added in a later account flow.
+                    {digitalOnlyOrder
+                      ? "Dijital-only sipariste kargo/adres bilgisi alinmaz. Yasal onaylar ve odeme kaydi siparisle birlikte saklanir."
+                      : "Billing address uses the shipping address for MVP checkout. Separate billing profiles can be added in a later account flow."}
                   </p>
 
                   <div className="mt-5 grid gap-4 border-t border-border pt-5">
@@ -322,11 +343,15 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
                 </div>
                 <div className="flex justify-between gap-4">
                   <dt className="text-muted-foreground">Delivery</dt>
-                  <dd className="text-paper">Selected in checkout</dd>
+                  <dd className="text-paper">
+                    {digitalOnlyOrder ? "Dijital teslimat" : "Selected in checkout"}
+                  </dd>
                 </div>
               </dl>
               <p className="mt-4 rounded-md border border-gold/20 bg-gold/10 p-3 text-xs leading-5 text-gold">
-                The default delivery option has no added fee. Paid priority delivery is only charged if manually selected.
+                {digitalOnlyOrder
+                  ? "Dosya mail eki olarak gonderilmez; guvenli indirme linki hesabinizda acilir."
+                  : "The default delivery option has no added fee. Paid priority delivery is only charged if manually selected."}
               </p>
             </aside>
           </Container>

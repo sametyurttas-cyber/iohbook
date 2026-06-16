@@ -42,7 +42,10 @@ vi.mock("@/features/checkout/providers", () => ({
 }));
 
 const { getActiveCartSnapshot } = await import("@/features/cart/queries");
+const { getCurrentUser } = await import("@/features/auth/queries");
 const { createSupabaseServiceRoleClient } = await import("@/lib/supabase/service-role");
+const { commitCheckoutPaymentStart } = await import("@/features/checkout/persistence");
+const { getPaymentProvider } = await import("@/features/checkout/providers");
 
 function buildRequiredLegalFormData() {
   const formData = new FormData();
@@ -83,10 +86,25 @@ function buildCartSnapshot(unitPriceMinor = 1000) {
         currency: "TRY",
         id: "cart-item-id",
         product_variants: {
-          fulfillment_type: "physical",
+          currency: "TRY",
+          digital_access_expires_at: null,
+          digital_access_starts_at: null,
+          digital_delivery_bucket: "digital-deliveries",
+          digital_delivery_path: "ebooks/godcode.pdf",
+          digital_download_limit: 5,
+          format: "digital_pdf",
+          fulfillment_type: "digital",
+          id: "variant-id",
           inventory_items: [{ on_hand: 10, reserved: 0, safety_stock: 0 }],
           max_per_order: null,
-          stock_policy: "track"
+          metadata: {},
+          products: {
+            id: "product-id",
+            slug: "godcode",
+            title: "GODCODE"
+          },
+          sku: "IOH-GODCODE-STD",
+          stock_policy: "unlimited"
         },
         quantity: 1,
         unit_price_minor: unitPriceMinor,
@@ -97,6 +115,28 @@ function buildCartSnapshot(unitPriceMinor = 1000) {
   };
 }
 
+function buildDigitalCartSnapshot(unitPriceMinor = 1000) {
+  const snapshot = buildCartSnapshot(unitPriceMinor);
+  snapshot.lines[0].product_variants.digital_delivery_bucket = "digital-deliveries";
+  snapshot.lines[0].product_variants.digital_delivery_path = "ebooks/godcode.pdf";
+  snapshot.lines[0].product_variants.digital_download_limit = 5;
+  snapshot.lines[0].product_variants.format = "digital_pdf";
+  snapshot.lines[0].product_variants.fulfillment_type = "digital";
+  snapshot.lines[0].product_variants.stock_policy = "unlimited";
+  return snapshot;
+}
+
+function buildPhysicalCartSnapshot(unitPriceMinor = 1000) {
+  const snapshot = buildCartSnapshot(unitPriceMinor);
+  snapshot.lines[0].product_variants.digital_delivery_bucket = null;
+  snapshot.lines[0].product_variants.digital_delivery_path = null;
+  snapshot.lines[0].product_variants.digital_download_limit = null;
+  snapshot.lines[0].product_variants.format = "standard";
+  snapshot.lines[0].product_variants.fulfillment_type = "physical";
+  snapshot.lines[0].product_variants.stock_policy = "track";
+  return snapshot;
+}
+
 function buildSupabaseMock(variant: {
   price_minor: number;
   products: { published_at: string | null; status: string } | null;
@@ -104,7 +144,12 @@ function buildSupabaseMock(variant: {
   return {
     from(table: string) {
       if (table !== "product_variants") {
-        throw new Error(`Unexpected table: ${table}`);
+        return {
+          insert: async () => ({
+            data: null,
+            error: null
+          })
+        };
       }
 
       return {
@@ -123,6 +168,7 @@ function buildSupabaseMock(variant: {
 describe("startCheckoutPayment product re-validation", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(getCurrentUser).mockResolvedValue(null as never);
   });
 
   it("redirects to cart when a cart line price changed after it was added", async () => {
@@ -136,6 +182,20 @@ describe("startCheckoutPayment product re-validation", () => {
 
     await expect(startCheckoutPayment(buildRequiredLegalFormData())).rejects.toThrow(
       "NEXT_REDIRECT:/cart?error=price-changed"
+    );
+  });
+
+  it("redirects to cart when a physical line reaches MVP checkout", async () => {
+    vi.mocked(getActiveCartSnapshot).mockResolvedValue(buildPhysicalCartSnapshot(1000) as never);
+    vi.mocked(createSupabaseServiceRoleClient).mockReturnValue(
+      buildSupabaseMock({
+        price_minor: 1000,
+        products: { published_at: "2026-06-01T00:00:00.000Z", status: "active" }
+      }) as never
+    );
+
+    await expect(startCheckoutPayment(buildRequiredLegalFormData())).rejects.toThrow(
+      "NEXT_REDIRECT:/cart?error=physical-unavailable"
     );
   });
 
@@ -168,5 +228,61 @@ describe("startCheckoutPayment product re-validation", () => {
     await expect(startCheckoutPayment(formData)).rejects.toThrow(
       "NEXT_REDIRECT:/checkout?error=invalid-checkout-details"
     );
+  });
+
+  it("starts a digital-only checkout without requiring shipping address or delivery", async () => {
+    const formData = buildRequiredLegalFormData();
+    formData.set("customer_email", "customer@example.com");
+    formData.set("customer_name", "Samet Yurttas");
+    formData.set("customer_phone", "+905551112233");
+
+    vi.mocked(getCurrentUser).mockResolvedValue({ email: "customer@example.com", id: "profile-id" } as never);
+    vi.mocked(getActiveCartSnapshot).mockResolvedValue(buildDigitalCartSnapshot(1000) as never);
+    vi.mocked(createSupabaseServiceRoleClient).mockReturnValue(
+      buildSupabaseMock({
+        price_minor: 1000,
+        products: { published_at: "2026-06-01T00:00:00.000Z", status: "active" }
+      }) as never
+    );
+    vi.mocked(getPaymentProvider).mockReturnValue({
+      availability: () => ({ enabled: true }),
+      id: "shopier",
+      label: "Shopier",
+      startPayment: vi.fn(async () => ({
+        failureReason: null,
+        normalizedStatus: "pending",
+        providerReference: "IOH-TEST",
+        providerStatus: "initialized",
+        rawResponse: {},
+        redirectUrl: "https://shopier.example/pay",
+        requestPayload: {},
+        status: "redirect"
+      })),
+      type: "hosted_checkout"
+    } as never);
+
+    await expect(startCheckoutPayment(formData)).rejects.toThrow(
+      "NEXT_REDIRECT:https://shopier.example/pay"
+    );
+
+    expect(commitCheckoutPaymentStart).toHaveBeenCalledTimes(1);
+    const [, args] = vi.mocked(commitCheckoutPaymentStart).mock.calls[0];
+    const orderPayload = args.p_order as {
+      billing_address: unknown;
+      shipping_address: unknown;
+      shipping_minor: number;
+    };
+    const orderItemPayload = args.p_order_items[0] as {
+      fulfillment_type: string;
+      variant_snapshot: {
+        digital_delivery_bucket: string | null;
+      };
+    };
+
+    expect(orderPayload.shipping_address).toBeNull();
+    expect(orderPayload.billing_address).toBeNull();
+    expect(orderPayload.shipping_minor).toBe(0);
+    expect(orderItemPayload.fulfillment_type).toBe("digital");
+    expect(orderItemPayload.variant_snapshot.digital_delivery_bucket).toBe("digital-deliveries");
   });
 });

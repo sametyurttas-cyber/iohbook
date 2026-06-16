@@ -4,8 +4,10 @@ import type { PaymentStatus } from "@/types/database";
 export type ShopierCallbackPayload = Record<string, string>;
 
 export function getShopierConfig() {
+  const apiKey = process.env.SHOPIER_API_TOKEN ?? process.env.SHOPIER_API_KEY ?? "";
+
   return {
-    apiKey: process.env.SHOPIER_API_KEY ?? "",
+    apiKey,
     apiBaseUrl: process.env.SHOPIER_API_BASE_URL ?? "https://api.shopier.com/v1",
     merchantId: process.env.SHOPIER_MERCHANT_ID ?? "",
     paymentUrl: process.env.SHOPIER_PAYMENT_URL ?? "https://www.shopier.com/ShowProduct/api_pay4.php",
@@ -30,7 +32,7 @@ export async function requestShopierApi<T>(path: string, init: RequestInit = {})
   const config = getShopierConfig();
 
   if (!config.apiKey) {
-    throw new Error("SHOPIER_API_KEY is required.");
+    throw new Error("SHOPIER_API_TOKEN or SHOPIER_API_KEY is required.");
   }
 
   const response = await fetch(`${config.apiBaseUrl}${path}`, {

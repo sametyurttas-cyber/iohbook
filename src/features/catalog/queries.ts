@@ -94,9 +94,9 @@ const previewBooks: StorefrontBook[] = [
         compare_at_minor: null,
         currency: "TRY",
         edition_label: null,
-        format: "standard",
-        fulfillment_type: "physical",
-        inventory_items: [{ on_hand: 25, reserved: 0, safety_stock: 2 }],
+        format: "digital_pdf",
+        fulfillment_type: "digital",
+        inventory_items: [{ on_hand: 999, reserved: 0, safety_stock: 0 }],
         id: "preview-godcode-standard",
         is_preview: true,
         lead_time_days: 3,
@@ -104,13 +104,13 @@ const previewBooks: StorefrontBook[] = [
         price_minor: 45000,
         sku: "IOH-GODCODE-STD",
         sort_order: 0,
-        stock_policy: "track",
-        title: "Standart baski",
-        weight_grams: 420
+        stock_policy: "unlimited",
+        title: "PDF",
+        weight_grams: null
       }
     ],
     published_at: now,
-    requires_shipping: true,
+    requires_shipping: false,
     seo_description:
       "GODCODE, IOH evreninde hafiza, beden degisimi, kuantum yapay zeka ve System icinde uyanan Algus'un kimlik arayisini anlatan distopik bilimkurgu kitabidir.",
     seo_title: "GODCODE",
@@ -149,9 +149,9 @@ const previewBooks: StorefrontBook[] = [
         compare_at_minor: null,
         currency: "TRY",
         edition_label: null,
-        format: "signed",
-        fulfillment_type: "physical",
-        inventory_items: [{ on_hand: 12, reserved: 0, safety_stock: 1 }],
+        format: "digital_pdf",
+        fulfillment_type: "digital",
+        inventory_items: [{ on_hand: 999, reserved: 0, safety_stock: 0 }],
         id: "preview-sysgod-signed",
         is_preview: true,
         lead_time_days: 5,
@@ -159,13 +159,13 @@ const previewBooks: StorefrontBook[] = [
         price_minor: 65000,
         sku: "IOH-SYSGOD-SIGNED",
         sort_order: 0,
-        stock_policy: "track",
-        title: "Imzali baski",
-        weight_grams: 430
+        stock_policy: "unlimited",
+        title: "PDF",
+        weight_grams: null
       }
     ],
     published_at: now,
-    requires_shipping: true,
+    requires_shipping: false,
     seo_description:
       "SYSGOD, IOH evreninde guvenlik, kontrol, hafiza ve insan bilinci uzerinden System'in mavi mimarisini anlatan distopik bilimkurgu kitabidir.",
     seo_title: "SYSGOD",
@@ -204,9 +204,9 @@ const previewBooks: StorefrontBook[] = [
         compare_at_minor: null,
         currency: "TRY",
         edition_label: "Limited",
-        format: "limited",
-        fulfillment_type: "physical",
-        inventory_items: [{ on_hand: 8, reserved: 0, safety_stock: 1 }],
+        format: "digital_pdf",
+        fulfillment_type: "digital",
+        inventory_items: [{ on_hand: 999, reserved: 0, safety_stock: 0 }],
         id: "preview-codewar-limited",
         is_preview: true,
         lead_time_days: 7,
@@ -214,13 +214,13 @@ const previewBooks: StorefrontBook[] = [
         price_minor: 90000,
         sku: "IOH-CODEWAR-LTD",
         sort_order: 0,
-        stock_policy: "track",
-        title: "Koleksiyon baskisi",
-        weight_grams: 460
+        stock_policy: "unlimited",
+        title: "PDF",
+        weight_grams: null
       }
     ],
     published_at: now,
-    requires_shipping: true,
+    requires_shipping: false,
     seo_description:
       "CODEWAR, IOH evreninde Algus'un para cekirdekleri, Iohcoin core ve System savunmalarina karsi yurutulen operasyonunu anlatan distopik teknoloji savasi kitabidir.",
     seo_title: "CODEWAR",

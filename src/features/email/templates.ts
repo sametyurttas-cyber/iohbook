@@ -1,6 +1,7 @@
 import { formatMoney } from "@/features/products/product-utils";
 
 export type OrderEmailLine = {
+  fulfillmentType: "physical" | "digital" | "claimable" | "hybrid" | string;
   quantity: number;
   title: string;
   totalMinor: number;
@@ -12,11 +13,31 @@ export type OrderEmailData = {
   lines: OrderEmailLine[];
   orderNumber: string;
   orderUrl: string;
+  downloadsUrl?: string;
   totalMinor: number;
   trackingNumber?: string | null;
   trackingUrl?: string | null;
   currency: string;
 };
+
+function getFulfillmentMode(lines: OrderEmailLine[]) {
+  const hasDigital = lines.some(
+    (line) => line.fulfillmentType === "digital" || line.fulfillmentType === "hybrid"
+  );
+  const hasPhysical = lines.some(
+    (line) => line.fulfillmentType === "physical" || line.fulfillmentType === "hybrid"
+  );
+
+  if (hasDigital && hasPhysical) {
+    return "hybrid";
+  }
+
+  if (hasDigital) {
+    return "digital";
+  }
+
+  return "physical";
+}
 
 function shell(input: { body: string; preview: string; title: string }) {
   return `<!doctype html>
@@ -83,9 +104,17 @@ function orderSummary(data: OrderEmailData) {
 }
 
 export function renderOrderReceivedEmail(data: OrderEmailData) {
+  const fulfillmentMode = getFulfillmentMode(data.lines);
+  const digitalNotice =
+    fulfillmentMode === "digital"
+      ? "<p>Bu siparis dijital kitap iceriyor. Odeme dogrulandiginda dosya eki gonderilmeyecek; guvenli indirme hakkiniz hesabinizda acilacak.</p>"
+      : fulfillmentMode === "hybrid"
+        ? "<p>Bu sipariste dijital ve fiziksel teslimat bir arada bulunuyor. Dijital dosyalar hesabinizdan, fiziksel kalemler operasyon sureciyle teslim edilir.</p>"
+        : "<p>Odeme dogrulamasi tamamlandiginda fiziksel siparisiniz hazirlik surecine alinacaktir.</p>";
+
   return {
     html: shell({
-      body: `${orderSummary(data)}<p>Odeme dogrulamasi tamamlandiginda sizi ayrica bilgilendirecegiz.</p>`,
+      body: `${orderSummary(data)}${digitalNotice}<p>Odeme dogrulamasi tamamlandiginda sizi ayrica bilgilendirecegiz.</p>`,
       preview: `${data.orderNumber} numarali siparisiniz alindi.`,
       title: "Siparisiniz alindi"
     }),
@@ -95,14 +124,28 @@ export function renderOrderReceivedEmail(data: OrderEmailData) {
 }
 
 export function renderPaymentConfirmedEmail(data: OrderEmailData) {
+  const fulfillmentMode = getFulfillmentMode(data.lines);
+  const downloadsLink = data.downloadsUrl
+    ? `<p><a href="${data.downloadsUrl}" style="display:inline-block;background:#c9a75d;color:#0d0d0f;text-decoration:none;padding:12px 16px;border-radius:6px;font-weight:bold;">Indirmelerimi ac</a></p>`
+    : "";
+  const digitalBody =
+    fulfillmentMode === "digital"
+      ? `<p>Kitabiniz hazir. PDF/EPUB dosyasi mail eki olarak gonderilmez ve kalici public link olusturulmaz. Indirmek icin hesabinizla giris yapip Indirmelerim sayfasini acin.</p>${downloadsLink}`
+      : fulfillmentMode === "hybrid"
+        ? `<p>Odemeniz onaylandi. Dijital kalemler icin hesabinizdaki Indirmelerim sayfasini kullanabilirsiniz; fiziksel kalemler ayrica hazirlik/teslimat surecine alinacaktir.</p>${downloadsLink}`
+        : "<p>Odemeniz backend dogrulamasi ile onaylandi. Fiziksel siparisiniz hazirlik asamasina alinacak.</p>";
+
   return {
     html: shell({
-      body: `${orderSummary(data)}<p>Odemeniz backend dogrulamasi ile onaylandi. Siparisiniz hazirlik asamasina alinacak.</p>`,
+      body: `${orderSummary(data)}${digitalBody}`,
       preview: `${data.orderNumber} odemesi onaylandi.`,
-      title: "Odemeniz onaylandi"
+      title: fulfillmentMode === "digital" ? "Kitabiniz hazir" : "Odemeniz onaylandi"
     }),
     subject: `Odemeniz onaylandi: ${data.orderNumber}`,
-    text: `Odemeniz onaylandi: ${data.orderNumber}\n${data.orderUrl}`
+    text:
+      fulfillmentMode === "physical"
+        ? `Odemeniz onaylandi: ${data.orderNumber}\n${data.orderUrl}`
+        : `Odemeniz onaylandi: ${data.orderNumber}\nDosya eki yoktur. Indirmek icin giris yapin: ${data.downloadsUrl ?? data.orderUrl}`
   };
 }
 

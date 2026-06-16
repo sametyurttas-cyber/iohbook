@@ -2,6 +2,8 @@ import { getPublicMediaUrlFromPath } from "@/features/media/public-url";
 import { formatMoney, VARIANT_FORMAT_LABELS } from "@/features/products/product-utils";
 import type { StorefrontBook, StorefrontMedia, StorefrontVariant } from "@/features/catalog/queries";
 
+const publicDigitalFormats = new Set(["digital_pdf", "digital_epub", "digital_bundle", "ebook"]);
+
 export function getSortedMedia(book: StorefrontBook) {
   return [...(book.product_media ?? [])].sort((a, b) => a.sort_order - b.sort_order);
 }
@@ -31,6 +33,23 @@ export function getSortedVariants(book: StorefrontBook) {
   return [...(book.product_variants ?? [])]
     .filter((variant) => variant.active)
     .sort((a, b) => a.sort_order - b.sort_order);
+}
+
+export function isPublicDigitalVariant(variant: StorefrontVariant) {
+  return (
+    variant.active &&
+    (variant.fulfillment_type === "digital" || publicDigitalFormats.has(variant.format))
+  );
+}
+
+export function getPublicDigitalVariants(book: StorefrontBook) {
+  return getSortedVariants(book).filter(isPublicDigitalVariant);
+}
+
+export function hasPhysicalStorefrontVariants(book: StorefrontBook) {
+  return getSortedVariants(book).some(
+    (variant) => variant.fulfillment_type === "physical" || variant.fulfillment_type === "hybrid"
+  );
 }
 
 export function getVariantAvailableStock(variant: StorefrontVariant) {
@@ -68,7 +87,7 @@ export function getStockLabel(variant: StorefrontVariant) {
 }
 
 export function getLowestPriceLabel(book: StorefrontBook) {
-  const variants = getSortedVariants(book);
+  const variants = getPublicDigitalVariants(book);
   const lowest = variants.reduce<StorefrontVariant | null>((current, variant) => {
     if (!current || variant.price_minor < current.price_minor) {
       return variant;

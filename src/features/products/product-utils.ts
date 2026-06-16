@@ -9,6 +9,9 @@ export const PRODUCT_STATUS_LABELS: Record<ProductStatus, string> = {
 export const VARIANT_FORMAT_LABELS: Record<VariantFormat, string> = {
   boxed: "Kutulu set",
   claimable: "Claim hakki",
+  digital_bundle: "PDF + EPUB",
+  digital_epub: "EPUB",
+  digital_pdf: "PDF",
   ebook: "E-kitap",
   limited: "Koleksiyon baskisi",
   preorder: "On siparis",

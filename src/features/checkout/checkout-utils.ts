@@ -104,7 +104,11 @@ export function buildIyzicoCheckoutPayload(input: {
     basketItems: input.cartLines.map((line) => ({
       category1: "Books",
       id: line.product_variants.id,
-      itemType: "PHYSICAL",
+      itemType:
+        line.product_variants.fulfillment_type === "physical" ||
+        line.product_variants.fulfillment_type === "hybrid"
+          ? "PHYSICAL"
+          : "VIRTUAL",
       name: `${line.product_variants.products.title} - ${line.product_variants.title}`,
       price: minorToDecimal(line.quantity * line.unit_price_minor)
     })),
@@ -162,4 +166,3 @@ export function formatAddress(address: CheckoutAddress) {
     .filter(Boolean)
     .join(", ");
 }
-

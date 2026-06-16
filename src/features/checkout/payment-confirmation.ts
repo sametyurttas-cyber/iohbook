@@ -13,6 +13,7 @@ import {
 import { updateOrThrow } from "@/features/checkout/persistence";
 import { sendPaymentConfirmedEmail } from "@/features/email/events";
 import { createEntitlementsForPaidOrder } from "@/features/entitlements/service";
+import { awardBookOrderRewardForPaidOrder } from "@/features/points/service";
 import { captureError, logInfo } from "@/lib/observability";
 import type { Database, OrderStatus, PaymentStatus } from "@/types/database";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -234,7 +235,29 @@ export async function confirmIyzicoCheckoutPayment(input: {
       orderId: attempt.order_id,
       supabase: input.supabase
     });
-    await sendPaymentConfirmedEmail(attempt.order_id);
+    try {
+      await awardBookOrderRewardForPaidOrder({
+        orderId: attempt.order_id,
+        supabase: input.supabase
+      });
+    } catch (error) {
+      captureError(error, {
+        operation: "points.book_order_reward",
+        order_id: attempt.order_id,
+        provider,
+        source: input.source
+      });
+    }
+    try {
+      await sendPaymentConfirmedEmail(attempt.order_id);
+    } catch (error) {
+      captureError(error, {
+        operation: "email.payment_confirmed",
+        order_id: attempt.order_id,
+        provider,
+        source: input.source
+      });
+    }
   }
 
   return {

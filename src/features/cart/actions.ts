@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/features/auth/queries";
 import { getOrCreateAnonymousCartId } from "@/features/cart/cart-cookie";
 import { validateCartQuantity } from "@/features/cart/cart-rules";
+import { requiresPhysicalDelivery } from "@/features/checkout/fulfillment-utils";
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/service-role";
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -89,7 +90,7 @@ async function getVariantForCart(variantId: string) {
   const { data, error } = await supabase
     .from("product_variants")
     .select(
-      "id, product_id, sku, title, price_minor, currency, stock_policy, max_per_order, active, inventory_items(on_hand, reserved, safety_stock), products(id, status, published_at)"
+      "id, product_id, sku, title, format, fulfillment_type, price_minor, currency, stock_policy, max_per_order, active, inventory_items(on_hand, reserved, safety_stock), products(id, status, published_at)"
     )
     .eq("id", variantId)
     .single();
@@ -101,6 +102,7 @@ async function getVariantForCart(variantId: string) {
   return data as unknown as {
     active: boolean;
     currency: string;
+    fulfillment_type: "physical" | "digital" | "claimable" | "hybrid";
     id: string;
     inventory_items: VariantInventory | VariantInventory[] | null;
     max_per_order: number | null;
@@ -133,6 +135,10 @@ export async function addToCart(formData: FormData) {
 
   if (!variant.active || variant.products.status !== "active" || !variant.products.published_at) {
     redirect("/cart?error=variant-unavailable");
+  }
+
+  if (requiresPhysicalDelivery(variant.fulfillment_type)) {
+    redirect("/cart?error=physical-unavailable");
   }
 
   if (variant.currency !== cart.currency) {

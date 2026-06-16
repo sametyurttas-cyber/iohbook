@@ -4,6 +4,11 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireStaff } from "@/features/auth/queries";
 import {
+  buildDigitalDeliveryStoragePath,
+  isDigitalDeliveryMimeType,
+  STORAGE_BUCKETS
+} from "@/features/media/storage-config";
+import {
   parseInteger,
   parseMoneyToMinor,
   parseOptionalString,
@@ -19,6 +24,8 @@ import type {
   VariantFormat
 } from "@/types/database";
 
+const DIGITAL_DELIVERY_MAX_BYTES = 100 * 1024 * 1024;
+
 async function requireProductStaff() {
   const staff = await requireStaff(["owner", "admin_ops", "editor"]);
 
@@ -27,6 +34,73 @@ async function requireProductStaff() {
   }
 
   return staff;
+}
+
+async function requireDigitalDeliveryStaff() {
+  const staff = await requireStaff(["owner", "admin_ops"]);
+
+  if (!staff) {
+    redirect("/unauthorized");
+  }
+
+  return staff;
+}
+
+function getDigitalDeliveryFile(formData: FormData) {
+  const file = formData.get("digital_delivery_file");
+  return file instanceof File && file.size > 0 ? file : null;
+}
+
+function isDigitalFulfillment(fulfillmentType: FulfillmentType) {
+  return fulfillmentType === "digital" || fulfillmentType === "hybrid";
+}
+
+async function uploadDigitalDeliveryFile(input: {
+  file: File;
+  productId: string;
+  supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>;
+  variantId: string;
+}) {
+  if (!isDigitalDeliveryMimeType(input.file.type)) {
+    throw new Error("invalid-digital-file-type");
+  }
+
+  if (input.file.size > DIGITAL_DELIVERY_MAX_BYTES) {
+    throw new Error("digital-file-too-large");
+  }
+
+  const storagePath = buildDigitalDeliveryStoragePath({
+    filename: input.file.name,
+    productId: input.productId,
+    variantId: input.variantId
+  });
+
+  const upload = await input.supabase.storage
+    .from(STORAGE_BUCKETS.digitalDeliveries)
+    .upload(storagePath, input.file, {
+      cacheControl: "3600",
+      contentType: input.file.type,
+      upsert: false
+    });
+
+  if (upload.error) {
+    throw upload.error;
+  }
+
+  const { error: updateError } = await input.supabase
+    .from("product_variants")
+    .update({
+      digital_delivery_bucket: STORAGE_BUCKETS.digitalDeliveries,
+      digital_delivery_path: storagePath
+    })
+    .eq("id", input.variantId);
+
+  if (updateError) {
+    await input.supabase.storage.from(STORAGE_BUCKETS.digitalDeliveries).remove([storagePath]);
+    throw updateError;
+  }
+
+  return storagePath;
 }
 
 function readProductPayload(formData: FormData) {
@@ -181,9 +255,18 @@ export async function createVariant(formData: FormData) {
   await requireProductStaff();
   const productId = String(formData.get("product_id") ?? "");
   const payload = readVariantPayload(formData);
+  const digitalFile = getDigitalDeliveryFile(formData);
 
   if (!productId || !payload.title || !payload.sku) {
     redirect(`/admin/products/${productId}?error=missing-variant`);
+  }
+
+  if (digitalFile && !isDigitalFulfillment(payload.fulfillment_type)) {
+    redirect(`/admin/products/${productId}?error=digital-file-needs-digital-variant`);
+  }
+
+  if (digitalFile) {
+    await requireDigitalDeliveryStaff();
   }
 
   const supabase = await createSupabaseServerClient();
@@ -225,6 +308,34 @@ export async function createVariant(formData: FormData) {
     redirect(`/admin/products/${productId}?error=${encodeURIComponent(inventory.error.code ?? "inventory-create-failed")}`);
   }
 
+  if (digitalFile) {
+    try {
+      const storagePath = await uploadDigitalDeliveryFile({
+        file: digitalFile,
+        productId,
+        supabase,
+        variantId: data.id
+      });
+
+      logInfo("admin.variant_digital_file_uploaded", {
+        product_id: productId,
+        storage_path: storagePath,
+        variant_id: data.id
+      });
+    } catch (uploadError) {
+      captureError(uploadError, {
+        operation: "admin.variant_digital_file_upload",
+        product_id: productId,
+        variant_id: data.id
+      });
+      redirect(
+        `/admin/products/${productId}?error=${encodeURIComponent(
+          uploadError instanceof Error ? uploadError.message : "digital-file-upload-failed"
+        )}`
+      );
+    }
+  }
+
   logInfo("admin.variant_created", {
     product_id: productId,
     sku: payload.sku,
@@ -241,9 +352,18 @@ export async function updateVariant(formData: FormData) {
   const variantId = String(formData.get("variant_id") ?? "");
   const inventoryId = parseOptionalString(formData.get("inventory_id"));
   const payload = readVariantPayload(formData);
+  const digitalFile = getDigitalDeliveryFile(formData);
 
   if (!productId || !variantId || !payload.title || !payload.sku) {
     redirect(`/admin/products/${productId}?error=missing-variant`);
+  }
+
+  if (digitalFile && !isDigitalFulfillment(payload.fulfillment_type)) {
+    redirect(`/admin/products/${productId}?error=digital-file-needs-digital-variant`);
+  }
+
+  if (digitalFile) {
+    await requireDigitalDeliveryStaff();
   }
 
   const supabase = await createSupabaseServerClient();
@@ -282,6 +402,34 @@ export async function updateVariant(formData: FormData) {
       variant_id: variantId
     });
     redirect(`/admin/products/${productId}?error=${encodeURIComponent(inventory.error.code ?? "inventory-update-failed")}`);
+  }
+
+  if (digitalFile) {
+    try {
+      const storagePath = await uploadDigitalDeliveryFile({
+        file: digitalFile,
+        productId,
+        supabase,
+        variantId
+      });
+
+      logInfo("admin.variant_digital_file_uploaded", {
+        product_id: productId,
+        storage_path: storagePath,
+        variant_id: variantId
+      });
+    } catch (uploadError) {
+      captureError(uploadError, {
+        operation: "admin.variant_digital_file_upload",
+        product_id: productId,
+        variant_id: variantId
+      });
+      redirect(
+        `/admin/products/${productId}?error=${encodeURIComponent(
+          uploadError instanceof Error ? uploadError.message : "digital-file-upload-failed"
+        )}`
+      );
+    }
   }
 
   logInfo("admin.variant_updated", {

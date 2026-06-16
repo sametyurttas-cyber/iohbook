@@ -1,4 +1,4 @@
-export type StaffRole = "owner" | "admin_ops" | "editor" | "fulfillment";
+export type StaffRole = "owner" | "admin_ops" | "editor" | "fulfillment" | "support";
 
 export type Profile = {
   id: string;
@@ -8,6 +8,7 @@ export type Profile = {
   locale: string;
   marketing_email_opt_in: boolean;
   marketing_sms_opt_in: boolean;
+  admin_notes: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -76,6 +77,9 @@ export type VariantFormat =
   | "limited"
   | "boxed"
   | "preorder"
+  | "digital_pdf"
+  | "digital_epub"
+  | "digital_bundle"
   | "ebook"
   | "claimable";
 export type FulfillmentType = "physical" | "digital" | "claimable" | "hybrid";
@@ -110,6 +114,11 @@ export type WalletLinkStatus = "pending" | "verified" | "revoked";
 export type ClaimReservationStatus = "reserved" | "claimed" | "expired" | "revoked";
 export type TokenCampaignStatus = "draft" | "active" | "paused" | "ended";
 export type TokenAllocationStatus = "pending" | "approved" | "sent" | "cancelled" | "refunded";
+export type IohPointsReason =
+  | "signup_bonus"
+  | "book_order_reward"
+  | "manual_adjustment_credit"
+  | "manual_adjustment_debit";
 
 export type Web3Network = {
   chain_id: number;
@@ -534,6 +543,25 @@ export type TokenAllocation = {
   updated_at: string;
 };
 
+export type IohPointBalance = {
+  profile_id: string;
+  balance: number;
+  lifetime_earned: number;
+  lifetime_spent: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type IohPointLedger = {
+  id: string;
+  profile_id: string;
+  order_id: string | null;
+  amount: number;
+  reason: IohPointsReason;
+  metadata: Record<string, unknown>;
+  created_at: string;
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -737,9 +765,49 @@ export type Database = {
         Update: Partial<TokenAllocation>;
         Relationships: [];
       };
+      ioh_point_balances: {
+        Row: IohPointBalance;
+        Insert: Partial<IohPointBalance> & Pick<IohPointBalance, "profile_id">;
+        Update: Partial<IohPointBalance>;
+        Relationships: [];
+      };
+      ioh_point_ledger: {
+        Row: IohPointLedger;
+        Insert: Partial<IohPointLedger> &
+          Pick<IohPointLedger, "profile_id" | "amount" | "reason">;
+        Update: Partial<IohPointLedger>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
+      award_ioh_points: {
+        Args: {
+          p_amount: number;
+          p_metadata?: Record<string, unknown>;
+          p_order_id?: string | null;
+          p_profile_id: string;
+          p_reason: IohPointsReason;
+        };
+        Returns: {
+          applied: boolean;
+          balance: number;
+          ledger_id: string | null;
+        }[];
+      };
+      adjust_ioh_points_manually: {
+        Args: {
+          p_actor_profile_id: string;
+          p_amount: number;
+          p_metadata?: Record<string, unknown>;
+          p_profile_id: string;
+          p_reason_text: string;
+        };
+        Returns: {
+          balance: number;
+          ledger_id: string;
+        }[];
+      };
       commit_checkout_payment_start: {
         Args: {
           p_consent_events: Record<string, unknown>[];
@@ -809,6 +877,7 @@ export type Database = {
       claim_reservation_status: ClaimReservationStatus;
       token_campaign_status: TokenCampaignStatus;
       token_allocation_status: TokenAllocationStatus;
+      ioh_points_reason: IohPointsReason;
     };
   };
 };

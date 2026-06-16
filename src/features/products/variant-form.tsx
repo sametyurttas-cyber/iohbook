@@ -26,6 +26,9 @@ const formats: VariantFormat[] = [
   "limited",
   "boxed",
   "preorder",
+  "digital_pdf",
+  "digital_epub",
+  "digital_bundle",
   "ebook",
   "claimable"
 ];
@@ -221,6 +224,27 @@ export function VariantForm({ productId, variant }: VariantFormProps) {
             placeholder="5"
           />
         </label>
+      </div>
+
+      <div className="grid gap-3 rounded-md border border-border bg-ink-soft p-4">
+        <div>
+          <span className="text-sm font-medium text-paper">PDF / EPUB dosyasi</span>
+          <p className="mt-1 text-xs leading-5 text-muted-foreground">
+            Dosya private digital-deliveries bucket alanina yuklenir. Customer public
+            URL gormez; indirme sadece entitlement kontrolu ve kisa sureli signed URL ile acilir.
+          </p>
+        </div>
+        <Input
+          accept="application/pdf,application/epub+zip,.pdf,.epub"
+          name="digital_delivery_file"
+          type="file"
+        />
+        {variant?.digital_delivery_path ? (
+          <p className="break-all text-xs text-muted-foreground">
+            Bagli dosya: {variant.digital_delivery_bucket ?? "digital-deliveries"} /{" "}
+            {variant.digital_delivery_path}
+          </p>
+        ) : null}
       </div>
 
       <div className="grid gap-4 rounded-md border border-gold/20 bg-gold/10 p-4 lg:grid-cols-2">

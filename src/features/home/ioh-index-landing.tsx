@@ -26,7 +26,14 @@ function loadScript(src: string) {
   });
 }
 
-export function IohIndexLanding() {
+type IohIndexLandingProps = {
+  accountActionsHtml?: string;
+};
+
+const DEFAULT_ACCOUNT_ACTIONS_HTML =
+  '<div class="head-actions"><a class="head-cta" href="/sign-in" data-hover data-magnet>Giriş</a><a class="head-cta" href="/collections" data-hover data-magnet>Koleksiyona Gir</a></div>';
+
+export function IohIndexLanding({ accountActionsHtml }: IohIndexLandingProps) {
   useEffect(() => {
     if (window.__iohIndexLandingLoaded) {
       return;
@@ -46,9 +53,13 @@ export function IohIndexLanding() {
     })();
   }, []);
 
+  const body = accountActionsHtml
+    ? IOH_INDEX_BODY.replace(DEFAULT_ACCOUNT_ACTIONS_HTML, accountActionsHtml)
+    : IOH_INDEX_BODY;
+
   return (
     <div
-      dangerouslySetInnerHTML={{ __html: IOH_INDEX_BODY }}
+      dangerouslySetInnerHTML={{ __html: body }}
       suppressHydrationWarning
     />
   );
