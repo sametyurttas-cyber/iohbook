@@ -21,6 +21,15 @@ type CartPageProps = {
   }>;
 };
 
+const cartErrorMessages: Record<string, string> = {
+  "out-of-stock":
+    "Sepetindeki urunlerden biri icin yeterli stok kalmadi. Devam etmeden once sepeti kontrol et.",
+  "price-changed":
+    "Sepetindeki urunlerden birinin fiyati guncellendi. Devam etmeden once sepeti kontrol et.",
+  "product-unavailable":
+    "Sepetindeki urunlerden biri artik satista degil. Devam etmeden once sepeti kontrol et."
+};
+
 export default async function CartPage({ searchParams }: CartPageProps) {
   const [cart, notices] = await Promise.all([getActiveCartSnapshot(), searchParams]);
 
@@ -47,7 +56,7 @@ export default async function CartPage({ searchParams }: CartPageProps) {
             <div className="grid gap-4">
               {notices?.error ? (
                 <div className="rounded-md border border-burgundy-bright/30 bg-burgundy-bright/10 p-3 text-sm text-burgundy-soft">
-                  {notices.error}
+                  {cartErrorMessages[notices.error] ?? notices.error}
                 </div>
               ) : null}
               {notices?.added || notices?.updated || notices?.removed ? (

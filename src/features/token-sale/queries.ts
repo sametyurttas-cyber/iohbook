@@ -37,7 +37,8 @@ async function fetchActiveTokenCampaigns() {
     .eq("status", "active")
     .eq("sales_enabled", true)
     .order("created_at", { ascending: false })
-    .order("sort_order", { referencedTable: "token_sale_packages", ascending: true });
+    .order("sort_order", { referencedTable: "token_sale_packages", ascending: true })
+    .limit(100);
 
   if (error) {
     throw error;
@@ -63,7 +64,8 @@ export async function listTokenCampaignsForAdmin() {
   const { data, error } = await supabase
     .from("token_sale_campaigns")
     .select("*, token_sale_packages(*)")
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(50);
 
   if (error) throw error;
   return (data ?? []) as unknown as TokenCampaignWithPackages[];
@@ -76,7 +78,8 @@ export async function listAccountTokenAllocations() {
     .from("token_allocations")
     .select("*, token_sale_campaigns(title, slug, token_symbol), orders(order_number, created_at, status)")
     .eq("profile_id", user.id)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(100);
 
   if (error) throw error;
   return (data ?? []) as unknown as AccountTokenAllocation[];
@@ -92,7 +95,8 @@ export async function listTokenAllocationsForAdmin() {
     .select(
       "*, token_sale_campaigns(title, slug, token_symbol), user_wallets(normalized_address, provider, chain_id), orders(order_number, customer_email, customer_name, status, total_minor, currency, created_at, payment_attempts(provider, provider_status, status, verified_at))"
     )
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(50);
 
   if (error) throw error;
   return (data ?? []) as unknown as AdminTokenAllocation[];

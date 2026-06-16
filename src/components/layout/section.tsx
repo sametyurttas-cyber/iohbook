@@ -7,8 +7,9 @@ type SectionProps = HTMLAttributes<HTMLElement> & {
 
 const sectionTones = {
   default: "bg-transparent",
-  muted: "border-y border-border bg-charcoal/35",
-  ink: "bg-ink"
+  muted:
+    "border-y border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.035),rgba(255,255,255,0.012))]",
+  ink: "bg-ink/86"
 };
 
 export function Section({
@@ -18,7 +19,7 @@ export function Section({
 }: SectionProps) {
   return (
     <section
-      className={cn("py-16 md:py-22", sectionTones[tone], className)}
+      className={cn("relative py-16 md:py-22", sectionTones[tone], className)}
       {...props}
     />
   );

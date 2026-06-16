@@ -7,19 +7,42 @@ import { getOrCreateAnonymousCartId } from "@/features/cart/cart-cookie";
 import { validateCartQuantity } from "@/features/cart/cart-rules";
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/service-role";
 
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+type VariantInventory = { on_hand: number; reserved: number; safety_stock: number };
+
+function getFirstInventory(
+  inventoryItems: VariantInventory | VariantInventory[] | null | undefined
+) {
+  return Array.isArray(inventoryItems) ? inventoryItems[0] : inventoryItems;
+}
+
+async function findActiveCart(input: {
+  anonymousId: string | null;
+  profileId: string | null;
+  supabase: ReturnType<typeof createSupabaseServiceRoleClient>;
+}) {
+  let query = input.supabase.from("carts").select("*").eq("status", "active").limit(1);
+
+  if (input.profileId) {
+    query = query.eq("profile_id", input.profileId);
+  } else {
+    query = query.eq("anonymous_id", input.anonymousId as string);
+  }
+
+  return query;
+}
+
 async function getOrCreateActiveCart() {
   const user = await getCurrentUser();
   const anonymousId = user ? null : await getOrCreateAnonymousCartId();
   const supabase = createSupabaseServiceRoleClient();
-
-  let query = supabase.from("carts").select("*").eq("status", "active").limit(1);
-  if (user) {
-    query = query.eq("profile_id", user.id);
-  } else {
-    query = query.eq("anonymous_id", anonymousId as string);
-  }
-
-  const { data: existing, error: findError } = await query;
+  const owner = {
+    anonymousId,
+    profileId: user?.id ?? null,
+    supabase
+  };
+  const { data: existing, error: findError } = await findActiveCart(owner);
 
   if (findError) {
     throw findError;
@@ -43,6 +66,18 @@ async function getOrCreateActiveCart() {
     .single();
 
   if (error) {
+    if (error.code === "23505") {
+      const { data: racedExisting, error: racedFindError } = await findActiveCart(owner);
+
+      if (racedFindError) {
+        throw racedFindError;
+      }
+
+      if (racedExisting?.[0]) {
+        return racedExisting[0];
+      }
+    }
+
     throw error;
   }
 
@@ -67,7 +102,7 @@ async function getVariantForCart(variantId: string) {
     active: boolean;
     currency: string;
     id: string;
-    inventory_items: Array<{ on_hand: number; reserved: number; safety_stock: number }>;
+    inventory_items: VariantInventory | VariantInventory[] | null;
     max_per_order: number | null;
     price_minor: number;
     product_id: string;
@@ -86,6 +121,10 @@ export async function addToCart(formData: FormData) {
     redirect("/cart?error=missing-variant");
   }
 
+  if (!UUID_PATTERN.test(variantId)) {
+    redirect("/cart?error=variant-unavailable");
+  }
+
   const supabase = createSupabaseServiceRoleClient();
   const [cart, variant] = await Promise.all([
     getOrCreateActiveCart(),
@@ -94,6 +133,10 @@ export async function addToCart(formData: FormData) {
 
   if (!variant.active || variant.products.status !== "active" || !variant.products.published_at) {
     redirect("/cart?error=variant-unavailable");
+  }
+
+  if (variant.currency !== cart.currency) {
+    redirect("/cart?error=currency-mismatch");
   }
 
   const { data: existing, error: existingError } = await supabase
@@ -108,7 +151,7 @@ export async function addToCart(formData: FormData) {
   }
 
   const nextQuantity = (existing?.quantity ?? 0) + requestedQuantity;
-  const inventory = variant.inventory_items?.[0];
+  const inventory = getFirstInventory(variant.inventory_items);
   const validation = validateCartQuantity({
     maxPerOrder: variant.max_per_order,
     onHand: inventory?.on_hand,
@@ -182,11 +225,11 @@ export async function updateCartItem(formData: FormData) {
   }
 
   const variant = line.product_variants as unknown as {
-    inventory_items: Array<{ on_hand: number; reserved: number; safety_stock: number }>;
+    inventory_items: VariantInventory | VariantInventory[] | null;
     max_per_order: number | null;
     stock_policy: "track" | "continue" | "deny" | "unlimited";
   };
-  const inventory = variant.inventory_items?.[0];
+  const inventory = getFirstInventory(variant.inventory_items);
   const validation = validateCartQuantity({
     maxPerOrder: variant.max_per_order,
     onHand: inventory?.on_hand,

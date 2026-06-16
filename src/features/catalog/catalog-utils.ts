@@ -34,7 +34,9 @@ export function getSortedVariants(book: StorefrontBook) {
 }
 
 export function getVariantAvailableStock(variant: StorefrontVariant) {
-  const inventory = variant.inventory_items?.[0];
+  const inventory = Array.isArray(variant.inventory_items)
+    ? variant.inventory_items[0]
+    : variant.inventory_items;
 
   if (variant.stock_policy === "unlimited") {
     return Number.POSITIVE_INFINITY;

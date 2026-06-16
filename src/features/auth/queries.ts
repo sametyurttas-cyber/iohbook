@@ -57,7 +57,9 @@ export async function getCurrentStaffRoles() {
       .from("staff_roles")
       .select("role")
       .eq("profile_id", user.id)
-      .is("revoked_at", null);
+      .is("revoked_at", null)
+      .order("created_at", { ascending: false })
+      .limit(100);
 
     if (error) {
       throw error;

@@ -151,30 +151,43 @@ export async function confirmIyzicoCheckoutPayment(input: {
     }
   }
 
-  await updateOrThrow(
-    input.supabase
-      .from("payment_attempts")
-      .update({
-        failure_code: response.errorCode ?? null,
-        failure_message: response.errorMessage ?? null,
-        failure_reason: response.errorMessage ?? null,
-        provider_status: response.paymentStatus ?? response.status ?? null,
-        provider_transaction_id: retrievedPaymentId ?? null,
-        provider_token: input.token,
-        provider_reference: input.token,
-        raw_response: {
-          retrieve: response,
-          source: input.source
-        },
-        response_payload: {
-          retrieve: response,
-          source: input.source
-        },
-        status: nextPaymentStatus,
-        verified_at: new Date().toISOString()
-      })
-      .eq("id", attempt.id)
-  );
+  const { data: lockedRows, error: lockError } = await input.supabase
+    .from("payment_attempts")
+    .update({
+      failure_code: response.errorCode ?? null,
+      failure_message: response.errorMessage ?? null,
+      failure_reason: response.errorMessage ?? null,
+      provider_status: response.paymentStatus ?? response.status ?? null,
+      provider_transaction_id: retrievedPaymentId ?? null,
+      provider_token: input.token,
+      provider_reference: input.token,
+      raw_response: {
+        retrieve: response,
+        source: input.source
+      },
+      response_payload: {
+        retrieve: response,
+        source: input.source
+      },
+      status: nextPaymentStatus,
+      verified_at: new Date().toISOString()
+    })
+    .eq("id", attempt.id)
+    .eq("status", attempt.status)
+    .select("id");
+
+  if (lockError) {
+    throw lockError;
+  }
+
+  if (!lockedRows || lockedRows.length === 0) {
+    return {
+      idempotent: true,
+      orderId: attempt.order_id,
+      paid,
+      providerTransactionId: retrievedPaymentId ?? null
+    } satisfies ConfirmIyzicoPaymentResult;
+  }
 
   await updateOrThrow(
     input.supabase
@@ -185,6 +198,22 @@ export async function confirmIyzicoCheckoutPayment(input: {
       })
       .eq("id", attempt.order_id)
   );
+
+  const stockRpcName = paid ? "commit_order_stock" : "release_order_reservation";
+  const { error: stockError } = await input.supabase.rpc(stockRpcName, {
+    p_order_id: attempt.order_id
+  });
+
+  if (stockError) {
+    captureError(stockError, {
+      operation: `payment.confirmation.${stockRpcName}`,
+      order_id: attempt.order_id,
+      provider,
+      source: input.source
+    });
+    throw stockError;
+  }
+
   logInfo("payment.confirmation.completed", {
     order_id: attempt.order_id,
     paid,

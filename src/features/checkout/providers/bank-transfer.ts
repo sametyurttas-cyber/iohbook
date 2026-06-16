@@ -3,8 +3,7 @@ import type { PaymentProvider } from "@/features/checkout/providers/types";
 export const bankTransferProvider: PaymentProvider = {
   availability() {
     return {
-      enabled: false,
-      reason: "Manual bank transfer is modeled but not enabled for MVP checkout."
+      enabled: true
     };
   },
   id: "bank_transfer",
@@ -31,4 +30,3 @@ export const bankTransferProvider: PaymentProvider = {
   },
   type: "manual"
 };
-

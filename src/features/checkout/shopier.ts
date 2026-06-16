@@ -6,15 +6,48 @@ export type ShopierCallbackPayload = Record<string, string>;
 export function getShopierConfig() {
   return {
     apiKey: process.env.SHOPIER_API_KEY ?? "",
+    apiBaseUrl: process.env.SHOPIER_API_BASE_URL ?? "https://api.shopier.com/v1",
     merchantId: process.env.SHOPIER_MERCHANT_ID ?? "",
     paymentUrl: process.env.SHOPIER_PAYMENT_URL ?? "https://www.shopier.com/ShowProduct/api_pay4.php",
     secret: process.env.SHOPIER_SECRET ?? ""
   };
 }
 
-export function isShopierConfigured() {
+export function isShopierClassicFormConfigured() {
   const config = getShopierConfig();
   return Boolean(config.apiKey && config.merchantId && config.secret && config.paymentUrl);
+}
+
+export function isShopierPatConfigured() {
+  return Boolean(getShopierConfig().apiKey);
+}
+
+export function isShopierConfigured() {
+  return isShopierPatConfigured() || isShopierClassicFormConfigured();
+}
+
+export async function requestShopierApi<T>(path: string, init: RequestInit = {}) {
+  const config = getShopierConfig();
+
+  if (!config.apiKey) {
+    throw new Error("SHOPIER_API_KEY is required.");
+  }
+
+  const response = await fetch(`${config.apiBaseUrl}${path}`, {
+    ...init,
+    headers: {
+      accept: "application/json",
+      authorization: `Bearer ${config.apiKey}`,
+      ...(init.body ? { "content-type": "application/json" } : {}),
+      ...init.headers
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`Shopier API request failed: ${response.status}`);
+  }
+
+  return (await response.json()) as T;
 }
 
 export function createShopierSignature(input: {
@@ -90,10 +123,11 @@ export function getShopierAmountMinor(payload: ShopierCallbackPayload) {
   const rawAmount = payload.total_order_value ?? payload.total_amount ?? payload.amount;
   if (!rawAmount) return null;
 
-  const amount = Number.parseFloat(rawAmount.replace(",", "."));
-  if (!Number.isFinite(amount)) return null;
+  const normalized = rawAmount.replace(",", ".").trim();
+  if (!/^\d+(\.\d{1,2})?$/.test(normalized)) return null;
 
-  return Math.round(amount * 100);
+  const [major, minor = ""] = normalized.split(".");
+  return Number.parseInt(major, 10) * 100 + Number.parseInt(minor.padEnd(2, "0"), 10);
 }
 
 export function mapShopierStatus(payload: ShopierCallbackPayload): PaymentStatus {

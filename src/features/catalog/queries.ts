@@ -26,7 +26,11 @@ export type StorefrontVariant = Pick<
   | "sort_order"
   | "active"
 > & {
-  inventory_items: Pick<InventoryItem, "on_hand" | "reserved" | "safety_stock">[];
+  is_preview?: boolean;
+  inventory_items:
+    | Pick<InventoryItem, "on_hand" | "reserved" | "safety_stock">
+    | Pick<InventoryItem, "on_hand" | "reserved" | "safety_stock">[]
+    | null;
 };
 
 export type StorefrontMedia = Pick<
@@ -94,6 +98,7 @@ const previewBooks: StorefrontBook[] = [
         fulfillment_type: "physical",
         inventory_items: [{ on_hand: 25, reserved: 0, safety_stock: 2 }],
         id: "preview-godcode-standard",
+        is_preview: true,
         lead_time_days: 3,
         max_per_order: 3,
         price_minor: 45000,
@@ -148,6 +153,7 @@ const previewBooks: StorefrontBook[] = [
         fulfillment_type: "physical",
         inventory_items: [{ on_hand: 12, reserved: 0, safety_stock: 1 }],
         id: "preview-sysgod-signed",
+        is_preview: true,
         lead_time_days: 5,
         max_per_order: 2,
         price_minor: 65000,
@@ -202,6 +208,7 @@ const previewBooks: StorefrontBook[] = [
         fulfillment_type: "physical",
         inventory_items: [{ on_hand: 8, reserved: 0, safety_stock: 1 }],
         id: "preview-codewar-limited",
+        is_preview: true,
         lead_time_days: 7,
         max_per_order: 1,
         price_minor: 90000,

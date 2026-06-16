@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createEntitlementsForPaidOrder } from "@/features/entitlements/service";
 import { sendPaymentConfirmedEmail } from "@/features/email/events";
 import { confirmIyzicoCheckoutPayment } from "./payment-confirmation";
@@ -78,7 +78,10 @@ function createPaymentUpdateFailureSupabaseMock() {
         }),
         update() {
           return {
-            eq: async () => ({
+            eq() {
+              return this;
+            },
+            select: async () => ({
               data: null,
               error: table === "payment_attempts" ? new Error("payment update failed") : null
             })
@@ -89,7 +92,73 @@ function createPaymentUpdateFailureSupabaseMock() {
   };
 }
 
+function createPaymentOptimisticLockMissSupabaseMock() {
+  const orderUpdate = vi.fn();
+  const cartUpdate = vi.fn();
+
+  return {
+    cartUpdate,
+    from(table: string) {
+      return {
+        eq() {
+          return this;
+        },
+        maybeSingle: async () => ({
+          data:
+            table === "payment_attempts"
+              ? {
+                  amount_minor: 1000,
+                  currency: "TRY",
+                  id: "attempt-id",
+                  order_id: "order-id",
+                  provider_reference: "checkout-token",
+                  provider_transaction_id: null,
+                  status: "pending"
+                }
+              : null,
+          error: null
+        }),
+        select() {
+          return this;
+        },
+        single: async () => ({
+          data: {
+            cart_id: "cart-id",
+            id: "order-id",
+            status: "pending_payment"
+          },
+          error: null
+        }),
+        update() {
+          if (table === "orders") {
+            orderUpdate();
+          }
+
+          if (table === "carts") {
+            cartUpdate();
+          }
+
+          return {
+            eq() {
+              return this;
+            },
+            select: async () => ({
+              data: table === "payment_attempts" ? [] : [{ id: `${table}-id` }],
+              error: null
+            })
+          };
+        }
+      };
+    },
+    orderUpdate
+  };
+}
+
 describe("payment confirmation idempotency", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("does not retrieve or rewrite an already paid provider transaction", async () => {
     const retrievePayment = vi.fn();
     const result = await confirmIyzicoCheckoutPayment({
@@ -125,6 +194,34 @@ describe("payment confirmation idempotency", () => {
       })
     ).rejects.toThrow("payment update failed");
 
+    expect(createEntitlementsForPaidOrder).not.toHaveBeenCalled();
+    expect(sendPaymentConfirmedEmail).not.toHaveBeenCalled();
+  });
+
+  it("returns idempotent without side effects when optimistic payment lock matches no rows", async () => {
+    const supabase = createPaymentOptimisticLockMissSupabaseMock();
+
+    const result = await confirmIyzicoCheckoutPayment({
+      retrievePayment: async () => ({
+        currency: "TRY",
+        paidPrice: 10,
+        paymentId: "payment-id",
+        paymentStatus: "SUCCESS",
+        status: "success"
+      }),
+      source: "callback",
+      supabase: supabase as never,
+      token: "checkout-token"
+    });
+
+    expect(result).toEqual({
+      idempotent: true,
+      orderId: "order-id",
+      paid: true,
+      providerTransactionId: "payment-id"
+    });
+    expect(supabase.orderUpdate).not.toHaveBeenCalled();
+    expect(supabase.cartUpdate).not.toHaveBeenCalled();
     expect(createEntitlementsForPaidOrder).not.toHaveBeenCalled();
     expect(sendPaymentConfirmedEmail).not.toHaveBeenCalled();
   });

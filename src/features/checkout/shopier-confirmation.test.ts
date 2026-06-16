@@ -80,10 +80,19 @@ function createOrderUpdateFailureSupabaseMock() {
         }),
         update() {
           return {
-            eq: async () => ({
-              data: null,
-              error: table === "orders" ? new Error("order update failed") : null
-            })
+            eq() {
+              return this;
+            },
+            select: async () => ({
+              data: table === "payment_attempts" ? [{ id: "attempt-id" }] : null,
+              error: null
+            }),
+            then(resolve: (value: { data: null; error: Error | null }) => void) {
+              return Promise.resolve({
+                data: null,
+                error: table === "orders" ? new Error("order update failed") : null
+              }).then(resolve);
+            }
           };
         }
       };

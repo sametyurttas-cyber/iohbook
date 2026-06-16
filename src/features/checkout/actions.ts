@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { z } from "zod";
 import { getCurrentUser } from "@/features/auth/queries";
 import { getActiveCartSnapshot } from "@/features/cart/queries";
 import { validateCartQuantity } from "@/features/cart/cart-rules";
@@ -20,6 +21,38 @@ import { sendOrderReceivedEmail } from "@/features/email/events";
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/service-role";
 import { captureError, logInfo } from "@/lib/observability";
 import type { FulfillmentType } from "@/types/database";
+
+type CheckoutCurrentVariant = {
+  id: string;
+  price_minor: number;
+  products:
+    | {
+        published_at: string | null;
+        status: string;
+      }
+    | {
+        published_at: string | null;
+        status: string;
+      }[]
+    | null;
+};
+
+const checkoutAddressSchema = z.object({
+  city: z.string().trim().min(1).max(80),
+  companyName: z.string().trim().max(120).nullable(),
+  country: z.string().trim().min(2).max(80),
+  countryCode: z.string().trim().toUpperCase().regex(/^[A-Z]{2}$/),
+  line1: z.string().trim().min(5).max(400),
+  line2: z.string().trim().max(400).nullable(),
+  postalCode: z.string().trim().min(2).max(24),
+  region: z.string().trim().max(120).nullable()
+});
+
+const checkoutContactSchema = z.object({
+  email: z.string().trim().email(),
+  fullName: z.string().trim().min(2).max(120),
+  phone: z.string().trim().regex(/^\+?[0-9\s\-()]{7,20}$/)
+});
 
 function requireText(formData: FormData, name: string) {
   const value = String(formData.get(name) ?? "").trim();
@@ -41,7 +74,7 @@ function buildAddress(formData: FormData, prefix: string): CheckoutAddress {
     city: requireText(formData, `${prefix}_city`),
     companyName: optionalText(formData, `${prefix}_company_name`),
     country: requireText(formData, `${prefix}_country`),
-    countryCode: requireText(formData, `${prefix}_country_code`).slice(0, 2).toUpperCase(),
+    countryCode: requireText(formData, `${prefix}_country_code`).toUpperCase(),
     line1: requireText(formData, `${prefix}_line1`),
     line2: optionalText(formData, `${prefix}_line2`),
     postalCode: requireText(formData, `${prefix}_postal_code`),
@@ -65,6 +98,42 @@ function requiresWalletDelivery(fulfillmentType: FulfillmentType) {
   return fulfillmentType === "claimable";
 }
 
+function validateCheckoutDetails(input: {
+  billingAddress: CheckoutAddress;
+  customerEmail: string;
+  customerName: string;
+  customerPhone: string;
+  shippingAddress: CheckoutAddress;
+}) {
+  const result = z
+    .object({
+      billingAddress: checkoutAddressSchema,
+      contact: checkoutContactSchema,
+      shippingAddress: checkoutAddressSchema
+    })
+    .safeParse({
+      billingAddress: input.billingAddress,
+      contact: {
+        email: input.customerEmail,
+        fullName: input.customerName,
+        phone: input.customerPhone
+      },
+      shippingAddress: input.shippingAddress
+    });
+
+  if (!result.success) {
+    redirect("/checkout?error=invalid-checkout-details");
+  }
+}
+
+type CheckoutInventory = { on_hand: number; reserved: number; safety_stock: number };
+
+function getFirstInventory(
+  inventoryItems: CheckoutInventory | CheckoutInventory[] | null | undefined
+) {
+  return Array.isArray(inventoryItems) ? inventoryItems[0] : inventoryItems;
+}
+
 export async function startCheckoutPayment(formData: FormData) {
   logInfo("checkout.payment_start.requested");
   const requiredLegalAccepted = checkoutLegalSummaries.every(
@@ -82,8 +151,10 @@ export async function startCheckoutPayment(formData: FormData) {
     redirect("/cart?error=empty-cart");
   }
 
+  const supabase = createSupabaseServiceRoleClient();
+
   for (const line of cart.lines) {
-    const inventory = line.product_variants.inventory_items?.[0];
+    const inventory = getFirstInventory(line.product_variants.inventory_items);
     const validation = validateCartQuantity({
       maxPerOrder: line.product_variants.max_per_order,
       onHand: inventory?.on_hand,
@@ -98,6 +169,38 @@ export async function startCheckoutPayment(formData: FormData) {
     }
   }
 
+  const variantIds = cart.lines.map((line) => line.variant_id);
+  const { data: currentVariants, error: currentVariantsError } = await supabase
+    .from("product_variants")
+    .select("id, price_minor, products(status, published_at)")
+    .in("id", variantIds);
+
+  if (currentVariantsError) {
+    throw currentVariantsError;
+  }
+
+  const currentVariantById = new Map(
+    ((currentVariants ?? []) as unknown as CheckoutCurrentVariant[]).map((variant) => [
+      variant.id,
+      variant
+    ])
+  );
+
+  for (const line of cart.lines) {
+    const variant = currentVariantById.get(line.variant_id);
+    const product = Array.isArray(variant?.products)
+      ? variant?.products[0]
+      : variant?.products;
+
+    if (!variant || !product || product.status !== "active" || !product.published_at) {
+      redirect("/cart?error=product-unavailable");
+    }
+
+    if (variant.price_minor !== line.unit_price_minor) {
+      redirect("/cart?error=price-changed");
+    }
+  }
+
   const delivery = getDeliveryOption(formData.get("delivery_option"));
   const customerName = requireText(formData, "customer_name");
   const customerEmail = requireText(formData, "customer_email");
@@ -107,6 +210,13 @@ export async function startCheckoutPayment(formData: FormData) {
   const billingAddress = billingSameAsShipping
     ? shippingAddress
     : buildAddress(formData, "billing");
+  validateCheckoutDetails({
+    billingAddress,
+    customerEmail,
+    customerName,
+    customerPhone,
+    shippingAddress
+  });
   const provider = getPaymentProvider(formData.get("payment_provider"));
   const providerAvailability = provider.availability();
   const acceptedAt = new Date().toISOString();
@@ -155,8 +265,6 @@ export async function startCheckoutPayment(formData: FormData) {
   if (hasDigitalOrClaimable && !user) {
     redirect("/sign-in?next=/checkout&error=account-required-for-digital");
   }
-
-  const supabase = createSupabaseServiceRoleClient();
 
   if (hasClaimable && user?.id) {
     const { data: wallet, error: walletError } = await supabase
@@ -325,6 +433,12 @@ export async function startCheckoutPayment(formData: FormData) {
         : {}
     });
   } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+
+    if (message.includes("insufficient_stock")) {
+      redirect("/cart?error=out-of-stock");
+    }
+
     captureError(error, {
       operation: "checkout.atomic_payment_start",
       order_id: order.id,

@@ -16,6 +16,7 @@ import { updateOrThrow } from "@/features/checkout/persistence";
 import { sendPaymentConfirmedEmail } from "@/features/email/events";
 import { createEntitlementsForPaidOrder } from "@/features/entitlements/service";
 import { approveTokenAllocationsForPaidOrder } from "@/features/token-sale/service";
+import { captureError } from "@/lib/observability";
 import type { Database } from "@/types/database";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -110,26 +111,39 @@ export async function confirmShopierPayment(input: {
   assertPaymentTransition(attempt.status, paymentStatus);
   assertOrderTransition(order.status, orderStatus);
 
-  await updateOrThrow(
-    input.supabase
-      .from("payment_attempts")
-      .update({
-        failure_reason: paid ? null : input.payload.error_message ?? input.payload.reason ?? "shopier-payment-failed",
-        provider_status: input.payload.status ?? input.payload.payment_status ?? null,
-        provider_transaction_id: transactionId,
-        raw_response: {
-          callback: input.payload,
-          source: "shopier_callback"
-        },
-        response_payload: {
-          callback: input.payload,
-          source: "shopier_callback"
-        },
-        status: paymentStatus,
-        verified_at: new Date().toISOString()
-      })
-      .eq("id", attempt.id)
-  );
+  const { data: lockedRows, error: lockError } = await input.supabase
+    .from("payment_attempts")
+    .update({
+      failure_reason: paid ? null : input.payload.error_message ?? input.payload.reason ?? "shopier-payment-failed",
+      provider_status: input.payload.status ?? input.payload.payment_status ?? null,
+      provider_transaction_id: transactionId,
+      raw_response: {
+        callback: input.payload,
+        source: "shopier_callback"
+      },
+      response_payload: {
+        callback: input.payload,
+        source: "shopier_callback"
+      },
+      status: paymentStatus,
+      verified_at: new Date().toISOString()
+    })
+    .eq("id", attempt.id)
+    .eq("status", attempt.status)
+    .select("id");
+
+  if (lockError) {
+    throw lockError;
+  }
+
+  if (!lockedRows || lockedRows.length === 0) {
+    return {
+      idempotent: true,
+      orderId: attempt.order_id,
+      paid,
+      providerTransactionId: transactionId
+    };
+  }
 
   await updateOrThrow(
     input.supabase
@@ -140,6 +154,20 @@ export async function confirmShopierPayment(input: {
       })
       .eq("id", attempt.order_id)
   );
+
+  const stockRpcName = paid ? "commit_order_stock" : "release_order_reservation";
+  const { error: stockError } = await input.supabase.rpc(stockRpcName, {
+    p_order_id: attempt.order_id
+  });
+
+  if (stockError) {
+    captureError(stockError, {
+      operation: `shopier.confirmation.${stockRpcName}`,
+      order_id: attempt.order_id,
+      provider: "shopier"
+    });
+    throw stockError;
+  }
 
   if (paid && order.cart_id) {
     await input.supabase.from("carts").update({ status: "converted" }).eq("id", order.cart_id);

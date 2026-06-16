@@ -6,6 +6,7 @@ import {
   getSignUpRedirectError,
   getSignUpRedirectPath
 } from "@/features/auth/error-utils";
+import { mergeAnonymousCartIntoProfileCart } from "@/features/cart/merge";
 import { sendAccountSecurityEmail, sendPasswordResetEmail } from "@/features/email/events";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/service-role";
@@ -32,6 +33,14 @@ export async function signInWithPassword(formData: FormData) {
 
   if (error) {
     redirect(`/sign-in?error=${getSignInRedirectError(error)}`);
+  }
+
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+
+  if (user) {
+    await mergeAnonymousCartIntoProfileCart(user.id);
   }
 
   await sendAccountSecurityEmail({
@@ -74,6 +83,10 @@ export async function signUpWithPassword(formData: FormData) {
 
   if (error) {
     redirect(`/sign-in?error=${getSignInRedirectError(error)}`);
+  }
+
+  if (data.user) {
+    await mergeAnonymousCartIntoProfileCart(data.user.id);
   }
 
   redirect(

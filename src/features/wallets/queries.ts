@@ -15,7 +15,8 @@ export async function listAccountWalletLinks() {
     .select("*")
     .eq("profile_id", user.id)
     .is("revoked_at", null)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(100);
 
   if (error) {
     throw error;
@@ -33,7 +34,8 @@ export async function listAccountUserWallets() {
     .eq("profile_id", user.id)
     .is("revoked_at", null)
     .order("is_primary", { ascending: false })
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(100);
 
   if (error) {
     throw error;
@@ -49,7 +51,8 @@ export async function listAccountClaimReservations() {
     .from("claim_reservations")
     .select("*, nft_collections(id, slug, title), nft_items(id, title, token_id)")
     .eq("profile_id", user.id)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(100);
 
   if (error) {
     throw error;

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { Textarea } from "@/components/ui/textarea";
 import { Breadcrumb } from "@/components/layout/breadcrumb";
 import { Container } from "@/components/layout/container";
@@ -38,6 +39,13 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
     getCurrentUser(),
     searchParams
   ]);
+  const paymentProviderOptions = Object.values(PAYMENT_PROVIDERS).map((provider) => ({
+    availability: provider.availability(),
+    provider
+  }));
+  const defaultEnabledPaymentProviderId =
+    paymentProviderOptions.find(({ availability }) => availability.enabled)?.provider.id ??
+    DEFAULT_PAYMENT_PROVIDER_ID;
 
   return (
     <>
@@ -182,9 +190,7 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
                     its merchant keys are configured.
                   </p>
                   <div className="mt-4 grid gap-3">
-                    {Object.values(PAYMENT_PROVIDERS).map((provider) => {
-                      const availability = provider.availability();
-
+                    {paymentProviderOptions.map(({ availability, provider }) => {
                       return (
                         <label
                           className="flex items-start gap-3 rounded-md border border-border bg-ink-soft p-4"
@@ -192,8 +198,8 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
                         >
                           <input
                             className="mt-1 h-4 w-4 accent-gold disabled:opacity-40"
-                            defaultChecked={provider.id === DEFAULT_PAYMENT_PROVIDER_ID}
-                            disabled={!availability.enabled}
+                            defaultChecked={provider.id === defaultEnabledPaymentProviderId}
+                            disabled={!availability.enabled && provider.id !== "shopier"}
                             name="payment_provider"
                             type="radio"
                             value={provider.id}
@@ -286,9 +292,7 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
                   </div>
                 </section>
 
-                <Button size="lg" type="submit">
-                Odeme sayfasina devam et
-                </Button>
+                <SubmitButton size="lg">Odeme sayfasina devam et</SubmitButton>
               </form>
             )}
 

@@ -38,10 +38,10 @@ After implementation:
 Use these once the project is scaffolded:
 
 ```bash
-pnpm lint
-pnpm typecheck
-pnpm test
-pnpm build
+npm run lint
+npm run typecheck
+npm test
+npm run build
 ```
 
 If the repo uses another package manager later, update this section.

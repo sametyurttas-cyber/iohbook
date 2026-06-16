@@ -754,6 +754,12 @@ export type Database = {
           payment_attempt_id: string;
         }[];
       };
+      commit_order_stock: {
+        Args: {
+          p_order_id: string;
+        };
+        Returns: void;
+      };
       commit_token_sale_payment_start: {
         Args: {
           p_allocation: Record<string, unknown>;
@@ -770,6 +776,12 @@ export type Database = {
           order_number: string;
           payment_attempt_id: string;
         }[];
+      };
+      release_order_reservation: {
+        Args: {
+          p_order_id: string;
+        };
+        Returns: void;
       };
       is_staff: {
         Args: { allowed_roles?: StaffRole[] };

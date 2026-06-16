@@ -53,7 +53,7 @@ export async function listOrdersForAdmin(filters: AdminOrderFilters = {}) {
     .from("orders")
     .select("*, order_items(*), payment_attempts(*), fulfillment_shipments(*)")
     .order("created_at", { ascending: false })
-    .limit(80);
+    .limit(50);
 
   if (filters.status && filters.status !== "all") {
     query = query.eq("status", filters.status);

@@ -23,6 +23,32 @@ export function VariantSelector({ variants }: VariantSelectorProps) {
     );
   }
 
+  const hasPreviewVariants = variants.some((variant) => variant.is_preview);
+
+  if (hasPreviewVariants) {
+    return (
+      <div className="grid gap-4 rounded-lg border border-border bg-card p-5 shadow-panel">
+        <div>
+          <p className="text-eyebrow uppercase text-muted-foreground">Varyant secimi</p>
+          <h2 className="mt-2 font-display text-title-md text-paper">Baski hazirlaniyor</h2>
+        </div>
+        <p className="text-sm leading-6 text-muted-foreground">
+          Bu kitap su an katalog on izlemesi olarak gorunuyor. Satin alma acilmasi
+          icin admin panelinden gercek urun ve varyant kaydi yayinlanmali.
+        </p>
+        <div className="grid gap-3 sm:grid-cols-[8rem_1fr_1fr]">
+          <Input defaultValue={1} disabled min={1} name="quantity" type="number" />
+          <Button disabled type="button">
+            Sepete ekle
+          </Button>
+          <Button disabled type="button" variant="secondary">
+            Direkt satin al
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   const firstAvailableIndex = variants.findIndex((variant) => {
     const stock = getVariantAvailableStock(variant);
     return (

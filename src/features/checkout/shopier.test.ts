@@ -52,6 +52,9 @@ describe("shopier payment helpers", () => {
   it("normalizes callback amounts to minor units", () => {
     expect(getShopierAmountMinor({ total_order_value: "125.45" })).toBe(12545);
     expect(getShopierAmountMinor({ total_order_value: "125,45" })).toBe(12545);
+    expect(getShopierAmountMinor({ total_order_value: "12,34" })).toBe(1234);
+    expect(getShopierAmountMinor({ total_order_value: "12.3" })).toBe(1230);
+    expect(getShopierAmountMinor({ total_order_value: "abc" })).toBeNull();
     expect(getShopierAmountMinor({ total_order_value: "not-money" })).toBeNull();
   });
 });
