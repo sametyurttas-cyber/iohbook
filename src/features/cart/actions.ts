@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/features/auth/queries";
-import { getOrCreateAnonymousCartId } from "@/features/cart/cart-cookie";
+import { getAnonymousCartId, getOrCreateAnonymousCartId } from "@/features/cart/cart-cookie";
 import { validateCartQuantity } from "@/features/cart/cart-rules";
 import { requiresPhysicalDelivery } from "@/features/checkout/fulfillment-utils";
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/service-role";
@@ -83,6 +83,28 @@ async function getOrCreateActiveCart() {
   }
 
   return data;
+}
+
+async function getActiveCartForCurrentOwner() {
+  const user = await getCurrentUser();
+  const anonymousId = user ? null : await getAnonymousCartId();
+
+  if (!user && !anonymousId) {
+    return null;
+  }
+
+  const supabase = createSupabaseServiceRoleClient();
+  const { data, error } = await findActiveCart({
+    anonymousId,
+    profileId: user?.id ?? null,
+    supabase
+  });
+
+  if (error) {
+    throw error;
+  }
+
+  return data?.[0] ?? null;
 }
 
 async function getVariantForCart(variantId: string) {
@@ -293,4 +315,23 @@ export async function removeCartItem(formData: FormData) {
 
   revalidatePath("/cart");
   redirect("/cart?removed=1");
+}
+
+export async function clearCart() {
+  const supabase = createSupabaseServiceRoleClient();
+  const cart = await getActiveCartForCurrentOwner();
+
+  if (!cart) {
+    redirect("/cart?cleared=1");
+  }
+
+  const { error } = await supabase.from("cart_items").delete().eq("cart_id", cart.id);
+
+  if (error) {
+    throw error;
+  }
+
+  revalidatePath("/cart");
+  revalidatePath("/checkout");
+  redirect("/cart?cleared=1");
 }

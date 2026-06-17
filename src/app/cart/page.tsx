@@ -6,6 +6,7 @@ import { Container } from "@/components/layout/container";
 import { Section } from "@/components/layout/section";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { clearCart } from "@/features/cart/actions";
 import { CartLineControls } from "@/features/cart/cart-line-controls";
 import { getActiveCartSnapshot } from "@/features/cart/queries";
 import { BookCover } from "@/features/catalog/book-cover";
@@ -17,6 +18,7 @@ type CartPageProps = {
   searchParams?: Promise<{
     added?: string;
     error?: string;
+    cleared?: string;
     removed?: string;
     updated?: string;
   }>;
@@ -63,9 +65,9 @@ export default async function CartPage({ searchParams }: CartPageProps) {
                   {cartErrorMessages[notices.error] ?? notices.error}
                 </div>
               ) : null}
-              {notices?.added || notices?.updated || notices?.removed ? (
+              {notices?.added || notices?.updated || notices?.removed || notices?.cleared ? (
                 <div className="rounded-md border border-gold/30 bg-gold/10 p-3 text-sm text-gold">
-                  Sepet guncellendi.
+                  {notices.cleared ? "Sepet bosaltildi." : "Sepet guncellendi."}
                 </div>
               ) : null}
 
@@ -152,9 +154,18 @@ export default async function CartPage({ searchParams }: CartPageProps) {
                     : "Kargo ve yasal bilgilendirme checkout adiminda hesaplanacak."}
                 </div>
               </dl>
-              <Button asChild className="mt-5 w-full">
-                <Link href="/checkout">Checkout adimina devam et</Link>
-              </Button>
+              {cart.lines.length > 0 ? (
+                <div className="mt-5 grid gap-3">
+                  <Button asChild className="w-full">
+                    <Link href="/checkout">Checkout adimina devam et</Link>
+                  </Button>
+                  <form action={clearCart}>
+                    <Button className="w-full" type="submit" variant="outline">
+                      Sepeti bosalt
+                    </Button>
+                  </form>
+                </div>
+              ) : null}
             </aside>
           </Container>
         </Section>
