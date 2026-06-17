@@ -41,10 +41,6 @@ type ShopierOrder = {
   status: OrderStatus;
 };
 
-type ShopierAttemptCandidate = ShopierAttempt & {
-  orders: ShopierOrder | ShopierOrder[] | null;
-};
-
 type ShopierWebhookPayload = Record<string, unknown>;
 
 function getNestedString(payload: ShopierWebhookPayload, paths: string[][]) {
@@ -119,10 +115,6 @@ function getShopierWebhookAmountMinor(payload: ShopierWebhookPayload) {
   ]);
 
   return parseShopierAmountMinor(rawAmount);
-}
-
-function normalizeJoinedOrder(order: ShopierAttemptCandidate["orders"]) {
-  return Array.isArray(order) ? order[0] ?? null : order;
 }
 
 async function applyShopierPaymentResult(input: {
@@ -408,7 +400,7 @@ export async function confirmShopierOrderCreatedWebhook(input: {
 
   const { data: candidates, error: candidatesError } = await input.supabase
     .from("payment_attempts")
-    .select("id, order_id, status, provider_reference, amount_minor, currency, orders(id, cart_id, customer_email, status)")
+    .select("id, order_id, status, provider_reference, amount_minor, currency")
     .eq("provider", "shopier")
     .eq("status", "pending")
     .eq("amount_minor", webhookAmountMinor)
@@ -420,27 +412,34 @@ export async function confirmShopierOrderCreatedWebhook(input: {
     throw candidatesError;
   }
 
-  const match = ((candidates ?? []) as ShopierAttemptCandidate[]).find((candidate) => {
-    const order = normalizeJoinedOrder(candidate.orders);
-    return order?.customer_email.toLowerCase() === webhookEmail;
-  });
+  for (const candidate of candidates ?? []) {
+    const { data: candidateOrder, error: candidateOrderError } = await input.supabase
+      .from("orders")
+      .select("id, cart_id, customer_email, status")
+      .eq("id", candidate.order_id)
+      .single();
 
-  const order = normalizeJoinedOrder(match?.orders ?? null);
+    if (candidateOrderError) {
+      throw candidateOrderError;
+    }
 
-  if (!match || !order) {
-    throw new Error("Shopier webhook payment attempt not found.");
+    if (candidateOrder.customer_email.toLowerCase() !== webhookEmail) {
+      continue;
+    }
+
+    return applyShopierPaymentResult({
+      attempt: candidate,
+      order: candidateOrder,
+      paymentStatus: "paid",
+      providerStatus: "order.created",
+      providerTransactionId: shopierOrderId,
+      rawResponse: {
+        webhook: input.payload
+      },
+      source: "shopier_order_created_webhook",
+      supabase: input.supabase
+    });
   }
 
-  return applyShopierPaymentResult({
-    attempt: match,
-    order,
-    paymentStatus: "paid",
-    providerStatus: "order.created",
-    providerTransactionId: shopierOrderId,
-    rawResponse: {
-      webhook: input.payload
-    },
-    source: "shopier_order_created_webhook",
-    supabase: input.supabase
-  });
+  throw new Error("Shopier webhook payment attempt not found.");
 }

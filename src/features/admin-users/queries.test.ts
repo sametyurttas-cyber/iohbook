@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buildAdminUserRows, filterAdminUserRows } from "@/features/admin-users/queries";
-import type { Address, IohPointBalance, Order, Profile, UserWallet } from "@/types/database";
+import type { Address, IohPointBalance, Profile, UserWallet } from "@/types/database";
 
 const profile = {
   admin_notes: null,
@@ -50,28 +50,14 @@ describe("admin users queries", () => {
       ],
       orders: [
         {
-          cart_id: null,
-          cancelled_at: null,
-          completed_at: null,
           created_at: "2026-06-03T10:00:00.000Z",
           currency: "TRY",
-          customer_email: profile.email,
-          customer_name: profile.full_name,
-          discount_minor: 0,
           id: "order-1",
-          legal_acceptance: {},
           order_number: "IOH-1",
-          paid_at: "2026-06-03T10:00:00.000Z",
           profile_id: profile.id,
-          shipping_minor: 0,
           status: "paid",
-          subtotal_minor: 10000,
-          tax_minor: 0,
-          total_minor: 10000,
-          updated_at: "2026-06-03T10:00:00.000Z",
-          billing_address: null,
-          shipping_address: null
-        } satisfies Order
+          total_minor: 10000
+        }
       ],
       profiles: [profile],
       wallets: [

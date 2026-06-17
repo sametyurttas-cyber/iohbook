@@ -128,12 +128,20 @@ function buildDigitalCartSnapshot(unitPriceMinor = 1000) {
 
 function buildPhysicalCartSnapshot(unitPriceMinor = 1000) {
   const snapshot = buildCartSnapshot(unitPriceMinor);
-  snapshot.lines[0].product_variants.digital_delivery_bucket = null;
-  snapshot.lines[0].product_variants.digital_delivery_path = null;
-  snapshot.lines[0].product_variants.digital_download_limit = null;
-  snapshot.lines[0].product_variants.format = "standard";
-  snapshot.lines[0].product_variants.fulfillment_type = "physical";
-  snapshot.lines[0].product_variants.stock_policy = "track";
+  const variant = snapshot.lines[0].product_variants as Omit<
+    (typeof snapshot.lines)[number]["product_variants"],
+    "digital_delivery_bucket" | "digital_delivery_path" | "digital_download_limit"
+  > & {
+    digital_delivery_bucket: string | null;
+    digital_delivery_path: string | null;
+    digital_download_limit: number | null;
+  };
+  variant.digital_delivery_bucket = null;
+  variant.digital_delivery_path = null;
+  variant.digital_download_limit = null;
+  variant.format = "standard";
+  variant.fulfillment_type = "physical";
+  variant.stock_policy = "track";
   return snapshot;
 }
 

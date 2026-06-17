@@ -53,4 +53,4 @@ describe("order email templates", () => {
     expect(email.html).toContain("dosya eki gonderilmeyecek");
     expect(email.html).toContain("guvenli indirme hakkiniz hesabinizda acilacak");
   });
-}
+});

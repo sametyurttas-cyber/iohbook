@@ -186,12 +186,6 @@ function createSuccessfulShopierWebhookSupabaseMock() {
                       currency: "TRY",
                       id: "attempt-id",
                       order_id: "order-id",
-                      orders: {
-                        cart_id: "cart-id",
-                        customer_email: "buyer@example.com",
-                        id: "order-id",
-                        status: "pending_payment"
-                      },
                       provider_reference: "IOH-1",
                       status: "pending"
                     }
@@ -210,6 +204,15 @@ function createSuccessfulShopierWebhookSupabaseMock() {
         select() {
           return this;
         },
+        single: async () => ({
+          data: {
+            cart_id: "cart-id",
+            customer_email: "buyer@example.com",
+            id: "order-id",
+            status: "pending_payment"
+          },
+          error: null
+        }),
         update() {
           return {
             eq() {
