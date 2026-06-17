@@ -78,28 +78,32 @@ CheckoutForm hosted checkout and writes the returned token as
 
 ### Shopier
 
-The current adapter targets a legacy hosted checkout URL configured by
-`SHOPIER_PAYMENT_URL` and defaults to `https://www.shopier.com/ShowProduct/api_pay4.php`.
-The public Shopier developer pages available during implementation did not
-provide a verifiable hosted-form `api_pay4.php` request/callback signature
-specification. Treat this adapter as **verification-gated** before live use.
+The MVP Shopier adapter can send GODCODE PDF buyers to the merchant product
+link, but the order is not finalized from that browser redirect. The trusted
+payment signal is the Shopier REST webhook:
 
-Live enablement requirements:
+`POST /api/payments/shopier/webhook`
 
-1. Obtain Shopier's official merchant integration document or capture a
-   Shopier sandbox/live test callback from the merchant panel.
-2. Confirm request field names for `API_key`, `merchant_id`,
-   `platform_order_id`, `total_order_value`, `currency`, `callback_url`, and
-   `signature`.
-3. Confirm callback field names for order reference, provider transaction id,
-   status, amount, currency, and signature/hash.
-4. Update `src/features/checkout/shopier.ts` and tests to the confirmed
-   canonical signature string. Do not infer this format from examples.
-5. Keep backend checks that require paid callbacks to match
-   `payment_attempts.amount_minor` and `payment_attempts.currency` before any
-   order can move to `paid`.
-6. Keep duplicate callback handling idempotent by checking provider transaction
-   references before mutating orders.
+Required environment:
+
+- `SHOPIER_API_TOKEN`: Shopier REST API personal access token.
+- `SHOPIER_WEBHOOK_TOKEN`: Shopier webhook secret/token used to verify
+  `Shopier-Signature`. If it is not set, the app falls back to
+  `SHOPIER_SECRET`, then `SHOPIER_API_TOKEN`.
+
+Webhook behavior:
+
+1. The route accepts only POST JSON webhooks.
+2. `order.created` webhooks are verified with HMAC-SHA256 over the raw body.
+3. The webhook order id becomes `payment_attempts.provider_transaction_id`.
+4. The webhook total, currency, and buyer email must match a pending Shopier
+   payment attempt before the order can move to `paid`.
+5. Duplicate webhooks are idempotent and do not create duplicate entitlements,
+   point rewards, emails, or token allocations.
+
+Legacy classic-form support remains in code for future Shopier merchant-id /
+secret configurations, but live digital delivery should rely on the webhook
+confirmation path above.
 
 ### Manual Bank Transfer
 

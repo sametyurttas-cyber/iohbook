@@ -3,6 +3,13 @@ import type { PaymentStatus } from "@/types/database";
 
 export type ShopierCallbackPayload = Record<string, string>;
 
+export type ShopierWebhookHeaders = {
+  event: string | null;
+  id: string | null;
+  signature: string | null;
+  timestamp: string | null;
+};
+
 export function getShopierConfig() {
   const apiKey = process.env.SHOPIER_API_TOKEN ?? process.env.SHOPIER_API_KEY ?? "";
 
@@ -11,7 +18,8 @@ export function getShopierConfig() {
     apiBaseUrl: process.env.SHOPIER_API_BASE_URL ?? "https://api.shopier.com/v1",
     merchantId: process.env.SHOPIER_MERCHANT_ID ?? "",
     paymentUrl: process.env.SHOPIER_PAYMENT_URL ?? "https://www.shopier.com/ShowProduct/api_pay4.php",
-    secret: process.env.SHOPIER_SECRET ?? ""
+    secret: process.env.SHOPIER_SECRET ?? "",
+    webhookToken: process.env.SHOPIER_WEBHOOK_TOKEN ?? process.env.SHOPIER_SECRET ?? apiKey
   };
 }
 
@@ -123,6 +131,10 @@ export function getShopierTransactionId(payload: ShopierCallbackPayload) {
 
 export function getShopierAmountMinor(payload: ShopierCallbackPayload) {
   const rawAmount = payload.total_order_value ?? payload.total_amount ?? payload.amount;
+  return parseShopierAmountMinor(rawAmount);
+}
+
+export function parseShopierAmountMinor(rawAmount: string | null | undefined) {
   if (!rawAmount) return null;
 
   const normalized = rawAmount.replace(",", ".").trim();
@@ -167,4 +179,30 @@ export function verifyShopierCallbackSignature(payload: ShopierCallbackPayload, 
   }
 
   return timingSafeEqual(providedBuffer, expectedBuffer);
+}
+
+export function verifyShopierWebhookSignature(input: {
+  rawBody: string;
+  signature: string | null;
+  webhookToken: string;
+}) {
+  if (!input.signature || !input.webhookToken) {
+    return false;
+  }
+
+  const providedBuffer = Buffer.from(input.signature);
+  const expectedHexBuffer = Buffer.from(createHmac("sha256", input.webhookToken).update(input.rawBody).digest("hex"));
+  const expectedBase64Buffer = Buffer.from(
+    createHmac("sha256", input.webhookToken).update(input.rawBody).digest("base64")
+  );
+
+  if (providedBuffer.length === expectedHexBuffer.length) {
+    return timingSafeEqual(providedBuffer, expectedHexBuffer);
+  }
+
+  if (providedBuffer.length === expectedBase64Buffer.length) {
+    return timingSafeEqual(providedBuffer, expectedBase64Buffer);
+  }
+
+  return false;
 }

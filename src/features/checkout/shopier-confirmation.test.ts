@@ -5,7 +5,7 @@ import { createEntitlementsForPaidOrder } from "@/features/entitlements/service"
 import { awardBookOrderRewardForPaidOrder } from "@/features/points/service";
 import { approveTokenAllocationsForPaidOrder } from "@/features/token-sale/service";
 import { captureError } from "@/lib/observability";
-import { confirmShopierPayment } from "./shopier-confirmation";
+import { confirmShopierOrderCreatedWebhook, confirmShopierPayment } from "./shopier-confirmation";
 
 vi.mock("@/features/email/events", () => ({
   sendPaymentConfirmedEmail: vi.fn()
@@ -36,7 +36,8 @@ vi.mock("@/features/checkout/shopier", async (importOriginal) => {
       apiKey: "api",
       merchantId: "merchant",
       paymentUrl: "https://shopier.example/pay",
-      secret: "secret"
+      secret: "secret",
+      webhookToken: "webhook"
     })
   };
 });
@@ -142,6 +143,73 @@ function createSuccessfulShopierSupabaseMock() {
           },
           error: null
         }),
+        update() {
+          return {
+            eq() {
+              return this;
+            },
+            select: async () => ({
+              data: table === "payment_attempts" ? [{ id: "attempt-id" }] : [{ id: `${table}-id` }],
+              error: null
+            }),
+            then(resolve: (value: { data: { id: string }[]; error: null }) => void) {
+              return Promise.resolve({
+                data: [{ id: `${table}-id` }],
+                error: null
+              }).then(resolve);
+            }
+          };
+        }
+      };
+    },
+    rpc: vi.fn(async () => ({
+      data: null,
+      error: null
+    }))
+  };
+}
+
+function createSuccessfulShopierWebhookSupabaseMock() {
+  return {
+    from(table: string) {
+      return {
+        eq() {
+          return this;
+        },
+        limit() {
+          return Promise.resolve({
+            data:
+              table === "payment_attempts"
+                ? [
+                    {
+                      amount_minor: 1000,
+                      currency: "TRY",
+                      id: "attempt-id",
+                      order_id: "order-id",
+                      orders: {
+                        cart_id: "cart-id",
+                        customer_email: "buyer@example.com",
+                        id: "order-id",
+                        status: "pending_payment"
+                      },
+                      provider_reference: "IOH-1",
+                      status: "pending"
+                    }
+                  ]
+                : null,
+            error: null
+          });
+        },
+        maybeSingle: async () => ({
+          data: null,
+          error: null
+        }),
+        order() {
+          return this;
+        },
+        select() {
+          return this;
+        },
         update() {
           return {
             eq() {
@@ -281,5 +349,60 @@ describe("shopier confirmation persistence", () => {
       order_id: "order-id",
       provider: "shopier"
     });
+  });
+
+  it("confirms a Shopier order.created webhook by matching pending attempt amount, currency, and email", async () => {
+    const payload = {
+      id: "SHOPIER-ORDER-1",
+      currency: "TRY",
+      shippingInfo: {
+        email: "buyer@example.com"
+      },
+      totals: {
+        total: "10.00"
+      }
+    };
+    const rawBody = JSON.stringify(payload);
+    const signature = createHmac("sha256", "webhook").update(rawBody).digest("hex");
+
+    const result = await confirmShopierOrderCreatedWebhook({
+      event: "order.created",
+      payload,
+      rawBody,
+      signature,
+      supabase: createSuccessfulShopierWebhookSupabaseMock() as never
+    });
+
+    expect(result).toEqual({
+      idempotent: false,
+      orderId: "order-id",
+      paid: true,
+      providerTransactionId: "SHOPIER-ORDER-1"
+    });
+    expect(createEntitlementsForPaidOrder).toHaveBeenCalledWith({
+      orderId: "order-id",
+      supabase: expect.anything()
+    });
+    expect(sendPaymentConfirmedEmail).toHaveBeenCalledWith("order-id");
+  });
+
+  it("rejects Shopier webhooks with an invalid signature", async () => {
+    const payload = {
+      id: "SHOPIER-ORDER-1",
+      currency: "TRY",
+      email: "buyer@example.com",
+      total: "10.00"
+    };
+    const rawBody = JSON.stringify(payload);
+
+    await expect(
+      confirmShopierOrderCreatedWebhook({
+        event: "order.created",
+        payload,
+        rawBody,
+        signature: "bad-signature",
+        supabase: createSuccessfulShopierWebhookSupabaseMock() as never
+      })
+    ).rejects.toThrow("Shopier webhook signature is invalid");
   });
 });
