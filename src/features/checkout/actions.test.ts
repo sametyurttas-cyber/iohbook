@@ -103,7 +103,7 @@ function buildCartSnapshot(unitPriceMinor = 1000) {
             slug: "godcode",
             title: "GODCODE"
           },
-          sku: "IOH-GODCODE-STD",
+          sku: "IOH-GODCODE-PDF",
           stock_policy: "unlimited"
         },
         quantity: 1,

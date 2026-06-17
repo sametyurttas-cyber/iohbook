@@ -7,7 +7,7 @@ import {
 import type { PaymentProvider } from "@/features/checkout/providers/types";
 
 const GODCODE_SHOPIER_URL = "https://www.shopier.com/sametyurttas/48021742";
-const GODCODE_SKU = "IOH-GODCODE-STD";
+const GODCODE_SKU = "IOH-GODCODE-PDF";
 
 function getDirectShopierUrlForCart(context: Parameters<PaymentProvider["startPayment"]>[0]) {
   const [line] = context.cartLines;
