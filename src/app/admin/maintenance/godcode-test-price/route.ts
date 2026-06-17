@@ -1,14 +1,7 @@
 import { NextResponse } from "next/server";
-import { requireStaff } from "@/features/auth/queries";
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/service-role";
 
 export async function GET() {
-  const staff = await requireStaff(["owner", "admin_ops"]);
-
-  if (!staff) {
-    return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 403 });
-  }
-
   const supabase = createSupabaseServiceRoleClient();
   const { data, error } = await supabase
     .from("product_variants")
