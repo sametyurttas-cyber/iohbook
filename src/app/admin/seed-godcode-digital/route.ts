@@ -30,7 +30,7 @@ export async function GET() {
         digital_delivery_bucket: "digital-deliveries",
         digital_delivery_path: "ebooks/godcode.pdf",
         digital_download_limit: 5,
-        format: "digital_pdf",
+        format: "ebook",
         fulfillment_type: "digital",
         lead_time_days: 0,
         max_per_order: 3,
