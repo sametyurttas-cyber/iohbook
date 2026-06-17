@@ -50,7 +50,7 @@ export function BookInfoTabs({ book, variants }: BookInfoTabsProps) {
       <TabsContent className="pt-4" value="delivery">
         <p className="text-sm leading-7 text-muted-foreground">
           Dijital kitaplar odeme onayindan sonra Hesabim &gt; Indirmelerim alaninda
-          guvenli indirme linkiyle acilir. Dosyalar public bucket'ta tutulmaz.
+          guvenli indirme linkiyle acilir. Dosyalar public bucket&apos;ta tutulmaz.
         </p>
       </TabsContent>
     </Tabs>

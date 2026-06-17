@@ -108,7 +108,7 @@ export function VariantSelector({ variants }: VariantSelectorProps) {
                       {physicalUnavailable ? "Yakinda" : getStockLabel(variant)}
                     </Badge>
                     {physicalUnavailable ? (
-                      <Badge variant="outline">Fiziksel satis MVP'de kapali</Badge>
+                      <Badge variant="outline">Fiziksel satis MVP&apos;de kapali</Badge>
                     ) : null}
                     {variant.edition_label ? (
                       <Badge variant="outline">{variant.edition_label}</Badge>

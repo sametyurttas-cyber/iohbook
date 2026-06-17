@@ -213,7 +213,7 @@ export default async function BooksPage() {
             <p className="m-note">
               GODCODE altin cekirdegi, SYSGOD mavi sistem katmanini, CODEWAR ise
               kirmizi catisma hattini tasir. Her baski, anlatinin fiziksel bir
-              parcasi gibi konumlanir; MVP'de erisim PDF ve EPUB dijital teslimatla baslar.
+              parcasi gibi konumlanir; MVP&apos;de erisim PDF ve EPUB dijital teslimatla baslar.
             </p>
           </div>
         </section>
