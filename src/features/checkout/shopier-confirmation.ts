@@ -27,6 +27,7 @@ type ServiceClient = SupabaseClient<Database>;
 
 type ShopierAttempt = {
   amount_minor: number;
+  created_at?: string;
   currency: string;
   id: string;
   order_id: string;
@@ -42,6 +43,8 @@ type ShopierOrder = {
 };
 
 type ShopierWebhookPayload = Record<string, unknown>;
+
+const DIRECT_LINK_SKUS = new Set(["IOH-GODCODE-PDF"]);
 
 function getNestedString(payload: ShopierWebhookPayload, paths: string[][]) {
   for (const path of paths) {
@@ -236,6 +239,116 @@ async function applyShopierPaymentResult(input: {
   };
 }
 
+async function orderMatchesEmail(input: {
+  email: string;
+  orderId: string;
+  supabase: ServiceClient;
+}) {
+  const { data: order, error } = await input.supabase
+    .from("orders")
+    .select("id, cart_id, customer_email, status")
+    .eq("id", input.orderId)
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  if (order.customer_email.toLowerCase() !== input.email) {
+    return null;
+  }
+
+  return order;
+}
+
+async function orderHasDirectLinkDigitalItem(input: {
+  orderId: string;
+  supabase: ServiceClient;
+}) {
+  const { data: items, error } = await input.supabase
+    .from("order_items")
+    .select("variant_snapshot, fulfillment_type")
+    .eq("order_id", input.orderId);
+
+  if (error) {
+    throw error;
+  }
+
+  return (items ?? []).some((item) => {
+    const snapshot = item.variant_snapshot as Record<string, unknown>;
+    return item.fulfillment_type === "digital" && DIRECT_LINK_SKUS.has(String(snapshot.sku ?? ""));
+  });
+}
+
+async function findShopierWebhookAttempt(input: {
+  amountMinor: number;
+  currency: string;
+  email: string;
+  supabase: ServiceClient;
+}) {
+  const { data: exactCandidates, error: exactCandidatesError } = await input.supabase
+    .from("payment_attempts")
+    .select("id, order_id, status, provider_reference, amount_minor, currency, created_at")
+    .eq("provider", "shopier")
+    .eq("status", "pending")
+    .eq("amount_minor", input.amountMinor)
+    .eq("currency", input.currency)
+    .order("created_at", { ascending: false })
+    .limit(20);
+
+  if (exactCandidatesError) {
+    throw exactCandidatesError;
+  }
+
+  for (const candidate of exactCandidates ?? []) {
+    const order = await orderMatchesEmail({
+      email: input.email,
+      orderId: candidate.order_id,
+      supabase: input.supabase
+    });
+
+    if (order) {
+      return { attempt: candidate, order };
+    }
+  }
+
+  const { data: fallbackCandidates, error: fallbackCandidatesError } = await input.supabase
+    .from("payment_attempts")
+    .select("id, order_id, status, provider_reference, amount_minor, currency, created_at")
+    .eq("provider", "shopier")
+    .eq("status", "pending")
+    .eq("currency", input.currency)
+    .order("created_at", { ascending: false })
+    .limit(20);
+
+  if (fallbackCandidatesError) {
+    throw fallbackCandidatesError;
+  }
+
+  for (const candidate of fallbackCandidates ?? []) {
+    const order = await orderMatchesEmail({
+      email: input.email,
+      orderId: candidate.order_id,
+      supabase: input.supabase
+    });
+
+    if (!order) {
+      continue;
+    }
+
+    const hasDirectLinkItem = await orderHasDirectLinkDigitalItem({
+      orderId: candidate.order_id,
+      supabase: input.supabase
+    });
+
+    if (hasDirectLinkItem) {
+      return { attempt: candidate, order };
+    }
+  }
+
+  return null;
+}
+
 export async function confirmShopierPayment(input: {
   payload: ShopierCallbackPayload;
   supabase: ServiceClient;
@@ -398,40 +511,20 @@ export async function confirmShopierOrderCreatedWebhook(input: {
     };
   }
 
-  const { data: candidates, error: candidatesError } = await input.supabase
-    .from("payment_attempts")
-    .select("id, order_id, status, provider_reference, amount_minor, currency")
-    .eq("provider", "shopier")
-    .eq("status", "pending")
-    .eq("amount_minor", webhookAmountMinor)
-    .eq("currency", webhookCurrency)
-    .order("created_at", { ascending: false })
-    .limit(20);
+  const match = await findShopierWebhookAttempt({
+    amountMinor: webhookAmountMinor,
+    currency: webhookCurrency,
+    email: webhookEmail,
+    supabase: input.supabase
+  });
 
-  if (candidatesError) {
-    throw candidatesError;
-  }
-
-  for (const candidate of candidates ?? []) {
-    const { data: candidateOrder, error: candidateOrderError } = await input.supabase
-      .from("orders")
-      .select("id, cart_id, customer_email, status")
-      .eq("id", candidate.order_id)
-      .single();
-
-    if (candidateOrderError) {
-      throw candidateOrderError;
-    }
-
-    if (candidateOrder.customer_email.toLowerCase() !== webhookEmail) {
-      continue;
-    }
-
+  if (match) {
     return applyShopierPaymentResult({
-      attempt: candidate,
-      order: candidateOrder,
+      attempt: match.attempt,
+      order: match.order,
       paymentStatus: "paid",
-      providerStatus: "order.created",
+      providerStatus:
+        match.attempt.amount_minor === webhookAmountMinor ? "order.created" : "order.created_amount_fallback",
       providerTransactionId: shopierOrderId,
       rawResponse: {
         webhook: input.payload
