@@ -357,16 +357,6 @@ export async function startCheckoutPayment(formData: FormData) {
     }))
   ];
 
-  const { error: consentError } = await supabase.from("consent_events").insert(consentEvents);
-
-  if (consentError) {
-    captureError(consentError, {
-      operation: "checkout.consent_log",
-      order_id: order.id
-    });
-    throw consentError;
-  }
-
   const orderItems = cart.lines.map((line) => ({
     fulfillment_type: line.product_variants.fulfillment_type,
     product_snapshot: {
