@@ -1,5 +1,8 @@
 # Product Scope
 
+> Historical baseline. The MVP later moved to digital-first commerce. Use
+> `docs/brain/current-state.md` for current scope.
+
 ## Product Vision
 
 IOH is a boutique author-brand commerce experience for Samet Yurttas. The site should sell books, but it should not feel like a generic marketplace. It should feel like an entry point into a dark, cosmic, technology-driven literary universe.

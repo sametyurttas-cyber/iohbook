@@ -1,5 +1,8 @@
 # Architecture Decisions
 
+> Historical baseline. Current production truth and document precedence live in
+> `docs/brain/current-state.md` and `docs/brain/README.md`.
+
 ## Purpose
 
 This project is a boutique author-brand commerce site for IOH / Samet Yurttas. It must feel like a premium literary and cosmic technology brand on the public side, while keeping a professional commerce core behind the scenes.

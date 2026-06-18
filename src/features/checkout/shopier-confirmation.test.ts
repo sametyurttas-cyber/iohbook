@@ -249,6 +249,46 @@ function createSuccessfulShopierWebhookSupabaseMock() {
   };
 }
 
+function createAlreadyPaidShopierWebhookSupabaseMock() {
+  return {
+    from(table: string) {
+      const filters = new Map<string, unknown>();
+      const builder = {
+        eq(key: string, value: unknown) {
+          filters.set(key, value);
+          return builder;
+        },
+        maybeSingle: async () => ({
+          data:
+            table === "payment_attempts" && filters.has("provider_transaction_id")
+              ? {
+                  id: "attempt-id",
+                  order_id: "order-id",
+                  provider_transaction_id: "SHOPIER-ORDER-1",
+                  status: "paid"
+                }
+              : null,
+          error: null
+        }),
+        select() {
+          return builder;
+        },
+        single: async () => ({
+          data: { cart_id: "cart-id" },
+          error: null
+        }),
+        update() {
+          return {
+            eq: async () => ({ data: null, error: null })
+          };
+        }
+      };
+
+      return builder;
+    }
+  };
+}
+
 describe("shopier confirmation persistence", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -402,6 +442,36 @@ describe("shopier confirmation persistence", () => {
     });
     expect(sendPaymentConfirmedEmail).toHaveBeenCalledWith("order-id");
     expect(retrieveShopierOrder).toHaveBeenCalledWith("SHOPIER-ORDER-1");
+  });
+
+  it("reconciles the book reward when a duplicate webhook finds an already paid attempt", async () => {
+    const payload = { id: "SHOPIER-ORDER-1" };
+    const rawBody = JSON.stringify(payload);
+    const signature = createHmac("sha256", "webhook").update(rawBody).digest("hex");
+
+    const result = await confirmShopierOrderCreatedWebhook({
+      event: "order.created",
+      payload,
+      rawBody,
+      signature,
+      supabase: createAlreadyPaidShopierWebhookSupabaseMock() as never
+    });
+
+    expect(result).toEqual({
+      idempotent: true,
+      orderId: "order-id",
+      paid: true,
+      providerTransactionId: "SHOPIER-ORDER-1"
+    });
+    expect(createEntitlementsForPaidOrder).toHaveBeenCalledWith({
+      orderId: "order-id",
+      supabase: expect.anything()
+    });
+    expect(awardBookOrderRewardForPaidOrder).toHaveBeenCalledWith({
+      orderId: "order-id",
+      supabase: expect.anything()
+    });
+    expect(retrieveShopierOrder).not.toHaveBeenCalled();
   });
 
   it("rejects a Shopier REST order when its amount does not match the noted attempt", async () => {

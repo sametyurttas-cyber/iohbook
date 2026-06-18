@@ -15,6 +15,7 @@ import {
   assertPaymentTransition,
   mapPaymentStatusToOrderStatus
 } from "@/features/checkout/payment-state";
+import { convertPaidOrderCart } from "@/features/checkout/cart-finalization";
 import { updateOrThrow } from "@/features/checkout/persistence";
 import { sendPaymentConfirmedEmail } from "@/features/email/events";
 import { createEntitlementsForPaidOrder } from "@/features/entitlements/service";
@@ -208,6 +209,29 @@ function getConfiguredShopierProductId(productUrl: string) {
   return segments.at(-1) ?? null;
 }
 
+async function reconcilePaidBookAccess(input: {
+  orderId: string;
+  supabase: ServiceClient;
+}) {
+  await createEntitlementsForPaidOrder({
+    orderId: input.orderId,
+    supabase: input.supabase
+  });
+
+  try {
+    await awardBookOrderRewardForPaidOrder({
+      orderId: input.orderId,
+      supabase: input.supabase
+    });
+  } catch (error) {
+    captureError(error, {
+      operation: "points.book_order_reward",
+      order_id: input.orderId,
+      provider: "shopier"
+    });
+  }
+}
+
 async function applyShopierPaymentResult(input: {
   attempt: ShopierAttempt;
   order: ShopierOrder;
@@ -282,27 +306,19 @@ async function applyShopierPaymentResult(input: {
     throw stockError;
   }
 
-  if (paid && input.order.cart_id) {
-    await input.supabase.from("carts").update({ status: "converted" }).eq("id", input.order.cart_id);
-  }
-
   if (paid) {
-    await createEntitlementsForPaidOrder({
+    await convertPaidOrderCart({
+      cartId: input.order.cart_id,
       orderId: input.attempt.order_id,
       supabase: input.supabase
     });
-    try {
-      await awardBookOrderRewardForPaidOrder({
-        orderId: input.attempt.order_id,
-        supabase: input.supabase
-      });
-    } catch (error) {
-      captureError(error, {
-        operation: "points.book_order_reward",
-        order_id: input.attempt.order_id,
-        provider: "shopier"
-      });
-    }
+  }
+
+  if (paid) {
+    await reconcilePaidBookAccess({
+      orderId: input.attempt.order_id,
+      supabase: input.supabase
+    });
     await approveTokenAllocationsForPaidOrder({
       orderId: input.attempt.order_id,
       paymentAttemptId: input.attempt.id,
@@ -392,7 +408,11 @@ export async function confirmShopierPayment(input: {
     }
 
     if (alreadyPaid?.status === "paid") {
-      await createEntitlementsForPaidOrder({
+      await convertPaidOrderCart({
+        orderId: alreadyPaid.order_id,
+        supabase: input.supabase
+      });
+      await reconcilePaidBookAccess({
         orderId: alreadyPaid.order_id,
         supabase: input.supabase
       });
@@ -421,7 +441,11 @@ export async function confirmShopierPayment(input: {
   }
 
   if (attempt.status === "paid") {
-    await createEntitlementsForPaidOrder({
+    await convertPaidOrderCart({
+      orderId: attempt.order_id,
+      supabase: input.supabase
+    });
+    await reconcilePaidBookAccess({
       orderId: attempt.order_id,
       supabase: input.supabase
     });
@@ -514,7 +538,11 @@ export async function confirmShopierOrderCreatedWebhook(input: {
   }
 
   if (alreadyPaid?.status === "paid") {
-    await createEntitlementsForPaidOrder({
+    await convertPaidOrderCart({
+      orderId: alreadyPaid.order_id,
+      supabase: input.supabase
+    });
+    await reconcilePaidBookAccess({
       orderId: alreadyPaid.order_id,
       supabase: input.supabase
     });
@@ -569,7 +597,11 @@ export async function confirmShopierOrderCreatedWebhook(input: {
   }
 
   if (attempt.status === "paid") {
-    await createEntitlementsForPaidOrder({
+    await convertPaidOrderCart({
+      orderId: attempt.order_id,
+      supabase: input.supabase
+    });
+    await reconcilePaidBookAccess({
       orderId: attempt.order_id,
       supabase: input.supabase
     });
