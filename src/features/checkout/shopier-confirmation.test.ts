@@ -255,10 +255,13 @@ describe("shopier confirmation persistence", () => {
     vi.mocked(retrieveShopierOrder).mockResolvedValue({
       currency: "TRY",
       id: "SHOPIER-ORDER-1",
-      items: [{ product_id: "48021742", quantity: 1 }],
+      lineItems: [{ productId: "48021742", quantity: 1 }],
       note: "IOH-1",
-      status: "paid",
-      total: "10.00"
+      paymentStatus: "paid",
+      status: "unfulfilled",
+      totals: {
+        total: "10.00"
+      }
     });
   });
 

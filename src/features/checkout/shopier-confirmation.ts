@@ -149,13 +149,18 @@ function getShopierRestStatus(payload: ShopierWebhookPayload) {
 
 function getShopierRestItems(payload: ShopierWebhookPayload) {
   const candidates: unknown[] = [
+    payload.lineItems,
     payload.items,
     payload.products,
     payload.orderItems,
     payload.order_items,
+    (payload.order as Record<string, unknown> | undefined)?.lineItems,
     (payload.order as Record<string, unknown> | undefined)?.items,
+    (payload.data as Record<string, unknown> | undefined)?.lineItems,
     (payload.data as Record<string, unknown> | undefined)?.items,
     (payload.data as Record<string, unknown> | undefined)?.products,
+    ((payload.data as Record<string, unknown> | undefined)?.order as Record<string, unknown> | undefined)
+      ?.lineItems,
     ((payload.data as Record<string, unknown> | undefined)?.order as Record<string, unknown> | undefined)
       ?.items
   ];
