@@ -392,6 +392,10 @@ export async function confirmShopierPayment(input: {
     }
 
     if (alreadyPaid?.status === "paid") {
+      await createEntitlementsForPaidOrder({
+        orderId: alreadyPaid.order_id,
+        supabase: input.supabase
+      });
       return {
         idempotent: true,
         orderId: alreadyPaid.order_id,
@@ -417,6 +421,10 @@ export async function confirmShopierPayment(input: {
   }
 
   if (attempt.status === "paid") {
+    await createEntitlementsForPaidOrder({
+      orderId: attempt.order_id,
+      supabase: input.supabase
+    });
     return {
       idempotent: true,
       orderId: attempt.order_id,
@@ -506,6 +514,10 @@ export async function confirmShopierOrderCreatedWebhook(input: {
   }
 
   if (alreadyPaid?.status === "paid") {
+    await createEntitlementsForPaidOrder({
+      orderId: alreadyPaid.order_id,
+      supabase: input.supabase
+    });
     return {
       idempotent: true,
       orderId: alreadyPaid.order_id,
@@ -557,6 +569,10 @@ export async function confirmShopierOrderCreatedWebhook(input: {
   }
 
   if (attempt.status === "paid") {
+    await createEntitlementsForPaidOrder({
+      orderId: attempt.order_id,
+      supabase: input.supabase
+    });
     return {
       idempotent: true,
       orderId: attempt.order_id,
