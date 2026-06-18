@@ -5,6 +5,7 @@ import {
   getShopierConfig,
   mapShopierStatus,
   parseShopierAmountMinor,
+  retrieveShopierOrder,
   type ShopierCallbackPayload,
   verifyShopierCallbackSignature,
   verifyShopierWebhookSignature
@@ -72,41 +73,48 @@ function getNestedString(payload: ShopierWebhookPayload, paths: string[][]) {
 }
 
 function getShopierWebhookOrderId(payload: ShopierWebhookPayload) {
-  return getNestedString(payload, [["id"], ["order", "id"], ["data", "id"]]);
-}
-
-function getShopierWebhookEmail(payload: ShopierWebhookPayload) {
   return getNestedString(payload, [
-    ["email"],
-    ["buyerEmail"],
-    ["buyer", "email"],
-    ["customer", "email"],
-    ["shippingInfo", "email"],
-    ["billingInfo", "email"],
-    ["order", "email"],
-    ["order", "buyer", "email"],
-    ["data", "email"],
-    ["data", "buyer", "email"]
-  ])?.toLowerCase();
+    ["id"],
+    ["order", "id"],
+    ["data", "id"],
+    ["data", "order", "id"]
+  ]);
 }
 
-function getShopierWebhookCurrency(payload: ShopierWebhookPayload) {
-  return (
-    getNestedString(payload, [
-      ["currency"],
-      ["currencyCode"],
-      ["totals", "currency"],
-      ["order", "currency"],
-      ["data", "currency"]
-    ])?.toUpperCase() ?? "TRY"
-  );
+function getShopierRestNote(payload: ShopierWebhookPayload) {
+  return getNestedString(payload, [
+    ["note"],
+    ["customerNote"],
+    ["customer_note"],
+    ["orderNote"],
+    ["order_note"],
+    ["order", "note"],
+    ["data", "note"],
+    ["data", "order", "note"],
+    ["data", "customerNote"],
+    ["data", "customer_note"]
+  ]);
 }
 
-function getShopierWebhookAmountMinor(payload: ShopierWebhookPayload) {
+function getShopierRestCurrency(payload: ShopierWebhookPayload) {
+  return getNestedString(payload, [
+    ["currency"],
+    ["currencyCode"],
+    ["currency_code"],
+    ["totals", "currency"],
+    ["order", "currency"],
+    ["data", "currency"],
+    ["data", "order", "currency"]
+  ])?.toUpperCase();
+}
+
+function getShopierRestAmountMinor(payload: ShopierWebhookPayload) {
   const rawAmount = getNestedString(payload, [
     ["total"],
     ["totalPrice"],
+    ["total_price"],
     ["totalAmount"],
+    ["total_amount"],
     ["amount"],
     ["totals", "total"],
     ["totals", "grandTotal"],
@@ -114,10 +122,85 @@ function getShopierWebhookAmountMinor(payload: ShopierWebhookPayload) {
     ["order", "total"],
     ["order", "amount"],
     ["data", "total"],
-    ["data", "amount"]
+    ["data", "amount"],
+    ["data", "order", "total"],
+    ["data", "order", "amount"]
   ]);
 
   return parseShopierAmountMinor(rawAmount);
+}
+
+function getShopierRestStatus(payload: ShopierWebhookPayload) {
+  return getNestedString(payload, [
+    ["paymentStatus"],
+    ["payment_status"],
+    ["status"],
+    ["order", "paymentStatus"],
+    ["order", "payment_status"],
+    ["order", "status"],
+    ["data", "paymentStatus"],
+    ["data", "payment_status"],
+    ["data", "status"],
+    ["data", "order", "paymentStatus"],
+    ["data", "order", "payment_status"],
+    ["data", "order", "status"]
+  ])?.toLowerCase();
+}
+
+function getShopierRestItems(payload: ShopierWebhookPayload) {
+  const candidates: unknown[] = [
+    payload.items,
+    payload.products,
+    payload.orderItems,
+    payload.order_items,
+    (payload.order as Record<string, unknown> | undefined)?.items,
+    (payload.data as Record<string, unknown> | undefined)?.items,
+    (payload.data as Record<string, unknown> | undefined)?.products,
+    ((payload.data as Record<string, unknown> | undefined)?.order as Record<string, unknown> | undefined)
+      ?.items
+  ];
+
+  return candidates.find(Array.isArray) as Record<string, unknown>[] | undefined;
+}
+
+function getShopierRestQuantity(payload: ShopierWebhookPayload) {
+  const direct = getNestedString(payload, [
+    ["quantity"],
+    ["totalQuantity"],
+    ["total_quantity"],
+    ["data", "quantity"]
+  ]);
+
+  if (direct && /^\d+$/.test(direct)) {
+    return Number.parseInt(direct, 10);
+  }
+
+  const items = getShopierRestItems(payload);
+  if (!items?.length) return null;
+
+  return items.reduce((total, item) => {
+    const value = item.quantity ?? item.qty ?? item.count;
+    const quantity = typeof value === "number" ? value : Number.parseInt(String(value ?? ""), 10);
+    return Number.isInteger(quantity) && quantity > 0 ? total + quantity : total;
+  }, 0);
+}
+
+function getShopierRestProductIds(payload: ShopierWebhookPayload) {
+  return (getShopierRestItems(payload) ?? [])
+    .map(
+      (item) =>
+        item.productId ??
+        item.product_id ??
+        (item.product as Record<string, unknown> | undefined)?.id ??
+        item.id
+    )
+    .filter((value): value is string | number => typeof value === "string" || typeof value === "number")
+    .map(String);
+}
+
+function getConfiguredShopierProductId(productUrl: string) {
+  const segments = new URL(productUrl).pathname.split("/").filter(Boolean);
+  return segments.at(-1) ?? null;
 }
 
 async function applyShopierPaymentResult(input: {
@@ -239,114 +322,40 @@ async function applyShopierPaymentResult(input: {
   };
 }
 
-async function orderMatchesEmail(input: {
-  email: string;
+async function validateDirectLinkOrderItems(input: {
   orderId: string;
-  supabase: ServiceClient;
-}) {
-  const { data: order, error } = await input.supabase
-    .from("orders")
-    .select("id, cart_id, customer_email, status")
-    .eq("id", input.orderId)
-    .single();
-
-  if (error) {
-    throw error;
-  }
-
-  if (order.customer_email.toLowerCase() !== input.email) {
-    return null;
-  }
-
-  return order;
-}
-
-async function orderHasDirectLinkDigitalItem(input: {
-  orderId: string;
+  productId: string | null;
+  quantity: number;
+  restOrder: ShopierWebhookPayload;
   supabase: ServiceClient;
 }) {
   const { data: items, error } = await input.supabase
     .from("order_items")
-    .select("variant_snapshot, fulfillment_type")
+    .select("quantity, variant_snapshot, fulfillment_type")
     .eq("order_id", input.orderId);
 
   if (error) {
     throw error;
   }
 
-  return (items ?? []).some((item) => {
+  const directItems = (items ?? []).filter((item) => {
     const snapshot = item.variant_snapshot as Record<string, unknown>;
     return item.fulfillment_type === "digital" && DIRECT_LINK_SKUS.has(String(snapshot.sku ?? ""));
   });
-}
 
-async function findShopierWebhookAttempt(input: {
-  amountMinor: number;
-  currency: string;
-  email: string;
-  supabase: ServiceClient;
-}) {
-  const { data: exactCandidates, error: exactCandidatesError } = await input.supabase
-    .from("payment_attempts")
-    .select("id, order_id, status, provider_reference, amount_minor, currency, created_at")
-    .eq("provider", "shopier")
-    .eq("status", "pending")
-    .eq("amount_minor", input.amountMinor)
-    .eq("currency", input.currency)
-    .order("created_at", { ascending: false })
-    .limit(20);
-
-  if (exactCandidatesError) {
-    throw exactCandidatesError;
+  if (directItems.length !== 1 || directItems.length !== (items ?? []).length) {
+    throw new Error("Shopier order does not contain the expected digital product.");
   }
 
-  for (const candidate of exactCandidates ?? []) {
-    const order = await orderMatchesEmail({
-      email: input.email,
-      orderId: candidate.order_id,
-      supabase: input.supabase
-    });
-
-    if (order) {
-      return { attempt: candidate, order };
-    }
+  const expectedQuantity = directItems.reduce((total, item) => total + item.quantity, 0);
+  if (input.quantity !== expectedQuantity) {
+    throw new Error("Shopier order quantity does not match payment attempt.");
   }
 
-  const { data: fallbackCandidates, error: fallbackCandidatesError } = await input.supabase
-    .from("payment_attempts")
-    .select("id, order_id, status, provider_reference, amount_minor, currency, created_at")
-    .eq("provider", "shopier")
-    .eq("status", "pending")
-    .eq("currency", input.currency)
-    .order("created_at", { ascending: false })
-    .limit(20);
-
-  if (fallbackCandidatesError) {
-    throw fallbackCandidatesError;
+  const productIds = getShopierRestProductIds(input.restOrder);
+  if (input.productId && productIds.length > 0 && !productIds.includes(input.productId)) {
+    throw new Error("Shopier order product does not match configured product.");
   }
-
-  for (const candidate of fallbackCandidates ?? []) {
-    const order = await orderMatchesEmail({
-      email: input.email,
-      orderId: candidate.order_id,
-      supabase: input.supabase
-    });
-
-    if (!order) {
-      continue;
-    }
-
-    const hasDirectLinkItem = await orderHasDirectLinkDigitalItem({
-      orderId: candidate.order_id,
-      supabase: input.supabase
-    });
-
-    if (hasDirectLinkItem) {
-      return { attempt: candidate, order };
-    }
-  }
-
-  return null;
 }
 
 export async function confirmShopierPayment(input: {
@@ -475,20 +484,9 @@ export async function confirmShopierOrderCreatedWebhook(input: {
   }
 
   const shopierOrderId = getShopierWebhookOrderId(input.payload);
-  const webhookEmail = getShopierWebhookEmail(input.payload);
-  const webhookAmountMinor = getShopierWebhookAmountMinor(input.payload);
-  const webhookCurrency = getShopierWebhookCurrency(input.payload);
 
   if (!shopierOrderId) {
     throw new Error("Shopier webhook missing order id.");
-  }
-
-  if (!webhookEmail) {
-    throw new Error("Shopier webhook missing buyer email.");
-  }
-
-  if (webhookAmountMinor === null) {
-    throw new Error("Shopier webhook missing order amount.");
   }
 
   const { data: alreadyPaid, error: alreadyPaidError } = await input.supabase
@@ -511,28 +509,98 @@ export async function confirmShopierOrderCreatedWebhook(input: {
     };
   }
 
-  const match = await findShopierWebhookAttempt({
-    amountMinor: webhookAmountMinor,
-    currency: webhookCurrency,
-    email: webhookEmail,
+  const restOrder = await retrieveShopierOrder<ShopierWebhookPayload>(shopierOrderId);
+  const orderReference = getShopierRestNote(restOrder);
+  const amountMinor = getShopierRestAmountMinor(restOrder);
+  const currency = getShopierRestCurrency(restOrder);
+  const quantity = getShopierRestQuantity(restOrder);
+  const providerStatus = getShopierRestStatus(restOrder);
+
+  if (!orderReference) {
+    throw new Error("Shopier REST order missing note reference.");
+  }
+
+  if (amountMinor === null) {
+    throw new Error("Shopier REST order missing amount.");
+  }
+
+  if (!currency) {
+    throw new Error("Shopier REST order missing currency.");
+  }
+
+  if (quantity === null || quantity < 1) {
+    throw new Error("Shopier REST order missing quantity.");
+  }
+
+  if (providerStatus && ["cancelled", "canceled", "failed", "refunded"].includes(providerStatus)) {
+    throw new Error(`Shopier REST order is not payable: ${providerStatus}`);
+  }
+
+  const { data: attempt, error: attemptError } = await input.supabase
+    .from("payment_attempts")
+    .select("id, order_id, status, provider_reference, amount_minor, currency, created_at")
+    .eq("provider", "shopier")
+    .eq("provider_reference", orderReference)
+    .maybeSingle();
+
+  if (attemptError) {
+    throw attemptError;
+  }
+
+  if (!attempt) {
+    throw new Error("Shopier payment attempt not found for order note.");
+  }
+
+  if (attempt.status === "paid") {
+    return {
+      idempotent: true,
+      orderId: attempt.order_id,
+      paid: true,
+      providerTransactionId: shopierOrderId
+    };
+  }
+
+  if (attempt.status !== "pending") {
+    throw new Error(`Shopier payment attempt is not pending: ${attempt.status}`);
+  }
+
+  if (attempt.amount_minor !== amountMinor) {
+    throw new Error("Shopier REST order amount does not match payment attempt.");
+  }
+
+  if (attempt.currency !== currency) {
+    throw new Error("Shopier REST order currency does not match payment attempt.");
+  }
+
+  const { data: order, error: orderError } = await input.supabase
+    .from("orders")
+    .select("id, cart_id, customer_email, status")
+    .eq("id", attempt.order_id)
+    .single();
+
+  if (orderError) {
+    throw orderError;
+  }
+
+  await validateDirectLinkOrderItems({
+    orderId: attempt.order_id,
+    productId: getConfiguredShopierProductId(config.productUrl),
+    quantity,
+    restOrder,
     supabase: input.supabase
   });
 
-  if (match) {
-    return applyShopierPaymentResult({
-      attempt: match.attempt,
-      order: match.order,
-      paymentStatus: "paid",
-      providerStatus:
-        match.attempt.amount_minor === webhookAmountMinor ? "order.created" : "order.created_amount_fallback",
-      providerTransactionId: shopierOrderId,
-      rawResponse: {
-        webhook: input.payload
-      },
-      source: "shopier_order_created_webhook",
-      supabase: input.supabase
-    });
-  }
-
-  throw new Error("Shopier webhook payment attempt not found.");
+  return applyShopierPaymentResult({
+    attempt,
+    order,
+    paymentStatus: "paid",
+    providerStatus: providerStatus ? `order.created:${providerStatus}` : "order.created:verified",
+    providerTransactionId: shopierOrderId,
+    rawResponse: {
+      retrieved_order: restOrder,
+      webhook: input.payload
+    },
+    source: "shopier_order_created_webhook_rest_verified",
+    supabase: input.supabase
+  });
 }

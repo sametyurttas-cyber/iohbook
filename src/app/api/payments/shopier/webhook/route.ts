@@ -9,12 +9,22 @@ export async function POST(request: NextRequest) {
 
   try {
     const payload = JSON.parse(rawBody) as Record<string, unknown>;
+    const payloadEvent =
+      typeof payload.event === "string"
+        ? payload.event
+        : typeof payload.type === "string"
+          ? payload.type
+          : null;
 
     await confirmShopierOrderCreatedWebhook({
-      event: request.headers.get("shopier-event"),
+      event:
+        request.headers.get("shopier-event") ??
+        request.headers.get("x-shopier-event") ??
+        payloadEvent,
       payload,
       rawBody,
-      signature: request.headers.get("shopier-signature"),
+      signature:
+        request.headers.get("shopier-signature") ?? request.headers.get("x-shopier-signature"),
       supabase
     });
 

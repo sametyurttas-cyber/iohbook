@@ -18,9 +18,23 @@ export function getShopierConfig() {
     apiBaseUrl: process.env.SHOPIER_API_BASE_URL ?? "https://api.shopier.com/v1",
     merchantId: process.env.SHOPIER_MERCHANT_ID ?? "",
     paymentUrl: process.env.SHOPIER_PAYMENT_URL ?? "https://www.shopier.com/ShowProduct/api_pay4.php",
+    productUrl:
+      process.env.SHOPIER_GODCODE_PRODUCT_URL ??
+      "https://www.shopier.com/sametyurttas/48021742",
     secret: process.env.SHOPIER_SECRET ?? "",
     webhookToken: process.env.SHOPIER_WEBHOOK_TOKEN ?? process.env.SHOPIER_SECRET ?? apiKey
   };
+}
+
+export function buildShopierProductUrl(input: {
+  note: string;
+  productUrl: string;
+  quantity: number;
+}) {
+  const url = new URL(input.productUrl);
+  url.searchParams.set("quantity", String(input.quantity));
+  url.searchParams.set("note", input.note);
+  return url.toString();
 }
 
 export function isShopierClassicFormConfigured() {
@@ -58,6 +72,10 @@ export async function requestShopierApi<T>(path: string, init: RequestInit = {})
   }
 
   return (await response.json()) as T;
+}
+
+export async function retrieveShopierOrder<T>(orderId: string) {
+  return requestShopierApi<T>(`/orders/${encodeURIComponent(orderId)}`);
 }
 
 export function createShopierSignature(input: {

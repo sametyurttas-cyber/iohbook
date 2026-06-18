@@ -78,15 +78,24 @@ CheckoutForm hosted checkout and writes the returned token as
 
 ### Shopier
 
-The MVP Shopier adapter can send GODCODE PDF buyers to the merchant product
-link, but the order is not finalized from that browser redirect. The trusted
-payment signal is the Shopier REST webhook:
+The MVP Shopier adapter sends GODCODE PDF buyers to the merchant product link.
+This flow does not require a Shopier OAuth application. Before redirecting, the
+site creates its own pending order and appends these parameters to the product
+URL:
+
+- `quantity`: cart quantity.
+- `note`: the unique IOH order number stored as `payment_attempts.provider_reference`.
+
+The order is not finalized from the browser redirect. The webhook is a trigger;
+the trusted payment signal is the matching order retrieved from the Shopier
+REST API with the personal access token:
 
 `POST /api/payments/shopier/webhook`
 
 Required environment:
 
 - `SHOPIER_API_TOKEN`: Shopier REST API personal access token.
+- `SHOPIER_GODCODE_PRODUCT_URL`: published Shopier product URL.
 - `SHOPIER_WEBHOOK_TOKEN`: Shopier webhook secret/token used to verify
   `Shopier-Signature`. If it is not set, the app falls back to
   `SHOPIER_SECRET`, then `SHOPIER_API_TOKEN`.
@@ -95,15 +104,19 @@ Webhook behavior:
 
 1. The route accepts only POST JSON webhooks.
 2. `order.created` webhooks are verified with HMAC-SHA256 over the raw body.
-3. The webhook order id becomes `payment_attempts.provider_transaction_id`.
-4. The webhook total, currency, and buyer email must match a pending Shopier
-   payment attempt before the order can move to `paid`.
-5. Duplicate webhooks are idempotent and do not create duplicate entitlements,
+3. The webhook order id is retrieved from the Shopier REST API.
+4. The REST order `note` must exactly match a pending Shopier
+   `provider_reference`.
+5. Amount, currency, quantity, and the configured product are validated before
+   the order can move to `paid`. There is no email or amount fallback matching.
+6. The Shopier order id becomes `payment_attempts.provider_transaction_id`.
+7. Duplicate webhooks are idempotent and do not create duplicate entitlements,
    point rewards, emails, or token allocations.
 
-Legacy classic-form support remains in code for future Shopier merchant-id /
-secret configurations, but live digital delivery should rely on the webhook
-confirmation path above.
+The `order.created` webhook subscription is registered once through Shopier's
+REST `POST /webhooks` endpoint. Legacy classic-form support remains in code for
+future Shopier merchant-id / secret configurations, but live digital delivery
+uses the product-link + PAT + REST verification path above.
 
 ### Manual Bank Transfer
 

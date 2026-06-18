@@ -1,4 +1,5 @@
 import {
+  buildShopierProductUrl,
   buildShopierPaymentUrl,
   getShopierConfig,
   isShopierClassicFormConfigured,
@@ -6,17 +7,23 @@ import {
 } from "@/features/checkout/shopier";
 import type { PaymentProvider } from "@/features/checkout/providers/types";
 
-const GODCODE_SHOPIER_URL = "https://www.shopier.com/sametyurttas/48021742";
 const GODCODE_SKU = "IOH-GODCODE-PDF";
 
-function getDirectShopierUrlForCart(context: Parameters<PaymentProvider["startPayment"]>[0]) {
+function getDirectShopierUrlForCart(
+  context: Parameters<PaymentProvider["startPayment"]>[0],
+  productUrl: string
+) {
   const [line] = context.cartLines;
 
   if (context.cartLines.length !== 1 || line?.product_variants.sku !== GODCODE_SKU) {
     return null;
   }
 
-  return GODCODE_SHOPIER_URL;
+  return buildShopierProductUrl({
+    note: context.order.order_number,
+    productUrl,
+    quantity: line.quantity
+  });
 }
 
 export const shopierProvider: PaymentProvider = {
@@ -34,7 +41,7 @@ export const shopierProvider: PaymentProvider = {
     const config = getShopierConfig();
 
     if (!isShopierClassicFormConfigured()) {
-      const directUrl = getDirectShopierUrlForCart(context);
+      const directUrl = getDirectShopierUrlForCart(context, config.productUrl);
 
       if (directUrl) {
         return {
@@ -50,7 +57,9 @@ export const shopierProvider: PaymentProvider = {
           redirectUrl: directUrl,
           requestPayload: {
             mode: "direct_product_link",
+            note: context.order.order_number,
             orderNumber: context.order.order_number,
+            quantity: context.cartLines[0]?.quantity ?? 1,
             sku: GODCODE_SKU
           },
           status: "redirect"

@@ -5,6 +5,7 @@ import { createEntitlementsForPaidOrder } from "@/features/entitlements/service"
 import { awardBookOrderRewardForPaidOrder } from "@/features/points/service";
 import { approveTokenAllocationsForPaidOrder } from "@/features/token-sale/service";
 import { captureError } from "@/lib/observability";
+import { retrieveShopierOrder } from "@/features/checkout/shopier";
 import { confirmShopierOrderCreatedWebhook, confirmShopierPayment } from "./shopier-confirmation";
 
 vi.mock("@/features/email/events", () => ({
@@ -36,9 +37,11 @@ vi.mock("@/features/checkout/shopier", async (importOriginal) => {
       apiKey: "api",
       merchantId: "merchant",
       paymentUrl: "https://shopier.example/pay",
+      productUrl: "https://www.shopier.com/sametyurttas/48021742",
       secret: "secret",
       webhookToken: "webhook"
-    })
+    }),
+    retrieveShopierOrder: vi.fn()
   };
 });
 
@@ -172,37 +175,49 @@ function createSuccessfulShopierSupabaseMock() {
 function createSuccessfulShopierWebhookSupabaseMock() {
   return {
     from(table: string) {
-      return {
-        eq() {
-          return this;
-        },
-        limit() {
-          return Promise.resolve({
-            data:
-              table === "payment_attempts"
-                ? [
-                    {
-                      amount_minor: 1000,
-                      currency: "TRY",
-                      id: "attempt-id",
-                      order_id: "order-id",
-                      provider_reference: "IOH-1",
-                      status: "pending"
-                    }
-                  ]
-                : null,
+      const filters = new Map<string, unknown>();
+      let operation: "select" | "update" = "select";
+      const result = () => {
+        if (operation === "update") {
+          return { data: [{ id: `${table}-id` }], error: null };
+        }
+
+        if (table === "order_items") {
+          return {
+            data: [
+              {
+                fulfillment_type: "digital",
+                quantity: 1,
+                variant_snapshot: { sku: "IOH-GODCODE-PDF" }
+              }
+            ],
             error: null
-          });
+          };
+        }
+
+        return { data: null, error: null };
+      };
+      const builder = {
+        eq(key: string, value: unknown) {
+          filters.set(key, value);
+          return builder;
         },
         maybeSingle: async () => ({
-          data: null,
+          data:
+            table === "payment_attempts" && filters.has("provider_reference")
+              ? {
+                  amount_minor: 1000,
+                  currency: "TRY",
+                  id: "attempt-id",
+                  order_id: "order-id",
+                  provider_reference: "IOH-1",
+                  status: "pending"
+                }
+              : null,
           error: null
         }),
-        order() {
-          return this;
-        },
         select() {
-          return this;
+          return builder;
         },
         single: async () => ({
           data: {
@@ -213,24 +228,19 @@ function createSuccessfulShopierWebhookSupabaseMock() {
           },
           error: null
         }),
+        then(
+          resolve: (value: ReturnType<typeof result>) => void,
+          reject?: (reason: unknown) => void
+        ) {
+          return Promise.resolve(result()).then(resolve, reject);
+        },
         update() {
-          return {
-            eq() {
-              return this;
-            },
-            select: async () => ({
-              data: table === "payment_attempts" ? [{ id: "attempt-id" }] : [{ id: `${table}-id` }],
-              error: null
-            }),
-            then(resolve: (value: { data: { id: string }[]; error: null }) => void) {
-              return Promise.resolve({
-                data: [{ id: `${table}-id` }],
-                error: null
-              }).then(resolve);
-            }
-          };
+          operation = "update";
+          return builder;
         }
       };
+
+      return builder;
     },
     rpc: vi.fn(async () => ({
       data: null,
@@ -242,6 +252,14 @@ function createSuccessfulShopierWebhookSupabaseMock() {
 describe("shopier confirmation persistence", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(retrieveShopierOrder).mockResolvedValue({
+      currency: "TRY",
+      id: "SHOPIER-ORDER-1",
+      items: [{ product_id: "48021742", quantity: 1 }],
+      note: "IOH-1",
+      status: "paid",
+      total: "10.00"
+    });
   });
 
   it("stops before entitlement, allocation, and email side effects when order update fails", async () => {
@@ -354,16 +372,9 @@ describe("shopier confirmation persistence", () => {
     });
   });
 
-  it("confirms a Shopier order.created webhook by matching pending attempt amount, currency, and email", async () => {
+  it("confirms a Shopier order.created webhook after REST verification by order note", async () => {
     const payload = {
-      id: "SHOPIER-ORDER-1",
-      currency: "TRY",
-      shippingInfo: {
-        email: "buyer@example.com"
-      },
-      totals: {
-        total: "10.00"
-      }
+      id: "SHOPIER-ORDER-1"
     };
     const rawBody = JSON.stringify(payload);
     const signature = createHmac("sha256", "webhook").update(rawBody).digest("hex");
@@ -387,6 +398,34 @@ describe("shopier confirmation persistence", () => {
       supabase: expect.anything()
     });
     expect(sendPaymentConfirmedEmail).toHaveBeenCalledWith("order-id");
+    expect(retrieveShopierOrder).toHaveBeenCalledWith("SHOPIER-ORDER-1");
+  });
+
+  it("rejects a Shopier REST order when its amount does not match the noted attempt", async () => {
+    vi.mocked(retrieveShopierOrder).mockResolvedValueOnce({
+      currency: "TRY",
+      id: "SHOPIER-ORDER-1",
+      items: [{ product_id: "48021742", quantity: 1 }],
+      note: "IOH-1",
+      status: "paid",
+      total: "9.99"
+    });
+    const payload = { id: "SHOPIER-ORDER-1" };
+    const rawBody = JSON.stringify(payload);
+    const signature = createHmac("sha256", "webhook").update(rawBody).digest("hex");
+
+    await expect(
+      confirmShopierOrderCreatedWebhook({
+        event: "order.created",
+        payload,
+        rawBody,
+        signature,
+        supabase: createSuccessfulShopierWebhookSupabaseMock() as never
+      })
+    ).rejects.toThrow("Shopier REST order amount does not match payment attempt");
+
+    expect(createEntitlementsForPaidOrder).not.toHaveBeenCalled();
+    expect(sendPaymentConfirmedEmail).not.toHaveBeenCalled();
   });
 
   it("rejects Shopier webhooks with an invalid signature", async () => {

@@ -2,12 +2,26 @@ import { createHmac } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import {
   buildShopierPaymentUrl,
+  buildShopierProductUrl,
   getShopierAmountMinor,
   mapShopierStatus,
   verifyShopierCallbackSignature
 } from "@/features/checkout/shopier";
 
 describe("shopier payment helpers", () => {
+  it("adds quantity and the IOH order reference to a Shopier product URL", () => {
+    const url = new URL(
+      buildShopierProductUrl({
+        note: "IOH-20260618-TEST",
+        productUrl: "https://www.shopier.com/sametyurttas/48021742",
+        quantity: 2
+      })
+    );
+
+    expect(url.searchParams.get("quantity")).toBe("2");
+    expect(url.searchParams.get("note")).toBe("IOH-20260618-TEST");
+  });
+
   it("builds a signed hosted payment URL", () => {
     const result = buildShopierPaymentUrl({
       amountMinor: 12500,
