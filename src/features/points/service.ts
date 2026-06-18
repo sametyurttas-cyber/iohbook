@@ -123,11 +123,13 @@ export async function awardBookOrderRewardForPaidOrder(input: {
     } satisfies AwardPointsResult;
   }
 
-  const hasPhysicalBookItem = (order.order_items ?? []).some(
-    (item) => item.fulfillment_type === "physical" && getProductTypeFromOrderItem(item) === "book"
+  const hasRewardableBookItem = (order.order_items ?? []).some(
+    (item) =>
+      ["physical", "digital", "hybrid"].includes(String(item.fulfillment_type)) &&
+      getProductTypeFromOrderItem(item) === "book"
   );
 
-  if (!hasPhysicalBookItem) {
+  if (!hasRewardableBookItem) {
     return {
       applied: false,
       balance: 0,

@@ -131,6 +131,28 @@ describe("IOH points service", () => {
     });
   });
 
+  it("awards the book order reward for a digital book", async () => {
+    const supabase = createOrderLookupSupabaseMock({
+      fulfillmentType: "digital",
+      productType: "book",
+      profileId: "profile-id"
+    });
+
+    await awardBookOrderRewardForPaidOrder({
+      orderId: "order-id",
+      supabase: supabase as never
+    });
+
+    expect(supabase.rpc).toHaveBeenCalledWith(
+      "award_ioh_points",
+      expect.objectContaining({
+        p_amount: BOOK_ORDER_REWARD_POINTS,
+        p_order_id: "order-id",
+        p_reason: "book_order_reward"
+      })
+    );
+  });
+
   it("does not apply the same book order reward twice when the RPC reports an idempotent duplicate", async () => {
     const supabase = createOrderLookupSupabaseMock({
       awardRow: {
@@ -188,9 +210,9 @@ describe("IOH points service", () => {
     expect(supabase.rpc).not.toHaveBeenCalled();
   });
 
-  it("skips book order reward when the book order item is not physical", async () => {
+  it("skips book order reward for claimable book items", async () => {
     const supabase = createOrderLookupSupabaseMock({
-      fulfillmentType: "digital",
+      fulfillmentType: "claimable",
       productType: "book",
       profileId: "profile-id"
     });
