@@ -1,0 +1,45 @@
+.header {
+  min-width: 0;
+}
+
+.actions {
+  min-width: 0;
+}
+
+@media (max-width: 760px) {
+  .header {
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+
+  .actions {
+    gap: 0.4rem;
+  }
+
+  .cta {
+    padding: 0.62rem 0.85rem;
+    font-size: 0.55rem;
+    letter-spacing: 0.18em;
+  }
+
+  .collectionAction {
+    display: none;
+  }
+
+  .userName {
+    max-width: 9rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 420px) {
+  .logoText {
+    display: none;
+  }
+
+  .userName {
+    display: none;
+  }
+}

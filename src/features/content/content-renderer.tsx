@@ -30,7 +30,7 @@ function Paragraphs({ text }: { text?: string }) {
 function HeroBlock({ block }: { block: Extract<ContentBlock, { type: "hero" }> }) {
   return (
     <Section className="relative overflow-hidden pb-18 pt-12 md:pb-26 md:pt-18">
-      <Container className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+      <Container className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-start">
         <div>
           {block.eyebrow ? <Badge variant="gold">{block.eyebrow}</Badge> : null}
           <h1 className="mt-6 max-w-4xl font-display text-display-sm text-paper md:text-display-md">
@@ -53,19 +53,22 @@ function HeroBlock({ block }: { block: Extract<ContentBlock, { type: "hero" }> }
           </div>
         </div>
 
-        <div className="relative min-h-[28rem] overflow-hidden rounded-lg border border-border bg-card shadow-panel">
+        <div className="flex items-center justify-center lg:justify-end">
           {block.imageUrl ? (
-            <Image
-              alt={block.imageAlt ?? block.title}
-              className="h-full min-h-[28rem] w-full object-cover"
-              fill
-              priority
-              sizes="(min-width: 1024px) 44vw, 100vw"
-              src={block.imageUrl}
-            />
+            <div className="relative aspect-[4/5] w-full max-w-[20rem] overflow-hidden rounded-2xl border border-gold/25 shadow-glow lg:sticky lg:top-28 lg:max-w-[22rem]">
+              <Image
+                alt={block.imageAlt ?? block.title}
+                className="object-cover"
+                fill
+                priority
+                sizes="(min-width: 1024px) 352px, (min-width: 640px) 320px, 100vw"
+                src={block.imageUrl}
+              />
+              <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/50 via-transparent to-transparent" />
+            </div>
           ) : (
-            <div className="relative flex h-full min-h-[28rem] items-end overflow-hidden p-6">
-              <div className="absolute right-[-6rem] top-12 h-80 w-80 rounded-full border border-gold/40 bg-gold/10 shadow-glow" />
+            <div className="relative flex aspect-[4/5] w-full max-w-[20rem] items-end overflow-hidden rounded-2xl border border-gold/30 bg-card p-6 shadow-glow lg:max-w-[22rem]">
+              <div className="absolute right-[-6rem] top-12 h-80 w-80 rounded-full border border-gold/40 bg-gold/10" />
               <div className="absolute right-10 top-24 h-40 w-40 rounded-full border border-mist-blue/50 bg-mist-blue/10 shadow-glow-blue" />
               <div className="absolute bottom-10 left-10 h-32 w-32 rounded-full border border-burgundy-bright/50 bg-burgundy-bright/10 shadow-glow-red" />
               <p className="relative z-10 font-display text-[5rem] font-bold leading-none text-gold md:text-[7rem]">

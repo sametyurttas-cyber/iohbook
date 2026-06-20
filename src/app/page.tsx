@@ -17,7 +17,7 @@ function escapeHtml(value: string) {
 export async function generateMetadata(): Promise<Metadata> {
   return buildPageMetadata({
     description:
-      "Samet Yurttas'in yazar evreni. GODCODE, SYSGOD ve CODEWAR - kod, sistem ve savas ekseninde premium bir anlati evreni. Cekirdeginde Iohcoin.",
+      "Samet Yurttas'in yazar evreni. GODCODE, CODEWAR ve SYSGOD - kod, savas ve sistem ekseninde premium bir anlati evreni. Cekirdeginde Iohcoin.",
     path: "/",
     title: "IOH Universe - Kod, Sistem ve Savas"
   });

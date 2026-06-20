@@ -1,0 +1,1226 @@
+.page {
+  --books-bg: #05060a;
+  --books-ink: #f2efe8;
+  --books-muted: #8a8fa0;
+  --books-line: rgba(242, 239, 232, 0.14);
+  --books-gold: #e7c574;
+  min-height: 100svh;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(10, 12, 20, 0.08), rgba(2, 3, 7, 0.64)),
+    var(--books-bg);
+  color: var(--books-ink);
+  cursor: auto;
+  font-family: var(--font-display);
+  -webkit-font-smoothing: antialiased;
+}
+
+.page a,
+.page button,
+.page summary {
+  cursor: pointer;
+}
+
+.page ::selection {
+  background: var(--books-gold);
+  color: #08090d;
+}
+
+.main {
+  position: relative;
+  z-index: 5;
+}
+
+.vignette,
+.grain {
+  position: fixed;
+  pointer-events: none;
+}
+
+.vignette {
+  inset: 0;
+  z-index: 2;
+  background: radial-gradient(ellipse 90% 72% at 50% 42%, transparent 54%, rgba(2, 3, 6, 0.78) 100%);
+}
+
+.grain {
+  inset: -35%;
+  z-index: 3;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='2'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grainShift 9s steps(8) infinite;
+}
+
+@keyframes grainShift {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  25% { transform: translate3d(-3%, 2%, 0); }
+  50% { transform: translate3d(2%, -3%, 0); }
+  75% { transform: translate3d(3%, 3%, 0); }
+}
+
+.shell {
+  width: min(1180px, calc(100% - 3rem));
+  margin-inline: auto;
+}
+
+.header {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 100;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  min-height: 76px;
+  padding: 0 2rem;
+  border-bottom: 1px solid rgba(242, 239, 232, 0.08);
+  background: rgba(5, 6, 10, 0.76);
+  backdrop-filter: blur(16px);
+}
+
+.logo {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  color: var(--books-ink);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.logo strong {
+  font-size: 1.08rem;
+  letter-spacing: 0.12em;
+}
+
+.logo span,
+.desktopNav,
+.headerActions,
+.mobilePanel,
+.kicker,
+.chapterIndex,
+.tags,
+.scrollHint,
+.rail,
+.coverCaption,
+.pathCard > span,
+.pathCard > b,
+.footerBase {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+}
+
+.logo span {
+  color: var(--books-muted);
+  font-size: 0.58rem;
+  letter-spacing: 0.24em;
+}
+
+.desktopNav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.45rem;
+  min-width: 0;
+  font-size: 0.64rem;
+  letter-spacing: 0.15em;
+}
+
+.desktopNav > a,
+.discoveryMenu > summary {
+  position: relative;
+  color: var(--books-muted);
+  text-decoration: none;
+  transition: color 180ms ease;
+  white-space: nowrap;
+}
+
+.desktopNav > a::after,
+.discoveryMenu > summary::after {
+  position: absolute;
+  right: 0;
+  bottom: -9px;
+  left: 0;
+  height: 1px;
+  background: var(--books-gold);
+  content: "";
+  transform: scaleX(0);
+  transition: transform 220ms ease;
+}
+
+.desktopNav > a:hover,
+.desktopNav > a:focus-visible,
+.discoveryMenu > summary:hover,
+.discoveryMenu > summary:focus-visible,
+.desktopNav .activeNavLink {
+  color: var(--books-ink);
+}
+
+.desktopNav > a:hover::after,
+.desktopNav > a:focus-visible::after,
+.discoveryMenu > summary:hover::after,
+.discoveryMenu > summary:focus-visible::after,
+.desktopNav .activeNavLink::after {
+  transform: scaleX(1);
+}
+
+.discoveryMenu {
+  position: relative;
+}
+
+.discoveryMenu > summary {
+  list-style: none;
+}
+
+.discoveryMenu > summary::-webkit-details-marker,
+.mobileMenu > summary::-webkit-details-marker {
+  display: none;
+}
+
+.discoveryPanel {
+  position: absolute;
+  top: 30px;
+  right: -24px;
+  display: grid;
+  width: 210px;
+  padding: 0.75rem;
+  border: 1px solid var(--books-line);
+  border-radius: 8px;
+  background: rgba(7, 8, 13, 0.97);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
+}
+
+.discoveryPanel a {
+  padding: 0.75rem;
+  color: var(--books-muted);
+  text-decoration: none;
+  transition: color 180ms ease, background 180ms ease;
+}
+
+.discoveryPanel a:hover,
+.discoveryPanel a:focus-visible {
+  color: var(--books-ink);
+  background: rgba(242, 239, 232, 0.05);
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.65rem;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+}
+
+.accountLink,
+.cartLink,
+.collectionLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 0 0.9rem;
+  border: 1px solid var(--books-line);
+  border-radius: 999px;
+  color: var(--books-ink);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: border-color 180ms ease, background 180ms ease, color 180ms ease;
+}
+
+.accountLink {
+  gap: 0.6rem;
+  max-width: 190px;
+}
+
+.accountLink span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.accountLink b {
+  color: var(--books-gold);
+  font-weight: 500;
+}
+
+.accountLink:hover,
+.accountLink:focus-visible,
+.cartLink:hover,
+.cartLink:focus-visible {
+  border-color: var(--books-gold);
+}
+
+.collectionLink {
+  border-color: var(--books-gold);
+  background: var(--books-gold);
+  color: #08090d;
+}
+
+.collectionLink:hover,
+.collectionLink:focus-visible {
+  background: transparent;
+  color: var(--books-gold);
+}
+
+.mobileMenu {
+  display: none;
+  justify-self: end;
+}
+
+.mobileMenu > summary {
+  display: grid;
+  place-content: center;
+  width: 44px;
+  height: 44px;
+  gap: 5px;
+  border: 1px solid var(--books-line);
+  border-radius: 50%;
+  list-style: none;
+}
+
+.mobileMenu > summary span {
+  display: block;
+  width: 18px;
+  height: 1px;
+  background: var(--books-ink);
+}
+
+.mobilePanel {
+  position: fixed;
+  top: 76px;
+  right: 0;
+  left: 0;
+  display: grid;
+  gap: 1.5rem;
+  padding: 1.25rem 1.5rem 1.5rem;
+  border-bottom: 1px solid var(--books-line);
+  background: rgba(5, 6, 10, 0.98);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+}
+
+.mobilePanel nav {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.mobilePanel nav a,
+.mobileAccount a {
+  min-width: 0;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid rgba(242, 239, 232, 0.08);
+  color: var(--books-ink);
+  text-decoration: none;
+}
+
+.mobilePanel nav a:nth-child(odd) {
+  padding-right: 1rem;
+}
+
+.mobileAccount {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.5rem;
+}
+
+.rail {
+  position: fixed;
+  top: 50%;
+  right: 1.5rem;
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+  font-size: 0.52rem;
+  letter-spacing: 0.14em;
+  transform: translateY(-50%);
+}
+
+.rail a {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  gap: 0.65rem;
+  color: var(--books-muted);
+  text-decoration: none;
+}
+
+.rail a span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.rail a b {
+  opacity: 0;
+  font-weight: 400;
+  transform: translateX(6px);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.rail a:hover b,
+.rail a:focus-visible b,
+.rail .activeRailLink b {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.rail .activeRailLink {
+  color: var(--books-gold);
+}
+
+.kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  color: var(--books-muted);
+  font-size: 0.66rem;
+  letter-spacing: 0.2em;
+}
+
+.kicker::before {
+  width: 34px;
+  height: 1px;
+  background: var(--book-accent, var(--books-gold));
+  content: "";
+}
+
+.hero {
+  position: relative;
+  display: grid;
+  min-height: 100svh;
+  place-items: center;
+  padding: 9rem 0 5rem;
+  overflow: hidden;
+}
+
+.hero::before {
+  position: absolute;
+  inset: 76px 0 auto;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(231, 197, 116, 0.35), transparent);
+  content: "";
+}
+
+.heroHalo {
+  position: absolute;
+  inset: 18% 15% 4%;
+  border: 1px solid rgba(231, 197, 116, 0.12);
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(231, 197, 116, 0.08), transparent 62%);
+  filter: blur(1px);
+}
+
+.hero .shell {
+  position: relative;
+  text-align: center;
+}
+
+.hero .kicker {
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.heroTitle {
+  display: grid;
+  margin: 0;
+  font-size: 10rem;
+  font-weight: 500;
+  line-height: 0.74;
+}
+
+.heroTitle span {
+  color: var(--books-ink);
+}
+
+.heroTitle em {
+  color: var(--books-gold);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.74em;
+  font-weight: 400;
+}
+
+.heroLead {
+  max-width: 590px;
+  margin: 3.25rem auto 0;
+  color: var(--books-muted);
+  font-size: 1.08rem;
+  line-height: 1.8;
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-top: 2.1rem;
+}
+
+.primaryButton,
+.secondaryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50px;
+  padding: 0 1.45rem;
+  border: 1px solid var(--books-gold);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.67rem;
+  letter-spacing: 0.14em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: background 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.primaryButton {
+  background: var(--books-gold);
+  color: #08090d;
+}
+
+.secondaryButton {
+  color: var(--books-ink);
+}
+
+.primaryButton:hover,
+.primaryButton:focus-visible,
+.secondaryButton:hover,
+.secondaryButton:focus-visible {
+  transform: translateY(-2px);
+}
+
+.secondaryButton:hover,
+.secondaryButton:focus-visible {
+  background: var(--books-gold);
+  color: #08090d;
+}
+
+.scrollHint {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  display: grid;
+  justify-items: center;
+  gap: 0.7rem;
+  color: var(--books-muted);
+  font-size: 0.54rem;
+  letter-spacing: 0.22em;
+  transform: translateX(-50%);
+}
+
+.scrollHint i {
+  width: 1px;
+  height: 34px;
+  background: linear-gradient(var(--books-gold), transparent);
+}
+
+.manifesto {
+  position: relative;
+  padding: 8rem 0;
+  border-block: 1px solid rgba(242, 239, 232, 0.08);
+}
+
+.manifestoInner {
+  width: min(920px, calc(100% - 3rem));
+  margin-inline: auto;
+}
+
+.manifestoInner > p:first-child {
+  max-width: 850px;
+  margin: 0;
+  font-size: 3.9rem;
+  font-weight: 400;
+  line-height: 1.12;
+}
+
+.manifestoInner em,
+.outroCall em {
+  color: var(--books-gold);
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 400;
+}
+
+.manifestoNote {
+  max-width: 610px;
+  margin: 2rem 0 0 auto;
+  padding-left: 1.5rem;
+  border-left: 1px solid var(--books-gold);
+  color: var(--books-muted);
+  font-size: 1rem;
+  line-height: 1.8;
+}
+
+.marquee {
+  position: relative;
+  z-index: 6;
+  overflow: hidden;
+  padding: 1.15rem 0;
+  border-bottom: 1px solid rgba(242, 239, 232, 0.08);
+  color: rgba(242, 239, 232, 0.35);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  white-space: nowrap;
+}
+
+.marquee > div {
+  display: flex;
+  width: max-content;
+  animation: marqueeMove 26s linear infinite;
+}
+
+.marquee span {
+  padding-right: 2.5rem;
+}
+
+@keyframes marqueeMove {
+  to { transform: translateX(-50%); }
+}
+
+.chapter {
+  --book-accent: var(--books-gold);
+  position: relative;
+  display: grid;
+  min-height: 860px;
+  align-items: center;
+  padding: 8rem 0;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(242, 239, 232, 0.08);
+}
+
+.chapterGlow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--book-accent) 9%, transparent), transparent 42%),
+    radial-gradient(ellipse 42% 64% at 78% 48%, color-mix(in srgb, var(--book-accent) 13%, transparent), transparent 72%);
+}
+
+.chapterGhost {
+  position: absolute;
+  top: 50%;
+  left: -1.5rem;
+  color: transparent;
+  font-size: 28rem;
+  font-weight: 700;
+  line-height: 0.7;
+  opacity: 0.13;
+  -webkit-text-stroke: 1px var(--book-accent);
+  transform: translateY(-50%);
+  user-select: none;
+}
+
+.chapterGrid {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 420px);
+  align-items: center;
+  gap: 7rem;
+}
+
+.chapterCopy {
+  min-width: 0;
+  padding-left: 4.5rem;
+}
+
+.chapterIndex {
+  display: block;
+  margin-bottom: 2.5rem;
+  color: var(--book-accent);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+}
+
+.chapterTitle {
+  margin: 1.5rem 0 0;
+  font-size: 7rem;
+  font-weight: 500;
+  line-height: 0.9;
+}
+
+.chapterTitle em {
+  display: block;
+  color: var(--book-accent);
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 400;
+}
+
+.chapterLead {
+  max-width: 630px;
+  margin: 2.1rem 0 0;
+  color: var(--books-muted);
+  font-size: 1.05rem;
+  line-height: 1.8;
+}
+
+.chapterLead strong {
+  color: var(--books-ink);
+  font-weight: 500;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+}
+
+.tags li {
+  padding: 0.58rem 0.8rem;
+  border: 1px solid color-mix(in srgb, var(--book-accent) 38%, transparent);
+  border-radius: 999px;
+  color: var(--books-ink);
+  background: color-mix(in srgb, var(--book-accent) 5%, transparent);
+}
+
+.chapterLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-bottom: 0.45rem;
+  border-bottom: 1px solid var(--book-accent);
+  color: var(--books-ink);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.chapterLink span {
+  color: var(--book-accent);
+  transition: transform 180ms ease;
+}
+
+.chapterLink:hover span,
+.chapterLink:focus-visible span {
+  transform: translateX(5px);
+}
+
+.coverStage {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  color: var(--books-ink);
+  text-decoration: none;
+}
+
+.coverStage::before {
+  position: absolute;
+  inset: 12% -20% 7%;
+  z-index: -1;
+  border: 1px solid color-mix(in srgb, var(--book-accent) 30%, transparent);
+  border-radius: 50%;
+  content: "";
+  transform: rotate(-8deg);
+}
+
+.coverNumber {
+  position: absolute;
+  top: -2rem;
+  right: -0.5rem;
+  color: var(--book-accent);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+}
+
+.coverFrame {
+  position: relative;
+  width: min(100%, 370px);
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--book-accent) 34%, transparent);
+  border-radius: 4px;
+  background: #08090d;
+  box-shadow: 0 36px 90px rgba(0, 0, 0, 0.5), 0 0 60px color-mix(in srgb, var(--book-accent) 10%, transparent);
+  transition: transform 260ms ease, border-color 260ms ease;
+}
+
+.coverFrame img {
+  object-fit: cover;
+}
+
+.coverStage:hover .coverFrame,
+.coverStage:focus-visible .coverFrame {
+  border-color: var(--book-accent);
+  transform: translateY(-6px);
+}
+
+.coverFallback {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  align-content: space-between;
+  padding: 2rem;
+  background: linear-gradient(145deg, color-mix(in srgb, var(--book-accent) 16%, #05060a), #05060a 62%);
+}
+
+.coverFallback span {
+  color: var(--book-accent);
+  font-size: 3rem;
+  font-weight: 700;
+}
+
+.coverFallback strong {
+  overflow-wrap: anywhere;
+  font-size: 2.4rem;
+  line-height: 1;
+}
+
+.coverCaption {
+  margin-top: 1rem;
+  color: var(--books-muted);
+  font-size: 0.54rem;
+  letter-spacing: 0.14em;
+}
+
+.paths {
+  position: relative;
+  padding: 10rem 0;
+  background: linear-gradient(180deg, transparent, rgba(231, 197, 116, 0.035), transparent);
+}
+
+.paths h2 {
+  margin: 1.35rem 0 0;
+  font-size: 7rem;
+  font-weight: 500;
+  line-height: 0.92;
+}
+
+.pathsLead {
+  max-width: 590px;
+  margin: 1.8rem 0 0;
+  color: var(--books-muted);
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.pathGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 4rem;
+}
+
+.pathCard {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  min-height: 280px;
+  align-content: start;
+  padding: 1.8rem;
+  overflow: hidden;
+  border: 1px solid var(--books-line);
+  border-radius: 8px;
+  color: var(--books-ink);
+  text-decoration: none;
+  transition: border-color 220ms ease, transform 220ms ease, background 220ms ease;
+}
+
+.pathCard > span,
+.pathCard > b {
+  color: var(--books-gold);
+  font-size: 0.56rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+}
+
+.pathCard > b {
+  justify-self: end;
+}
+
+.pathCard h3 {
+  grid-column: 1 / -1;
+  margin: 4rem 0 0;
+  font-size: 1.65rem;
+  font-weight: 500;
+}
+
+.pathCard p {
+  grid-column: 1 / -1;
+  margin: 0.8rem 0 0;
+  color: var(--books-muted);
+  line-height: 1.7;
+}
+
+.pathCard i {
+  position: absolute;
+  right: 1.8rem;
+  bottom: 1.8rem;
+  color: var(--books-gold);
+  font-style: normal;
+}
+
+.pathCard:hover,
+.pathCard:focus-visible {
+  border-color: rgba(231, 197, 116, 0.7);
+  background: rgba(231, 197, 116, 0.04);
+  transform: translateY(-5px);
+}
+
+.outro {
+  position: relative;
+  padding: 9rem 0 0;
+  border-top: 1px solid rgba(242, 239, 232, 0.08);
+}
+
+.outroCall {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+}
+
+.outroCall h2 {
+  max-width: 900px;
+  margin: 0 0 2.5rem;
+  font-size: 5.5rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.footer {
+  margin-top: 9rem;
+  padding-top: 4rem;
+  border-top: 1px solid var(--books-line);
+}
+
+.footerGrid {
+  display: grid;
+  grid-template-columns: 2fr repeat(3, 1fr);
+  gap: 3rem;
+}
+
+.footerGrid h3 {
+  margin: 0 0 1.25rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.footerGrid a {
+  display: block;
+  width: fit-content;
+  margin: 0.7rem 0;
+  color: var(--books-muted);
+  font-size: 0.88rem;
+  text-decoration: none;
+}
+
+.footerGrid a:hover,
+.footerGrid a:focus-visible {
+  color: var(--books-gold);
+}
+
+.footerIntro p {
+  max-width: 360px;
+  color: var(--books-muted);
+  line-height: 1.75;
+}
+
+.footerMark {
+  overflow: hidden;
+  margin-top: 5rem;
+  color: rgba(242, 239, 232, 0.07);
+  font-size: 12rem;
+  font-weight: 600;
+  line-height: 0.72;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.footerBase {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 2.25rem 0;
+  border-top: 1px solid rgba(242, 239, 232, 0.08);
+  color: var(--books-muted);
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+}
+
+@media (max-width: 1180px) {
+  .desktopNav {
+    gap: 1rem;
+  }
+
+  .collectionLink,
+  .accountLink span {
+    display: none;
+  }
+
+  .accountLink {
+    max-width: none;
+  }
+
+  .chapterGrid {
+    gap: 4rem;
+  }
+
+  .chapterCopy {
+    padding-left: 2rem;
+  }
+
+  .chapterTitle {
+    font-size: 5.5rem;
+  }
+}
+
+@media (max-width: 980px) {
+  .header {
+    grid-template-columns: auto 1fr auto;
+  }
+
+  .desktopNav,
+  .headerActions {
+    display: none;
+  }
+
+  .mobileMenu {
+    display: block;
+    grid-column: 3;
+  }
+
+  .rail {
+    display: none;
+  }
+
+  .heroTitle {
+    font-size: 7rem;
+  }
+
+  .manifestoInner > p:first-child {
+    font-size: 3.1rem;
+  }
+
+  .chapter {
+    min-height: auto;
+  }
+
+  .chapterGrid {
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
+    gap: 2.5rem;
+  }
+
+  .chapterCopy {
+    padding-left: 0;
+  }
+
+  .chapterTitle {
+    font-size: 4.5rem;
+  }
+
+  .chapterGhost {
+    left: -4rem;
+    font-size: 20rem;
+  }
+
+  .paths h2 {
+    font-size: 5.5rem;
+  }
+
+  .pathGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .pathCard {
+    min-height: 240px;
+  }
+
+  .outroCall h2 {
+    font-size: 4.5rem;
+  }
+
+  .footerMark {
+    font-size: 8rem;
+  }
+}
+
+@media (max-width: 720px) {
+  .shell,
+  .manifestoInner {
+    width: min(calc(100% - 2rem), 620px);
+  }
+
+  .header {
+    min-height: 68px;
+    padding: 0 1rem;
+  }
+
+  .mobilePanel {
+    top: 68px;
+  }
+
+  .hero {
+    min-height: 760px;
+    padding: 8rem 0 5rem;
+  }
+
+  .hero::before {
+    top: 68px;
+  }
+
+  .heroHalo {
+    inset: 28% -25% 14%;
+  }
+
+  .heroTitle {
+    font-size: 4.4rem;
+    line-height: 0.78;
+  }
+
+  .heroLead {
+    margin-top: 2.5rem;
+    font-size: 0.98rem;
+  }
+
+  .heroActions {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: min(100%, 340px);
+    margin-inline: auto;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+  }
+
+  .manifesto {
+    padding: 6rem 0;
+  }
+
+  .manifestoInner > p:first-child {
+    font-size: 2.25rem;
+  }
+
+  .manifestoNote {
+    margin-top: 1.5rem;
+    padding-left: 1rem;
+    font-size: 0.92rem;
+  }
+
+  .chapter {
+    padding: 6.5rem 0;
+  }
+
+  .chapterGrid {
+    grid-template-columns: 1fr;
+    gap: 4rem;
+  }
+
+  .chapterCopy {
+    order: 2;
+  }
+
+  .coverStage {
+    order: 1;
+    width: min(78vw, 340px);
+    margin-inline: auto;
+  }
+
+  .chapterTitle {
+    font-size: 4rem;
+  }
+
+  .chapterGhost {
+    top: 42%;
+    left: -2rem;
+    font-size: 13rem;
+  }
+
+  .chapterLead {
+    font-size: 0.98rem;
+  }
+
+  .paths {
+    padding: 7rem 0;
+  }
+
+  .paths h2 {
+    font-size: 3.6rem;
+  }
+
+  .pathGrid {
+    margin-top: 2.5rem;
+  }
+
+  .outro {
+    padding-top: 7rem;
+  }
+
+  .outroCall h2 {
+    font-size: 3.25rem;
+  }
+
+  .footer {
+    margin-top: 7rem;
+  }
+
+  .footerGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2.5rem 1.5rem;
+  }
+
+  .footerIntro {
+    grid-column: 1 / -1;
+  }
+
+  .footerMark {
+    font-size: 4.2rem;
+  }
+
+  .footerBase {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 420px) {
+  .logo span {
+    display: none;
+  }
+
+  .mobilePanel nav {
+    grid-template-columns: 1fr;
+  }
+
+  .mobilePanel nav a:nth-child(odd) {
+    padding-right: 0;
+  }
+
+  .heroTitle {
+    font-size: 3.75rem;
+  }
+
+  .chapterTitle {
+    font-size: 3.35rem;
+  }
+
+  .paths h2 {
+    font-size: 3rem;
+  }
+
+  .outroCall h2 {
+    font-size: 2.65rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grain,
+  .marquee > div {
+    animation: none;
+  }
+
+  .primaryButton,
+  .secondaryButton,
+  .pathCard,
+  .coverFrame {
+    transition: none;
+  }
+}
