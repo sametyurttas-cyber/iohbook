@@ -1,8 +1,10 @@
 import Link from "next/link";
+import styles from "@/features/account/account-scene.module.css";
 
 const accountItems = [
   { href: "/account/orders", label: "Siparislerim" },
   { href: "/account/downloads", label: "Indirmelerim" },
+  { href: "/account/rewards", label: "Odullerim" },
   { href: "/account/nft-collection", label: "NFT Koleksiyonum" },
   { href: "/account/token-allocations", label: "Token Haklarim" },
   { href: "/account/wallets", label: "Cuzdanlarim" },
@@ -10,18 +12,24 @@ const accountItems = [
   { href: "/account/profile", label: "Profilim" }
 ];
 
-export function AccountNav() {
+export function AccountNav({ activePath }: { activePath: string }) {
   return (
-    <nav aria-label="Account navigation" className="flex flex-wrap gap-2">
-      {accountItems.map((item) => (
-        <Link
-          className="inline-flex min-h-11 items-center rounded-md border border-border px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:border-gold/40 hover:bg-gold/10 hover:text-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          href={item.href}
-          key={item.href}
-        >
-          {item.label}
-        </Link>
-      ))}
+    <nav aria-label="Hesap navigasyonu" className={styles.tabs}>
+      <div className={`${styles.shell} ${styles.tabsInner}`}>
+        {accountItems.map((item) => {
+          const isActive = activePath === item.href || activePath.startsWith(`${item.href}/`);
+
+          return (
+            <Link
+              className={`${styles.tab} ${isActive ? styles.tabActive : ""}`}
+              href={item.href}
+              key={item.href}
+            >
+              {item.label}
+            </Link>
+          );
+        })}
+      </div>
     </nav>
   );
 }

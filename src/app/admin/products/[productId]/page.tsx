@@ -8,6 +8,7 @@ import {
   listCollectionsForAdmin
 } from "@/features/products/queries";
 import type { ProductMedia } from "@/types/database";
+import styles from "@/features/admin/admin-scene.module.css";
 
 type ProductDetailPageProps = {
   params: Promise<{
@@ -36,97 +37,90 @@ export default async function ProductDetailPage({
   const media = (product.product_media ?? []) as ProductMediaRow[];
 
   return (
-    <main className="mx-auto grid max-w-7xl gap-6 px-6 py-10" id="main-content">
-      <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
-        <div>
-          <Link className="text-sm text-muted-foreground hover:text-gold" href="/admin/products">
-            Urunlere don
-          </Link>
-          <div className="mt-4 flex flex-wrap items-center gap-3">
-            <h1 className="font-display text-title-lg text-paper">{product.title}</h1>
-            <ProductStatusBadge status={product.status} />
-          </div>
-          <p className="mt-2 text-sm text-muted-foreground">/{product.slug}</p>
+    <main className={styles.main} id="main-content">
+      <div className={styles.detailHead}>
+        <Link className={styles.backLink} href="/admin/products">
+          ← Urunlere Don
+        </Link>
+        <div className={styles.detailTitle}>
+          {product.title}
+          <ProductStatusBadge status={product.status} />
         </div>
-        <div className="rounded-md border border-border bg-card px-4 py-3 text-sm text-muted-foreground">
-          {variants.length} varyant - {media.length} medya kaydi
-        </div>
+        <p className={styles.detailMeta}>/{product.slug} · {variants.length} varyant · {media.length} medya</p>
       </div>
 
-      {notices?.saved ? (
-        <div className="rounded-md border border-gold/30 bg-gold/10 p-3 text-sm text-gold">
-          Degisiklik kaydedildi.
-        </div>
-      ) : null}
-      {notices?.error ? (
-        <div className="rounded-md border border-burgundy-bright/30 bg-burgundy-bright/10 p-3 text-sm text-burgundy-soft">
-          Islem tamamlanamadi: {notices.error}
-        </div>
-      ) : null}
+      <div className={styles.notices} style={{ marginBottom: "1.25rem" }}>
+        {notices?.saved ? (
+          <div className={styles.noticeSuccess}>Degisiklik kaydedildi.</div>
+        ) : null}
+        {notices?.error ? (
+          <div className={styles.noticeError}>Islem tamamlanamadi: {notices.error}</div>
+        ) : null}
+      </div>
 
-      <section className="rounded-lg border border-border bg-card p-6 shadow-panel">
-        <div className="mb-6">
-          <p className="text-eyebrow uppercase text-muted-foreground">Product</p>
-          <h2 className="mt-2 font-display text-title-md text-paper">Urun bilgileri</h2>
-        </div>
-        <ProductForm collections={collections} product={product} />
-      </section>
-
-      <section className="grid gap-5">
-        <div>
-          <p className="text-eyebrow uppercase text-muted-foreground">Variants</p>
-          <h2 className="mt-2 font-display text-title-md text-paper">
-            Varyantlar ve stok
-          </h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Standart, imzali ve koleksiyon baskilari ayri SKU olarak yonetin.
-          </p>
-        </div>
-
-        {variants.map((variant) => (
-          <VariantForm key={variant.id} productId={product.id} variant={variant} />
-        ))}
-
-        <div className="rounded-lg border border-gold/30 bg-gold/5 p-1">
-          <VariantForm productId={product.id} />
-        </div>
-      </section>
-
-      <section className="grid gap-5 lg:grid-cols-[0.8fr_1.2fr]">
-        <div className="rounded-lg border border-border bg-card p-6 shadow-panel">
-          <p className="text-eyebrow uppercase text-muted-foreground">Media</p>
-          <h2 className="mt-2 font-display text-title-md text-paper">Medya yonetimi</h2>
-          <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Kapak ve galeri gorselleri public-media bucket alanina yuklenir ve
-            urun metadata kaydi olusturur.
-          </p>
-          <div className="mt-6">
-            <AdminMediaUploadForm productId={product.id} />
+      <div className={styles.grid}>
+        <section className={styles.panel}>
+          <div className={styles.panelHead}>
+            <h3 className={styles.panelTitle}>Urun Bilgileri</h3>
+            <p className={styles.kicker}>TEMEL BILGILER</p>
           </div>
-        </div>
+          <ProductForm collections={collections} product={product} />
+        </section>
 
-        <div className="rounded-lg border border-border bg-card p-6 shadow-panel">
-          <h3 className="font-display text-title-md text-paper">Medya kayitlari</h3>
-          <div className="mt-4 grid gap-3">
-            {media.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Henuz medya kaydi yok.</p>
-            ) : null}
-            {media.map((item) => (
-              <div
-                className="grid gap-2 rounded-md border border-border bg-ink-soft p-3 text-sm"
-                key={item.id}
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <span className="font-medium text-paper">{item.kind}</span>
-                  <span className="text-muted-foreground">{item.storage_bucket}</span>
-                </div>
-                <p className="break-all text-muted-foreground">{item.storage_path}</p>
-                {item.alt_text ? <p className="text-muted-foreground">{item.alt_text}</p> : null}
-              </div>
+        <section className={styles.panel}>
+          <div className={styles.sectionHead}>
+            <p className={styles.kicker}>VARYANTLAR VE STOK</p>
+            <h3 className={styles.sectionTitle}>Varyantlar</h3>
+            <p className={styles.sectionLead}>
+              Standart, imzali ve koleksiyon baskilari ayri SKU olarak yonetin.
+            </p>
+          </div>
+          <div className={styles.grid}>
+            {variants.map((variant) => (
+              <VariantForm key={variant.id} productId={product.id} variant={variant} />
             ))}
           </div>
+          <div style={{ border: "1px solid rgba(231,197,116,0.3)", borderRadius: "12px", padding: "0.5rem", background: "rgba(231,197,116,0.04)" }}>
+            <VariantForm productId={product.id} />
+          </div>
+        </section>
+
+        <div className={styles.gridLg3}>
+          <section className={styles.panel}>
+            <div className={styles.panelHead}>
+              <h3 className={styles.panelTitle}>Medya Yonetimi</h3>
+              <p className={styles.kicker}>UPLOAD</p>
+            </div>
+            <p className={styles.panelLead}>
+              Kapak ve galeri gorselleri public-media bucket alanina yuklenir ve
+              urun metadata kaydi olusturur.
+            </p>
+            <AdminMediaUploadForm productId={product.id} />
+          </section>
+
+          <section className={styles.panel}>
+            <div className={styles.panelHead}>
+              <h3 className={styles.panelTitle}>Medya Kayitlari</h3>
+              <p className={styles.kicker}>{media.length} kayit</p>
+            </div>
+            <div className={styles.grid}>
+              {media.length === 0 ? (
+                <p className={styles.sectionLead}>Henuz medya kaydi yok.</p>
+              ) : null}
+              {media.map((item) => (
+                <div className={styles.panel} key={item.id} style={{ padding: "1rem" }}>
+                  <div className={styles.panelHead} style={{ padding: 0, border: 0 }}>
+                    <span className={styles.badge + " " + styles.badgeGold}>{item.kind}</span>
+                    <span className={styles.detailMeta}>{item.storage_bucket}</span>
+                  </div>
+                  <p className={styles.detailMeta} style={{ wordBreak: "break-all" }}>{item.storage_path}</p>
+                  {item.alt_text ? <p className={styles.sectionLead}>{item.alt_text}</p> : null}
+                </div>
+              ))}
+            </div>
+          </section>
         </div>
-      </section>
+      </div>
     </main>
   );
 }

@@ -1,8 +1,7 @@
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { formatDateTime } from "@/features/account/account-utils";
 import { listAccountNftCollection } from "@/features/account/queries";
+import styles from "@/features/account/account-scene.module.css";
 
 function readSnapshotText(snapshot: Record<string, unknown> | undefined, key: string) {
   const value = snapshot?.[key];
@@ -10,10 +9,10 @@ function readSnapshotText(snapshot: Record<string, unknown> | undefined, key: st
 }
 
 function getNftStatusLabel(status: string) {
-  if (status === "active") return "Teslim edildi";
-  if (status === "pending") return "Admin onayi bekliyor";
-  if (status === "revoked") return "Iptal edildi";
-  if (status === "expired") return "Suresi doldu";
+  if (status === "active") return "Teslim Edildi";
+  if (status === "pending") return "Admin Onayi Bekliyor";
+  if (status === "revoked") return "Iptal Edildi";
+  if (status === "expired") return "Suresi Doldu";
   return status;
 }
 
@@ -21,56 +20,55 @@ export default async function AccountNftCollectionPage() {
   const items = await listAccountNftCollection();
 
   return (
-    <div className="grid gap-5">
-      <div className="max-w-3xl">
-        <h2 className="font-display text-title-lg text-paper">NFT Koleksiyonum</h2>
-        <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          Shopier veya diger provider odemesi backend tarafinda dogrulandiktan sonra
-          NFT teslimat haklari burada gorunur. Otomatik mint yoksa teslimat admin
-          onayi ile tamamlanir.
+    <div className={styles.cards}>
+      <div className={styles.contentHead}>
+        <p className={styles.kicker}>03 / NFT KOLEKSIYONUM</p>
+        <h2 className={styles.contentTitle}>Dijital Koleksiyonum</h2>
+        <p className={styles.contentLead}>
+          Shopier veya diger provider odemesi backend tarafinda dogrulandiktan
+          sonra NFT teslimat haklari burada gorunur. Otomatik mint yoksa teslimat
+          admin onayi ile tamamlanir.
         </p>
       </div>
 
       {items.length === 0 ? (
-        <div className="rounded-lg border border-border bg-card p-8 shadow-panel">
-          <h3 className="font-display text-title-md text-paper">Henuz NFT satin alimi yok</h3>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
-            NFT urunu satin aldiginizda teslimat durumu burada listelenir.
+        <div className={styles.emptyState}>
+          <div className={styles.emptyVisual}>NFT</div>
+          <h3 className={styles.emptyTitle}>Dijital koleksiyon alani henuz bos</h3>
+          <p className={styles.emptyDesc}>
+            NFT urunu satin aldiginizda teslimat durumu burada listelenir. Su anda
+            aktif mint veya satis islemi bulunmuyor.
           </p>
-          <Button asChild className="mt-6">
-            <Link href="/books">Katalogu incele</Link>
-          </Button>
+          <Link className={styles.emptyCta} href="/nft">
+            Galeriyi Incele
+          </Link>
         </div>
       ) : (
-        <div className="grid gap-3">
+        <div className={styles.cards}>
           {items.map((item) => (
-            <article
-              className="rounded-lg border border-border bg-card p-5 shadow-panel"
-              key={item.id}
-            >
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge variant={item.status === "active" ? "gold" : "outline"}>
+            <article className={styles.card} key={item.id}>
+              <div className={styles.cardTop}>
+                <span className={`${styles.badge} ${item.status === "active" ? styles.badgeGold : ""}`}>
                   {getNftStatusLabel(item.status)}
-                </Badge>
-                <Badge variant="secondary">NFT</Badge>
+                </span>
+                <span className={`${styles.badge} ${styles.badgeBlue}`}>NFT</span>
                 {item.order_items?.orders ? (
-                  <span className="text-xs text-muted-foreground">
-                    {item.order_items.orders.order_number} -{" "}
+                  <span className={styles.cardMono}>
+                    {item.order_items.orders.order_number} /{" "}
                     {formatDateTime(item.order_items.orders.created_at)}
                   </span>
                 ) : null}
               </div>
-              <h3 className="mt-3 font-display text-title-md text-paper">
+              <h3 className={styles.cardTitle}>
                 {readSnapshotText(item.order_items?.product_snapshot, "title")}
               </h3>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {readSnapshotText(item.order_items?.variant_snapshot, "title")} - SKU{" "}
-                {readSnapshotText(item.order_items?.variant_snapshot, "sku")}
+              <p className={styles.cardMono}>
+                {readSnapshotText(item.order_items?.variant_snapshot, "title")}
               </p>
               {item.status === "pending" ? (
-                <p className="mt-3 text-xs leading-5 text-muted-foreground">
-                  Teslimat icin dogrulanmis wallet gereklidir. Admin kontrolu sonrasi
-                  mint/teslimat bilgisi guncellenecek.
+                <p className={styles.cardDesc}>
+                  Teslimat icin dogrulanmis wallet gereklidir. Admin kontrolu
+                  sonrasi mint/teslimat bilgisi guncellenecek.
                 </p>
               ) : null}
             </article>

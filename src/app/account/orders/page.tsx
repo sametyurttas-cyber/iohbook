@@ -1,6 +1,4 @@
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { listAccountOrders } from "@/features/account/queries";
 import {
   formatDateTime,
@@ -8,15 +6,33 @@ import {
   ORDER_STATUS_LABELS
 } from "@/features/account/account-utils";
 import { formatMoney } from "@/features/products/product-utils";
+import styles from "@/features/account/account-scene.module.css";
+
+function statusBadgeClass(status: string) {
+  if (status === "paid" || status === "fulfilled" || status === "completed") {
+    return styles.badgeGold;
+  }
+
+  if (status === "pending_payment" || status === "draft") {
+    return styles.badgeBlue;
+  }
+
+  if (status === "cancelled" || status === "refunded") {
+    return styles.badgeRed;
+  }
+
+  return "";
+}
 
 export default async function AccountOrdersPage() {
   const orders = await listAccountOrders();
 
   return (
-    <div className="grid gap-5">
-      <div className="max-w-3xl">
-        <h2 className="font-display text-title-lg text-paper">Siparislerim</h2>
-        <p className="mt-2 text-sm leading-6 text-muted-foreground">
+    <div className={styles.cards}>
+      <div className={styles.contentHead}>
+        <p className={styles.kicker}>01 / SIPARISLERIM</p>
+        <h2 className={styles.contentTitle}>Siparis Arşivi</h2>
+        <p className={styles.contentLead}>
           Odeme ve hazirlama durumlari backend kayitlarindan gosterilir. Odeme
           yonlendirmesi basarili olsa bile backend dogrulamasi bitmeden siparis
           odendi olarak isaretlenmez.
@@ -24,44 +40,45 @@ export default async function AccountOrdersPage() {
       </div>
 
       {orders.length === 0 ? (
-        <div className="rounded-lg border border-border bg-card p-8 shadow-panel">
-          <h3 className="font-display text-title-md text-paper">Henuz siparis yok</h3>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
-            Checkout tamamlandiginda siparisleriniz odeme ve kargo durumlariyla
-            burada gorunur.
+        <div className={styles.emptyState}>
+          <div className={styles.emptyVisual}>IOH</div>
+          <h3 className={styles.emptyTitle}>Henuz siparis yok</h3>
+          <p className={styles.emptyDesc}>
+            Checkout tamamlandiginda siparisleriniz odeme ve teslimat
+            durumlariyla burada gorunur.
           </p>
-          <Button asChild className="mt-6">
-            <Link href="/books">Kitaplari incele</Link>
-          </Button>
+          <Link className={styles.emptyCta} href="/books">
+            Kitaplari Incele
+          </Link>
         </div>
       ) : (
-        <div className="grid gap-3">
+        <div className={styles.cards}>
           {orders.map((order) => (
-            <article
-              className="grid gap-4 rounded-lg border border-border bg-card p-5 shadow-panel md:grid-cols-[1fr_auto] md:items-center"
-              key={order.id}
-            >
-              <div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant="gold">{ORDER_STATUS_LABELS[order.status]}</Badge>
-                  <span className="text-xs text-muted-foreground">
-                    {formatDateTime(order.created_at)}
-                  </span>
+            <article className={styles.card} key={order.id}>
+              <div className={styles.cardRow}>
+                <div className={styles.cardMain}>
+                  <div className={styles.cardTop}>
+                    <span className={`${styles.badge} ${statusBadgeClass(order.status)}`}>
+                      {ORDER_STATUS_LABELS[order.status]}
+                    </span>
+                    <span className={styles.cardMono}>
+                      {formatDateTime(order.created_at)}
+                    </span>
+                  </div>
+                  <h3 className={styles.cardTitle}>{order.order_number}</h3>
+                  <p className={styles.cardDesc}>{ORDER_STATUS_HELP[order.status]}</p>
                 </div>
-                <h3 className="mt-3 font-display text-title-md text-paper">
-                  {order.order_number}
-                </h3>
-                <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-                  {ORDER_STATUS_HELP[order.status]}
-                </p>
-              </div>
-              <div className="flex flex-wrap items-center gap-3 md:justify-end">
-                <p className="font-display text-title-md text-gold">
-                  {formatMoney(order.total_minor, order.currency)}
-                </p>
-                <Button asChild variant="outline">
-                  <Link href={`/account/orders/${order.id}`}>Detaylari gor</Link>
-                </Button>
+                <div className={styles.cardActions}>
+                  <span className={styles.cardPrice}>
+                    {formatMoney(order.total_minor, order.currency)}
+                  </span>
+                  <Link
+                    className={`${styles.btnLink} ${styles.btnLinkGold}`}
+                    href={`/account/orders/${order.id}`}
+                  >
+                    Detaylari Gor
+                  </Link>
+                </div>
               </div>
             </article>
           ))}

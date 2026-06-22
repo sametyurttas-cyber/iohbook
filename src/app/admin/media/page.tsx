@@ -1,23 +1,54 @@
 import { AdminMediaUploadForm } from "@/features/media/admin-media-upload-form";
+import styles from "@/features/admin/admin-scene.module.css";
 
-export default function AdminMediaPage() {
+export default async function AdminMediaPage() {
   return (
-    <main className="mx-auto grid max-w-7xl gap-6 px-6 py-10 lg:grid-cols-[0.8fr_1.2fr]" id="main-content">
-      <section className="rounded-lg border border-border bg-card p-6 shadow-panel">
-        <p className="text-eyebrow uppercase text-muted-foreground">Media</p>
-        <h1 className="mt-3 font-display text-title-lg text-paper">
-          Admin media uploads
-        </h1>
-        <p className="mt-3 text-sm leading-6 text-muted-foreground">
-          Kapak, galeri ve banner gorselleri public-media bucket alanina yuklenir
-          ve product_media metadata kaydi olusturur. Urun admin ekrani henuz
-          eklenmedigi icin bu gecici yuzey product id degerini manuel alir.
-        </p>
+    <main className={styles.main} id="main-content">
+      <section className={styles.hero}>
+        <div className={styles.heroTop}>
+          <div className={styles.heroMain}>
+            <div className={styles.heroGhost} aria-hidden="true">MEDIA</div>
+            <p className={styles.kicker}>08 / MEDYA YONETIMI</p>
+            <h2 className={styles.heroTitle}>Medya Yukleme</h2>
+            <p className={styles.heroLead}>
+              Kapak, galeri ve banner gorselleri public-media bucket alanina yuklenir
+              ve product_media metadata kaydi olusturur. Urun admin ekrani henuz
+              eklenmedigi icin bu gecici yuzey product id degerini manuel alir.
+            </p>
+          </div>
+        </div>
       </section>
 
-      <section className="rounded-lg border border-border bg-card p-6 shadow-panel">
-        <AdminMediaUploadForm />
-      </section>
+      <div className={styles.grid2}>
+        <section className={styles.panel}>
+          <div className={styles.panelHead}>
+            <h3 className={styles.panelTitle}>Yukleme Alani</h3>
+            <p className={styles.kicker}>UPLOAD</p>
+          </div>
+          <AdminMediaUploadForm />
+        </section>
+
+        <section className={styles.panel}>
+          <div className={styles.panelHead}>
+            <h3 className={styles.panelTitle}>Bucket Bilgisi</h3>
+            <p className={styles.kicker}>STORAGE</p>
+          </div>
+          <p className={styles.panelLead}>
+            Yuklenen gorseller public-media bucket alaninda saklanir. Her yukleme
+            icin urun ID ve gorsel turu (cover/gallery/banner) secilmelidir.
+          </p>
+          <div className={styles.grid}>
+            <div className={styles.panel} style={{ padding: "1rem" }}>
+              <p className={styles.kicker}>BUCKET</p>
+              <p className={styles.dd}>public-media</p>
+            </div>
+            <div className={styles.panel} style={{ padding: "1rem" }}>
+              <p className={styles.kicker}>ERISIM</p>
+              <p className={styles.dd}>Public read</p>
+            </div>
+          </div>
+        </section>
+      </div>
     </main>
   );
 }

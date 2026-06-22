@@ -9,6 +9,7 @@ export type IohSceneHeaderUser = {
 const navItems = [
   { href: "/", label: "Evren" },
   { href: "/books", label: "Kitaplar" },
+  { href: "/encyclopedia", label: "Encyclopedia" },
   { href: "/token-sale", label: "Iohcoin" },
   { href: "/author", label: "Yazar Hakkinda" },
   { href: "/nft", label: "NFT Galeri" },

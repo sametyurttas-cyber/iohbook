@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { getCurrentUser, requireStaff } from "@/features/auth/queries";
 import type { StaffRole } from "@/types/database";
+import styles from "@/features/admin/admin-scene.module.css";
 
 type AdminLayoutProps = {
   children: ReactNode;
@@ -38,6 +39,11 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
       href: "/admin/users",
       label: "Kullanicilar"
     },
+    {
+      allowedRoles: ["owner", "admin_ops", "support"],
+      href: "/admin/verifications",
+      label: "Dogrulamalar"
+    },
     { href: "/admin/content", label: "Icerik" },
     { href: "/admin/media", label: "Medya" }
   ] satisfies AdminNavItem[];
@@ -46,30 +52,45 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
   );
 
   return (
-    <div className="min-h-screen bg-charcoal/40">
-      <header className="border-b border-border bg-ink px-6 py-4">
-        <div className="mx-auto flex max-w-7xl items-center justify-between">
-          <div>
-            <p className="text-eyebrow uppercase text-muted-foreground">IOH Admin</p>
-            <p className="font-display text-title-md text-paper">Operations</p>
+    <div className={styles.page}>
+      <div className={styles.bgGrid} aria-hidden="true" />
+      <div className={styles.bgGlow} aria-hidden="true" />
+
+      <header className={styles.header}>
+        <div className={styles.headerInner}>
+          <div className={styles.brand}>
+            <p className={styles.brandKicker}>IOH / Operations Center</p>
+            <h1 className={styles.brandTitle}>
+              <b>IOH</b> Admin
+            </h1>
           </div>
-          <p className="text-sm text-muted-foreground">
-            Roles: {staff.roles.join(", ")}
-          </p>
+          <div className={styles.roles}>
+            {staff.roles.map((role) => (
+              <span className={styles.roleTag} key={role}>{role}</span>
+            ))}
+          </div>
         </div>
-        <nav className="mx-auto mt-4 flex max-w-7xl flex-wrap gap-2">
+        <nav aria-label="Admin navigasyonu" className={styles.nav}>
           {visibleNavItems.map((item) => (
-            <Link
-              className="rounded-md border border-border px-3 py-2 text-sm text-muted-foreground transition-colors hover:border-gold/40 hover:text-gold"
-              href={item.href}
-              key={item.href}
-            >
+            <Link className={styles.navLink} href={item.href} key={item.href}>
               {item.label}
             </Link>
           ))}
         </nav>
       </header>
+
       {children}
+
+      <footer className={styles.footer}>
+        <div className={styles.footerInner}>
+          <div className={styles.footerMeta}>
+            <span>IOH Admin <b>v1.0</b></span>
+            <span>Kullanici: <b>{user.email}</b></span>
+            <span>Rol: <b>{staff.roles.join(", ")}</b></span>
+          </div>
+          <span className={styles.footerStatus}>Sistem Aktif</span>
+        </div>
+      </footer>
     </div>
   );
 }

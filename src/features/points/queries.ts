@@ -64,5 +64,13 @@ export function formatIohPointReason(reason: IohPointLedger["reason"]) {
     return "Admin puan ekleme";
   }
 
+  if (reason === "amazon_purchase_verification") {
+    return "Amazon satin alma dogrulamasi";
+  }
+
+  if (reason === "amazon_review_verification") {
+    return "Amazon yorum dogrulamasi";
+  }
+
   return "Admin puan dusme";
 }

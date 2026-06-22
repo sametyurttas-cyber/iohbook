@@ -5,6 +5,7 @@ import { absoluteUrl } from "@/lib/seo";
 const staticRoutes = [
   { path: "/", priority: 1 },
   { path: "/books", priority: 0.9 },
+  { path: "/encyclopedia", priority: 0.8 },
   { path: "/author", priority: 0.75 },
   { path: "/collections", priority: 0.65 },
   { path: "/nft", priority: 0.45 },

@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -10,6 +9,7 @@ import {
 import { updateNftFulfillmentStatus } from "@/features/nft/admin-actions";
 import { listAdminNftOrders } from "@/features/nft/admin-queries";
 import { formatMoney } from "@/features/products/product-utils";
+import styles from "@/features/admin/admin-scene.module.css";
 
 function readSnapshotText(snapshot: Record<string, unknown> | undefined, key: string) {
   const value = snapshot?.[key];
@@ -20,72 +20,87 @@ export default async function AdminNftOrdersPage() {
   const rows = await listAdminNftOrders();
 
   return (
-    <div className="grid gap-6">
-      <div>
-        <p className="text-eyebrow uppercase text-muted-foreground">NFT operations</p>
-        <h1 className="mt-3 font-display text-title-lg text-paper">NFT siparisleri</h1>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">
-          Odeme backend tarafinda dogrulansa bile NFT teslimati dogrulanmis wallet
-          olmadan aktif edilemez. Bu ekran manual fulfillment/mint takibi icindir.
-        </p>
-      </div>
+    <main className={styles.main} id="main-content">
+      <section className={styles.hero}>
+        <div className={styles.heroTop}>
+          <div className={styles.heroMain}>
+            <div className={styles.heroGhost} aria-hidden="true">NFT</div>
+            <p className={styles.kicker}>04 / NFT OPERASYONLARI</p>
+            <h2 className={styles.heroTitle}>NFT Siparisleri</h2>
+            <p className={styles.heroLead}>
+              Odeme backend tarafinda dogrulansa bile NFT teslimati dogrulanmis wallet
+              olmadan aktif edilemez. Bu ekran manual fulfillment/mint takibi icindir.
+            </p>
+          </div>
+          <div className={styles.heroActions}>
+            <span className={styles.statPill}>Toplam <b>{rows.length}</b> siparis</span>
+          </div>
+        </div>
+      </section>
 
-      <div className="grid gap-4">
+      <div className={styles.grid}>
         {rows.length === 0 ? (
-          <div className="rounded-lg border border-border bg-card p-8 text-sm text-muted-foreground shadow-panel">
-            NFT siparisi yok.
+          <div className={styles.emptyState}>
+            <div className={styles.emptyVisual}>NFT</div>
+            <h3 className={styles.emptyTitle}>NFT siparisi yok</h3>
+            <p className={styles.emptyDesc}>
+              Henuz NFT teslimat hakki bulunmuyor.
+            </p>
           </div>
         ) : null}
+
         {rows.map((row) => {
           const order = row.order_items?.orders;
           const payment = order?.payment_attempts?.[0];
           const wallets = order?.user_wallets ?? [];
 
           return (
-            <article className="rounded-lg border border-border bg-card p-5 shadow-panel" key={row.id}>
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Badge variant={row.status === "active" ? "gold" : "outline"}>
-                      {row.status}
-                    </Badge>
-                    <Badge variant="secondary">{payment?.provider ?? "provider yok"}</Badge>
-                    <Badge variant="outline">{payment?.status ?? "odeme yok"}</Badge>
-                  </div>
-                  <h2 className="mt-3 font-display text-title-md text-paper">
-                    {readSnapshotText(row.order_items?.product_snapshot, "title")}
-                  </h2>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {readSnapshotText(row.order_items?.variant_snapshot, "title")} -{" "}
-                    {order?.order_number ?? "order yok"}
-                  </p>
+            <article className={styles.panel} key={row.id}>
+              <div className={styles.panelHead}>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center" }}>
+                  <span className={styles.badge + " " + (row.status === "active" ? styles.badgeGold : "")}>
+                    {row.status}
+                  </span>
+                  <span className={styles.badge + " " + styles.badgeBlue}>
+                    {payment?.provider ?? "provider yok"}
+                  </span>
+                  <span className={styles.badge}>{payment?.status ?? "odeme yok"}</span>
                 </div>
-                <div className="text-right text-sm">
-                  <p className="text-paper">
-                    {order ? formatMoney(order.total_minor, order.currency) : "-"}
-                  </p>
-                  <p className="mt-1 text-muted-foreground">{order?.customer_email ?? "-"}</p>
+                <div style={{ textAlign: "right" }}>
+                  <p className={styles.ddGold}>{order ? formatMoney(order.total_minor, order.currency) : "-"}</p>
+                  <p className={styles.detailMeta}>{order?.customer_email ?? "-"}</p>
                 </div>
               </div>
 
-              <div className="mt-4 grid gap-4 border-t border-border pt-4 md:grid-cols-2">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">
-                    Wallet
-                  </p>
+              <div>
+                <h3 className={styles.panelTitle} style={{ fontSize: "1.3rem" }}>
+                  {readSnapshotText(row.order_items?.product_snapshot, "title")}
+                </h3>
+                <p className={styles.sectionLead}>
+                  {readSnapshotText(row.order_items?.variant_snapshot, "title")} ·{" "}
+                  {order?.order_number ?? "order yok"}
+                </p>
+              </div>
+
+              <div className={styles.grid2}>
+                <div className={styles.section}>
+                  <p className={styles.kicker}>WALLET</p>
                   {wallets.length === 0 ? (
-                    <p className="mt-2 text-sm text-burgundy-soft">Dogrulanmis wallet yok</p>
+                    <p className={styles.sectionLead} style={{ color: "var(--ad-red)" }}>
+                      Dogrulanmis wallet yok
+                    </p>
                   ) : (
-                    <div className="mt-2 grid gap-2">
+                    <div className={styles.grid}>
                       {wallets.map((wallet) => (
-                        <p className="break-all font-mono text-xs text-paper" key={wallet.id}>
+                        <p key={wallet.id} className={styles.detailMeta} style={{ wordBreak: "break-all", fontFamily: "var(--font-mono)", fontSize: "0.78rem" }}>
                           {wallet.normalized_address} {wallet.is_primary ? "(primary)" : ""}
                         </p>
                       ))}
                     </div>
                   )}
                 </div>
-                <form action={updateNftFulfillmentStatus} className="grid gap-3">
+
+                <form action={updateNftFulfillmentStatus} className={styles.formGrid}>
                   <input name="entitlement_id" type="hidden" value={row.id} />
                   <Select defaultValue={row.status} name="status">
                     <SelectTrigger>
@@ -97,13 +112,13 @@ export default async function AdminNftOrdersPage() {
                       <SelectItem value="revoked">Iptal edildi</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Button type="submit">Durumu guncelle</Button>
+                  <Button type="submit">Durumu Guncelle</Button>
                 </form>
               </div>
             </article>
           );
         })}
       </div>
-    </div>
+    </main>
   );
 }

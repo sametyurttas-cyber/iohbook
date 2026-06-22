@@ -1,32 +1,32 @@
 import type { OrderStatus, ShipmentStatus } from "@/types/database";
 
 export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
-  cancelled: "Cancelled",
-  completed: "Completed",
-  draft: "Draft",
-  fulfilled: "Fulfilled",
-  paid: "Paid",
-  pending_payment: "Waiting for payment",
-  refunded: "Refunded"
+  cancelled: "Iptal",
+  completed: "Tamamlandi",
+  draft: "Taslak",
+  fulfilled: "Hazirlandi",
+  paid: "Odendi",
+  pending_payment: "Odeme Bekliyor",
+  refunded: "Iade Edildi"
 };
 
 export const ORDER_STATUS_HELP: Record<OrderStatus, string> = {
-  cancelled: "This order was cancelled. If this looks wrong, contact support with your order number.",
-  completed: "Delivery and post-order processing are complete.",
-  draft: "This order was started but payment has not been initialized yet.",
-  fulfilled: "Your order has been handed to fulfillment or the carrier.",
-  paid: "Payment is confirmed. The order is waiting for fulfillment.",
-  pending_payment: "Payment has started but is not confirmed yet. We verify provider responses on the backend.",
-  refunded: "This order has a refund record. Bank/provider settlement timing may vary."
+  cancelled: "Bu siparis iptal edildi. Hatali gorunuyorsa destek ekibine siparis numaranizla basvurun.",
+  completed: "Teslimat ve siparis sonrasi sureclar tamamlandi.",
+  draft: "Siparis baslatildi ama odeme henuz baslatilmadi.",
+  fulfilled: "Siparisiniz hazirliga veya kargoya devredildi.",
+  paid: "Odeme dogrulandi. Siparis hazirlama bekliyor.",
+  pending_payment: "Odeme baslatildi ama henuz dogrulanmadi. Provider yanitlari backend tarafinda kontrol edilir.",
+  refunded: "Bu sipariste iade kaydi var. Banka/provider odeme suresi farkli olabilir."
 };
 
 export const SHIPMENT_STATUS_LABELS: Record<ShipmentStatus, string> = {
-  cancelled: "Cancelled",
-  delivered: "Delivered",
-  pending: "Pending",
-  preparing: "Preparing",
-  returned: "Returned",
-  shipped: "Shipped"
+  cancelled: "Iptal",
+  delivered: "Teslim Edildi",
+  pending: "Beklemede",
+  preparing: "Hazirlaniyor",
+  returned: "Iade Edildi",
+  shipped: "Gonderildi"
 };
 
 export function formatDateTime(value: string | null) {
@@ -34,7 +34,7 @@ export function formatDateTime(value: string | null) {
     return "-";
   }
 
-  return new Intl.DateTimeFormat("en", {
+  return new Intl.DateTimeFormat("tr", {
     dateStyle: "medium",
     timeStyle: "short"
   }).format(new Date(value));
@@ -56,3 +56,10 @@ export function formatAddressLines(address: {
   ].filter(Boolean);
 }
 
+export function shortenWalletAddress(address: string) {
+  if (address.length <= 12) {
+    return address;
+  }
+
+  return `${address.slice(0, 6)}...${address.slice(-4)}`;
+}

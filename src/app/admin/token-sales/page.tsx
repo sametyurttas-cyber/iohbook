@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -12,73 +11,100 @@ import { updateTokenAllocation } from "@/features/token-sale/actions";
 import { listTokenAllocationsForAdmin } from "@/features/token-sale/queries";
 import { formatMoney } from "@/features/products/product-utils";
 import { formatTokenAmount } from "@/features/token-sale/utils";
+import styles from "@/features/admin/admin-scene.module.css";
+
+function badgeClassForStatus(status: string) {
+  if (status === "sent") return styles.badgeGold;
+  if (status === "approved") return styles.badgeBlue;
+  if (status === "cancelled" || status === "refunded") return styles.badgeRed;
+  return "";
+}
 
 export default async function AdminTokenSalesPage() {
   const allocations = await listTokenAllocationsForAdmin();
 
   return (
-    <div className="grid gap-6">
-      <div>
-        <p className="text-eyebrow uppercase text-muted-foreground">Token operations</p>
-        <h1 className="mt-3 font-display text-title-lg text-paper">Token satislari</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Otomatik transfer yok. Admin manuel gonderim durumunu ve transaction hash alanini yonetir.
-        </p>
-      </div>
+    <main className={styles.main} id="main-content">
+      <section className={styles.hero}>
+        <div className={styles.heroTop}>
+          <div className={styles.heroMain}>
+            <div className={styles.heroGhost} aria-hidden="true">ALLOC</div>
+            <p className={styles.kicker}>06 / TOKEN SATISLARI</p>
+            <h2 className={styles.heroTitle}>Token Satislari</h2>
+            <p className={styles.heroLead}>
+              Otomatik transfer yok. Admin manuel gonderim durumunu ve transaction
+              hash alanini yonetir.
+            </p>
+          </div>
+          <div className={styles.heroActions}>
+            <span className={styles.statPill}>Toplam <b>{allocations.length}</b> allocation</span>
+          </div>
+        </div>
+      </section>
 
-      <div className="grid gap-4">
+      <div className={styles.grid}>
         {allocations.map((allocation) => (
-          <article className="rounded-lg border border-border bg-card p-5 shadow-panel" key={allocation.id}>
-            <div className="flex flex-wrap items-start justify-between gap-4">
+          <article className={styles.panel} key={allocation.id}>
+            <div className={styles.panelHead}>
               <div>
-                <div className="flex flex-wrap gap-2">
-                  <Badge variant={allocation.status === "sent" ? "gold" : "outline"}>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginBottom: "0.5rem" }}>
+                  <span className={styles.badge + " " + badgeClassForStatus(allocation.status)}>
                     {allocation.status}
-                  </Badge>
-                  <Badge variant="secondary">{allocation.token_symbol}</Badge>
-                  <Badge variant="outline">{allocation.orders?.payment_attempts?.[0]?.status ?? "odeme yok"}</Badge>
+                  </span>
+                  <span className={styles.badge + " " + styles.badgeBlue}>{allocation.token_symbol}</span>
+                  <span className={styles.badge}>
+                    {allocation.orders?.payment_attempts?.[0]?.status ?? "odeme yok"}
+                  </span>
                 </div>
-                <h2 className="mt-3 font-display text-title-md text-paper">
+                <h3 className={styles.panelTitle} style={{ fontSize: "1.3rem" }}>
                   {allocation.token_sale_campaigns?.title ?? "Token kampanyasi"}
-                </h2>
-                <p className="mt-1 break-all font-mono text-xs text-muted-foreground">
+                </h3>
+                <p className={styles.detailMeta} style={{ wordBreak: "break-all", fontFamily: "var(--font-mono)" }}>
                   {allocation.normalized_address}
                 </p>
               </div>
-              <div className="text-right text-sm">
-                <p className="text-paper">
+              <div style={{ textAlign: "right" }}>
+                <p className={styles.ddGold}>
                   {formatTokenAmount(allocation.total_amount)} {allocation.token_symbol}
                 </p>
-                <p className="mt-1 text-muted-foreground">
+                <p className={styles.detailMeta}>
                   {formatMoney(allocation.total_price_minor, allocation.currency)}
                 </p>
               </div>
             </div>
 
-            <form action={updateTokenAllocation} className="mt-5 grid gap-3 border-t border-border pt-5 md:grid-cols-[1fr_2fr_auto]">
+            <form action={updateTokenAllocation} className={styles.formGrid}>
               <input name="allocation_id" type="hidden" value={allocation.id} />
-              <Select defaultValue={allocation.status} name="status">
-                <SelectTrigger>
-                  <SelectValue placeholder="Allocation durumu" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="approved">Approved</SelectItem>
-                  <SelectItem value="sent">Sent</SelectItem>
-                  <SelectItem value="cancelled">Cancelled</SelectItem>
-                  <SelectItem value="refunded">Refunded</SelectItem>
-                </SelectContent>
-              </Select>
-              <Input
-                defaultValue={allocation.manual_transfer_tx_hash ?? ""}
-                name="manual_transfer_tx_hash"
-                placeholder="Transaction hash (sent icin zorunlu)"
-              />
-              <Button type="submit">Guncelle</Button>
+              <div className={styles.formGrid3} style={{ gridTemplateColumns: "1fr 2fr auto", alignItems: "end" }}>
+                <label className={styles.formLabel}>
+                  <span className={styles.formLabelText}>Durum</span>
+                  <Select defaultValue={allocation.status} name="status">
+                    <SelectTrigger>
+                      <SelectValue placeholder="Allocation durumu" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="approved">Approved</SelectItem>
+                      <SelectItem value="sent">Sent</SelectItem>
+                      <SelectItem value="cancelled">Cancelled</SelectItem>
+                      <SelectItem value="refunded">Refunded</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </label>
+                <label className={styles.formLabel}>
+                  <span className={styles.formLabelText}>Transaction Hash</span>
+                  <Input
+                    defaultValue={allocation.manual_transfer_tx_hash ?? ""}
+                    name="manual_transfer_tx_hash"
+                    placeholder="Transaction hash (sent icin zorunlu)"
+                  />
+                </label>
+                <Button type="submit">Guncelle</Button>
+              </div>
             </form>
           </article>
         ))}
       </div>
-    </div>
+    </main>
   );
 }

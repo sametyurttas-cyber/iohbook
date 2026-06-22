@@ -220,27 +220,38 @@ function BooksIndexPaths() {
   );
 }
 
-export function BooksIndexFooter() {
+export function BooksIndexFooter({ context = "books" }: { context?: "books" | "encyclopedia" }) {
+  const isEncyclopedia = context === "encyclopedia";
+
   return (
     <section className={styles.outro}>
       <div className={styles.shell}>
         <div className={styles.outroCall}>
           <h2>
-            Kitaplar <em>evrenin</em> ilk dijital kapisidir.
+            {isEncyclopedia ? (
+              <>Arsiv her kayitta <em>biraz daha buyur.</em></>
+            ) : (
+              <>Kitaplar <em>evrenin</em> ilk dijital kapisidir.</>
+            )}
           </h2>
-          <Link className={styles.primaryButton} href="/cart">
-            Sepete git
+          <Link className={styles.primaryButton} href={isEncyclopedia ? "/books" : "/cart"}>
+            {isEncyclopedia ? "Kitaplara don" : "Sepete git"}
           </Link>
         </div>
         <footer className={styles.footer}>
           <div className={styles.footerGrid}>
             <div className={styles.footerIntro}>
               <h3>IOH Universe</h3>
-              <p>Samet Yurttas kitap evreninin karanlik ve kozmik katalog deneyimi.</p>
+              <p>
+                {isEncyclopedia
+                  ? "IOH Universe karakterleri, sehirleri ve sistemleri icin resmi evren arsivi."
+                  : "Samet Yurttas kitap evreninin karanlik ve kozmik katalog deneyimi."}
+              </p>
             </div>
             <div>
               <h3>Evren</h3>
               <Link href="/books">Kitaplar</Link>
+              <Link href="/encyclopedia">Encyclopedia</Link>
               <Link href="/collections">Koleksiyonlar</Link>
               <Link href="/author">Yazar Hakkinda</Link>
             </div>
@@ -258,11 +269,11 @@ export function BooksIndexFooter() {
             </div>
           </div>
           <div className={styles.footerMark} aria-hidden="true">
-            IOH Books
+            {isEncyclopedia ? "IOH Archive" : "IOH Books"}
           </div>
           <div className={styles.footerBase}>
             <p>(c) 2026 IOH Universe / Samet Yurttas</p>
-            <p>Books / System / Conflict</p>
+            <p>{isEncyclopedia ? "Archive / Systems / Memory" : "Books / System / Conflict"}</p>
           </div>
         </footer>
       </div>

@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,102 +12,178 @@ import { createTokenCampaign, createTokenPackage } from "@/features/token-sale/a
 import { listTokenCampaignsForAdmin } from "@/features/token-sale/queries";
 import { formatMoney } from "@/features/products/product-utils";
 import { formatTokenAmount } from "@/features/token-sale/utils";
+import styles from "@/features/admin/admin-scene.module.css";
 
 export default async function AdminTokenCampaignsPage() {
   const campaigns = await listTokenCampaignsForAdmin();
 
   return (
-    <div className="grid gap-6">
-      <div>
-        <p className="text-eyebrow uppercase text-muted-foreground">Token sale</p>
-        <h1 className="mt-3 font-display text-title-lg text-paper">Token kampanyalari</h1>
-      </div>
-
-      <form action={createTokenCampaign} className="grid gap-4 rounded-lg border border-border bg-card p-5 shadow-panel">
-        <h2 className="font-display text-title-md text-paper">Yeni kampanya</h2>
-        <div className="grid gap-4 md:grid-cols-2">
-          <Input name="title" placeholder="Kampanya adi" required />
-          <Input name="slug" placeholder="slug" />
-          <Input name="token_symbol" placeholder="TOKEN sembolu" required />
-          <Input name="total_sale_limit" placeholder="Toplam satis limiti" required />
-          <Input name="per_user_limit" placeholder="Kisi basi limit" />
-          <Input name="price" placeholder="Birim fiyat" required />
-          <Input name="currency" placeholder="USD" defaultValue="USD" />
-          <Input name="bonus_bps" placeholder="Bonus bps: 1000 = %10" defaultValue="0" />
-          <Input name="starts_at" type="datetime-local" />
-          <Input name="ends_at" type="datetime-local" />
+    <main className={styles.main} id="main-content">
+      <section className={styles.hero}>
+        <div className={styles.heroTop}>
+          <div className={styles.heroMain}>
+            <div className={styles.heroGhost} aria-hidden="true">CAMPAIGN</div>
+            <p className={styles.kicker}>05 / TOKEN KAMPANYALARI</p>
+            <h2 className={styles.heroTitle}>Token Kampanyalari</h2>
+            <p className={styles.heroLead}>
+              IOHcoin kampanya ve paket yonetimi. Yeni kampanya olustur, paket ekle,
+              satis ve yayin durumunu yonet.
+            </p>
+          </div>
+          <div className={styles.heroActions}>
+            <span className={styles.statPill}>Toplam <b>{campaigns.length}</b> kampanya</span>
+          </div>
         </div>
-        <Textarea name="description" placeholder="Aciklama" />
-        <Select defaultValue="draft" name="status">
-          <SelectTrigger>
-            <SelectValue placeholder="Durum" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="draft">Taslak</SelectItem>
-            <SelectItem value="active">Aktif</SelectItem>
-            <SelectItem value="paused">Duraklatildi</SelectItem>
-            <SelectItem value="ended">Bitti</SelectItem>
-          </SelectContent>
-        </Select>
-        <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-          <label className="flex items-center gap-2">
-            <input className="h-4 w-4 accent-gold" name="legal_approved" type="checkbox" />
-            Yasal/uyum onayi alindi
-          </label>
-          <label className="flex items-center gap-2">
-            <input className="h-4 w-4 accent-gold" name="sales_enabled" type="checkbox" />
-            Satisi aktif et
-          </label>
-        </div>
-        <Button type="submit">Kampanya olustur</Button>
-      </form>
+      </section>
 
-      <div className="grid gap-4">
-        {campaigns.map((campaign) => (
-          <section className="rounded-lg border border-border bg-card p-5 shadow-panel" key={campaign.id}>
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <div>
-                <div className="flex flex-wrap gap-2">
-                  <Badge variant={campaign.sales_enabled ? "gold" : "outline"}>{campaign.status}</Badge>
-                  <Badge variant="secondary">{campaign.token_symbol}</Badge>
-                </div>
-                <h2 className="mt-3 font-display text-title-md text-paper">{campaign.title}</h2>
-                <p className="mt-1 text-sm text-muted-foreground">{campaign.description}</p>
-              </div>
-              <div className="text-right text-sm text-muted-foreground">
-                <p>{formatMoney(campaign.price_minor, campaign.currency)}</p>
-                <p>Limit: {formatTokenAmount(campaign.total_sale_limit)}</p>
-              </div>
-            </div>
+      <div className={styles.grid}>
+        <form action={createTokenCampaign} className={styles.panel}>
+          <div className={styles.panelHead}>
+            <h3 className={styles.panelTitle}>Yeni Kampanya</h3>
+            <p className={styles.kicker}>TEMEL BILGILER</p>
+          </div>
 
-            <form action={createTokenPackage} className="mt-5 grid gap-3 border-t border-border pt-5 md:grid-cols-6">
-              <input name="campaign_id" type="hidden" value={campaign.id} />
-              <Input className="md:col-span-2" name="title" placeholder="Paket adi" required />
-              <Input name="token_amount" placeholder="Token miktari" required />
-              <Input name="price" placeholder="Fiyat" required />
-              <Input name="currency" placeholder={campaign.currency} defaultValue={campaign.currency} />
-              <Input name="max_quantity_per_order" placeholder="Max adet" />
-              <Input name="sort_order" placeholder="Sira" defaultValue="0" />
-              <label className="flex items-center gap-2 text-sm text-muted-foreground">
-                <input className="h-4 w-4 accent-gold" defaultChecked name="active" type="checkbox" />
-                Aktif
+          <div className={styles.formGrid}>
+            <div className={styles.formGrid2}>
+              <label className={styles.formLabel}>
+                <span className={styles.formLabelText}>Kampanya Adi</span>
+                <Input name="title" placeholder="Kampanya adi" required />
               </label>
-              <Button className="md:col-span-2" type="submit">Paket ekle</Button>
-            </form>
-
-            <div className="mt-4 grid gap-2">
-              {campaign.token_sale_packages.map((pkg) => (
-                <div className="flex justify-between rounded-md border border-border bg-ink-soft p-3 text-sm" key={pkg.id}>
-                  <span className="text-paper">{pkg.title}</span>
-                  <span className="text-muted-foreground">
-                    {formatTokenAmount(pkg.token_amount)} {campaign.token_symbol} - {formatMoney(pkg.price_minor, pkg.currency)}
-                  </span>
-                </div>
-              ))}
+              <label className={styles.formLabel}>
+                <span className={styles.formLabelText}>Slug</span>
+                <Input name="slug" placeholder="slug" />
+              </label>
             </div>
-          </section>
-        ))}
+
+            <div className={styles.formGrid3}>
+              <label className={styles.formLabel}>
+                <span className={styles.formLabelText}>TOKEN Sembolu</span>
+                <Input name="token_symbol" placeholder="IOH" required />
+              </label>
+              <label className={styles.formLabel}>
+                <span className={styles.formLabelText}>Birim Fiyat</span>
+                <Input name="price" placeholder="10" required />
+              </label>
+              <label className={styles.formLabel}>
+                <span className={styles.formLabelText}>Para Birimi</span>
+                <Input name="currency" placeholder="USD" defaultValue="USD" />
+              </label>
+            </div>
+
+            <div className={styles.formGrid3}>
+              <label className={styles.formLabel}>
+                <span className={styles.formLabelText}>Toplam Satis Limiti</span>
+                <Input name="total_sale_limit" placeholder="1000000" required />
+              </label>
+              <label className={styles.formLabel}>
+                <span className={styles.formLabelText}>Kisi Basi Limit</span>
+                <Input name="per_user_limit" placeholder="1000" />
+              </label>
+              <label className={styles.formLabel}>
+                <span className={styles.formLabelText}>Bonus (bps: 1000 = %10)</span>
+                <Input name="bonus_bps" placeholder="0" defaultValue="0" />
+              </label>
+            </div>
+
+            <div className={styles.formGrid2}>
+              <label className={styles.formLabel}>
+                <span className={styles.formLabelText}>Baslangic</span>
+                <Input name="starts_at" type="datetime-local" />
+              </label>
+              <label className={styles.formLabel}>
+                <span className={styles.formLabelText}>Bitis</span>
+                <Input name="ends_at" type="datetime-local" />
+              </label>
+            </div>
+
+            <label className={styles.formLabel}>
+              <span className={styles.formLabelText}>Aciklama</span>
+              <Textarea name="description" placeholder="Aciklama" />
+            </label>
+
+            <label className={styles.formLabel}>
+              <span className={styles.formLabelText}>Durum</span>
+              <Select defaultValue="draft" name="status">
+                <SelectTrigger>
+                  <SelectValue placeholder="Durum" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="draft">Taslak</SelectItem>
+                  <SelectItem value="active">Aktif</SelectItem>
+                  <SelectItem value="paused">Duraklatildi</SelectItem>
+                  <SelectItem value="ended">Bitti</SelectItem>
+                </SelectContent>
+              </Select>
+            </label>
+
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
+              <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--ad-muted)", fontSize: "0.85rem" }}>
+                <input className="h-4 w-4" style={{ accentColor: "var(--ad-gold)" }} name="legal_approved" type="checkbox" />
+                Yasal/uyum onayi alindi
+              </label>
+              <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--ad-muted)", fontSize: "0.85rem" }}>
+                <input className="h-4 w-4" style={{ accentColor: "var(--ad-gold)" }} name="sales_enabled" type="checkbox" />
+                Satisi aktif et
+              </label>
+            </div>
+
+            <Button type="submit">Kampanya Olustur</Button>
+          </div>
+        </form>
+
+        <div className={styles.grid}>
+          {campaigns.map((campaign) => (
+            <section className={styles.panel} key={campaign.id}>
+              <div className={styles.panelHead}>
+                <div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginBottom: "0.5rem" }}>
+                    <span className={styles.badge + " " + (campaign.sales_enabled ? styles.badgeGold : "")}>
+                      {campaign.status}
+                    </span>
+                    <span className={styles.badge + " " + styles.badgeBlue}>{campaign.token_symbol}</span>
+                  </div>
+                  <h3 className={styles.panelTitle} style={{ fontSize: "1.3rem" }}>{campaign.title}</h3>
+                  <p className={styles.sectionLead}>{campaign.description}</p>
+                </div>
+                <div style={{ textAlign: "right" }}>
+                  <p className={styles.ddGold}>{formatMoney(campaign.price_minor, campaign.currency)}</p>
+                  <p className={styles.detailMeta}>Limit: {formatTokenAmount(campaign.total_sale_limit)}</p>
+                </div>
+              </div>
+
+              <form action={createTokenPackage} className={styles.formGrid}>
+                <input name="campaign_id" type="hidden" value={campaign.id} />
+                <div className={styles.formGrid3}>
+                  <Input name="title" placeholder="Paket adi" required />
+                  <Input name="token_amount" placeholder="Token miktari" required />
+                  <Input name="price" placeholder="Fiyat" required />
+                </div>
+                <div className={styles.formGrid3}>
+                  <Input name="currency" placeholder={campaign.currency} defaultValue={campaign.currency} />
+                  <Input name="max_quantity_per_order" placeholder="Max adet" />
+                  <Input name="sort_order" placeholder="Sira" defaultValue="0" />
+                </div>
+                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--ad-muted)", fontSize: "0.85rem" }}>
+                  <input className="h-4 w-4" style={{ accentColor: "var(--ad-gold)" }} defaultChecked name="active" type="checkbox" />
+                  Aktif
+                </label>
+                <Button type="submit">Paket Ekle</Button>
+              </form>
+
+              <div className={styles.grid}>
+                {campaign.token_sale_packages.map((pkg) => (
+                  <div className={styles.panel} key={pkg.id} style={{ padding: "0.85rem 1rem", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "1rem" }}>
+                    <span className={styles.dd}>{pkg.title}</span>
+                    <span className={styles.detailMeta}>
+                      {formatTokenAmount(pkg.token_amount)} {campaign.token_symbol} · {formatMoney(pkg.price_minor, pkg.currency)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </section>
+          ))}
+        </div>
       </div>
-    </div>
+    </main>
   );
 }

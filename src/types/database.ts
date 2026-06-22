@@ -118,7 +118,63 @@ export type IohPointsReason =
   | "signup_bonus"
   | "book_order_reward"
   | "manual_adjustment_credit"
-  | "manual_adjustment_debit";
+  | "manual_adjustment_debit"
+  | "amazon_purchase_verification"
+  | "amazon_review_verification";
+
+export type SubmissionKind = "amazon_purchase" | "amazon_review" | "general_message";
+
+export type SubmissionStatus =
+  | "pending"
+  | "under_review"
+  | "approved"
+  | "rejected"
+  | "responded"
+  | "closed";
+
+export type VerificationSubmission = {
+  id: string;
+  profile_id: string;
+  kind: SubmissionKind;
+  book_slug: string | null;
+  title: string;
+  body: string | null;
+  amazon_order_id: string | null;
+  amazon_review_url: string | null;
+  amazon_profile_name: string | null;
+  status: SubmissionStatus;
+  reward_amount: number;
+  reward_reason: string | null;
+  reward_ledger_id: string | null;
+  rewarded_at: string | null;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  admin_notes: string | null;
+  rejection_reason: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type SubmissionReply = {
+  id: string;
+  submission_id: string;
+  profile_id: string;
+  is_staff: boolean;
+  body: string;
+  created_at: string;
+};
+
+export type VerificationAttachment = {
+  id: string;
+  submission_id: string;
+  profile_id: string;
+  bucket: string;
+  path: string;
+  file_name: string;
+  mime_type: string;
+  size_bytes: number;
+  created_at: string;
+};
 
 export type Web3Network = {
   chain_id: number;
@@ -778,6 +834,30 @@ export type Database = {
         Update: Partial<IohPointLedger>;
         Relationships: [];
       };
+      verification_submissions: {
+        Row: VerificationSubmission;
+        Insert: Partial<VerificationSubmission> &
+          Pick<VerificationSubmission, "profile_id" | "kind" | "title">;
+        Update: Partial<VerificationSubmission>;
+        Relationships: [];
+      };
+      submission_replies: {
+        Row: SubmissionReply;
+        Insert: Partial<SubmissionReply> &
+          Pick<SubmissionReply, "submission_id" | "profile_id" | "is_staff" | "body">;
+        Update: Partial<SubmissionReply>;
+        Relationships: [];
+      };
+      verification_attachments: {
+        Row: VerificationAttachment;
+        Insert: Partial<VerificationAttachment> &
+          Pick<
+            VerificationAttachment,
+            "submission_id" | "profile_id" | "path" | "file_name" | "mime_type" | "size_bytes"
+          >;
+        Update: Partial<VerificationAttachment>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -855,6 +935,20 @@ export type Database = {
         Args: { allowed_roles?: StaffRole[] };
         Returns: boolean;
       };
+      approve_verification_submission: {
+        Args: {
+          p_submission_id: string;
+          p_actor_profile_id: string;
+          p_reward_amount?: number;
+          p_admin_note?: string | null;
+        };
+        Returns: {
+          approved: boolean;
+          ledger_id: string | null;
+          balance: number | null;
+          error_code: string | null;
+        }[];
+      };
     };
     Enums: {
       staff_role: StaffRole;
@@ -878,6 +972,8 @@ export type Database = {
       token_campaign_status: TokenCampaignStatus;
       token_allocation_status: TokenAllocationStatus;
       ioh_points_reason: IohPointsReason;
+      submission_kind: SubmissionKind;
+      submission_status: SubmissionStatus;
     };
   };
 };

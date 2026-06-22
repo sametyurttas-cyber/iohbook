@@ -13,11 +13,12 @@ import {
 const navItems = [
   { label: "Evren", href: "/" },
   { label: "Kitaplar", href: "/books" },
+  { label: "Encyclopedia", href: "/encyclopedia" },
   { label: "IOHCoin", href: "/token-sale" },
-  { label: "Koleksiyonlar", href: "/collections" },
   { label: "Yazar Hakkinda", href: "/author" },
   { label: "NFT Galeri", href: "/nft" },
   { label: "Gunluk/Blog", href: "/journal" },
+  { label: "Sepet", href: "/cart" },
   { label: "Iletisim", href: "/contact" }
 ];
 

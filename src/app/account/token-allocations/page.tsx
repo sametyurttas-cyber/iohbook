@@ -1,47 +1,135 @@
-import { Badge } from "@/components/ui/badge";
 import { listAccountTokenAllocations } from "@/features/token-sale/queries";
+import {
+  getAccountPointBalance,
+  listAccountPointLedger
+} from "@/features/account/queries";
+import { formatIohPointReason } from "@/features/points/queries";
 import { formatMoney } from "@/features/products/product-utils";
 import { formatTokenAmount } from "@/features/token-sale/utils";
+import { formatDateTime } from "@/features/account/account-utils";
+import styles from "@/features/account/account-scene.module.css";
+
+function allocationStatusBadge(status: string) {
+  if (status === "sent") return styles.badgeGold;
+  if (status === "approved") return styles.badgeBlue;
+  if (status === "cancelled" || status === "refunded") return styles.badgeRed;
+  return "";
+}
+
+function allocationStatusLabel(status: string) {
+  const map: Record<string, string> = {
+    pending: "Beklemede",
+    approved: "Onaylandi",
+    sent: "Gonderildi",
+    cancelled: "Iptal",
+    refunded: "Iade"
+  };
+  return map[status] ?? status;
+}
 
 export default async function AccountTokenAllocationsPage() {
-  const allocations = await listAccountTokenAllocations();
+  const [allocations, points, pointLedger] = await Promise.all([
+    listAccountTokenAllocations(),
+    getAccountPointBalance(),
+    listAccountPointLedger(5)
+  ]);
 
   return (
-    <div className="grid gap-5">
-      <div className="max-w-3xl">
-        <h2 className="font-display text-title-lg text-paper">Token Haklarim / Allocations</h2>
-        <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          Odeme backend tarafinda dogrulandiktan sonra token haklariniz burada gorunur.
-          Otomatik transfer yoktur; manuel gonderim admin tarafindan tamamlanir.
+    <div className={styles.cards}>
+      <div className={styles.contentHead}>
+        <p className={styles.kicker}>04 / TOKEN HAKLARIM</p>
+        <h2 className={styles.contentTitle}>IOH Puan ve Haklarim</h2>
+        <p className={styles.contentLead}>
+          IOH puanin ve token allocation kayitlarin tek merkezde. Bu alan
+          IOH Universe erisim ve puan hakki olarak sunulur; yatirim tavsiyesi
+          veya finansal getiri vaadi icermez.
         </p>
       </div>
 
+      <div className={styles.pointsPanel}>
+        <div className={styles.pointsHead}>
+          <div className={styles.pointsInfo}>
+            <span className={`${styles.badge} ${styles.badgeGold}`}>IOH PUAN</span>
+            <h3 className={styles.pointsTitle}>Mevcut IOH puanin</h3>
+            <p className={styles.pointsDesc}>
+              Uye olma ve basarili kitap siparislerinden kazandigin uygulama ici
+              puanlar. Yatirim araci degildir.
+            </p>
+          </div>
+          <div className={styles.pointsValue}>
+            <span className={styles.pointsNumber}>{points.balance}</span>
+            <span className={styles.pointsUnit}>IOH Puan</span>
+          </div>
+        </div>
+        <div className={styles.pointsStats}>
+          <div className={styles.pointsStat}>
+            <span className={styles.pointsStatLabel}>Toplam Kazanilan</span>
+            <span className={styles.pointsStatValue}>{points.lifetimeEarned}</span>
+          </div>
+          <div className={styles.pointsStat}>
+            <span className={styles.pointsStatLabel}>Toplam Kullanilan</span>
+            <span className={styles.pointsStatValue}>{points.lifetimeSpent}</span>
+          </div>
+        </div>
+      </div>
+
+      {pointLedger.length > 0 ? (
+        <section className={styles.sectionPanel}>
+          <h3 className={styles.sectionTitle}>Puan Hareketleri</h3>
+          <div className={styles.ledger}>
+            {pointLedger.map((entry) => (
+              <div className={styles.ledgerItem} key={entry.id}>
+                <div className={styles.ledgerInfo}>
+                  <span className={styles.ledgerReason}>{formatIohPointReason(entry.reason)}</span>
+                  <span className={styles.ledgerDate}>
+                    {formatDateTime(entry.created_at)}
+                    {entry.order_id ? ` / Siparis: ${entry.order_id.slice(0, 8)}` : ""}
+                  </span>
+                </div>
+                <span className={`${styles.ledgerAmount} ${entry.amount < 0 ? styles.ledgerAmountNegative : ""}`}>
+                  {entry.amount > 0 ? "+" : ""}{entry.amount}
+                </span>
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      <div className={styles.contentHead}>
+        <p className={styles.kicker}>ALLOCATION KAYITLARI</p>
+      </div>
+
       {allocations.length === 0 ? (
-        <div className="rounded-lg border border-border bg-card p-8 text-sm text-muted-foreground shadow-panel">
-          Henuz token allocation yok.
+        <div className={styles.emptyState}>
+          <div className={styles.emptyVisual}>IOH</div>
+          <h3 className={styles.emptyTitle}>Henuz allocation kaydi yok</h3>
+          <p className={styles.emptyDesc}>
+            IOHcoin paketi satin aldiginda allocation haklari burada gorunur.
+            Otomatik transfer yapilmaz; manuel gonderim admin tarafindan tamamlanir.
+          </p>
         </div>
       ) : (
-        <div className="grid gap-3">
+        <div className={styles.cards}>
           {allocations.map((allocation) => (
-            <article className="rounded-lg border border-border bg-card p-5 shadow-panel" key={allocation.id}>
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge variant={allocation.status === "sent" ? "gold" : "outline"}>
-                  {allocation.status}
-                </Badge>
-                <Badge variant="secondary">{allocation.token_symbol}</Badge>
-                <span className="text-xs text-muted-foreground">
+            <article className={styles.card} key={allocation.id}>
+              <div className={styles.cardTop}>
+                <span className={`${styles.badge} ${allocationStatusBadge(allocation.status)}`}>
+                  {allocationStatusLabel(allocation.status)}
+                </span>
+                <span className={`${styles.badge} ${styles.badgeBlue}`}>{allocation.token_symbol}</span>
+                <span className={styles.cardMono}>
                   {allocation.orders?.order_number ?? "-"}
                 </span>
               </div>
-              <h3 className="mt-3 font-display text-title-md text-paper">
+              <h3 className={styles.cardTitle}>
                 {allocation.token_sale_campaigns?.title ?? "Token allocation"}
               </h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Allocation: {formatTokenAmount(allocation.total_amount)} {allocation.token_symbol}
+              <p className={styles.cardMono}>
+                Allocation: <b>{formatTokenAmount(allocation.total_amount)} {allocation.token_symbol}</b>
                 {" "}({formatMoney(allocation.total_price_minor, allocation.currency)})
               </p>
               {allocation.manual_transfer_tx_hash ? (
-                <p className="mt-2 break-all font-mono text-xs text-gold">
+                <p className={styles.walletAddress} style={{ color: "var(--a-gold)" }}>
                   TX: {allocation.manual_transfer_tx_hash}
                 </p>
               ) : null}

@@ -1,7 +1,5 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { getAccountOrderDetail } from "@/features/account/queries";
 import {
   formatDateTime,
@@ -10,6 +8,7 @@ import {
   SHIPMENT_STATUS_LABELS
 } from "@/features/account/account-utils";
 import { formatMoney } from "@/features/products/product-utils";
+import styles from "@/features/account/account-scene.module.css";
 
 type AccountOrderDetailPageProps = {
   params: Promise<{
@@ -30,6 +29,22 @@ function orderHasDigitalItems(order: Awaited<ReturnType<typeof getAccountOrderDe
   );
 }
 
+function statusBadgeClass(status: string) {
+  if (status === "paid" || status === "fulfilled" || status === "completed") {
+    return styles.badgeGold;
+  }
+
+  if (status === "pending_payment" || status === "draft") {
+    return styles.badgeBlue;
+  }
+
+  if (status === "cancelled" || status === "refunded") {
+    return styles.badgeRed;
+  }
+
+  return "";
+}
+
 export default async function AccountOrderDetailPage({
   params
 }: AccountOrderDetailPageProps) {
@@ -43,141 +58,123 @@ export default async function AccountOrderDetailPage({
   const hasDigitalItems = orderHasDigitalItems(order);
 
   return (
-    <div className="grid gap-5">
-      <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-start">
-        <div>
-          <Button asChild size="sm" variant="outline">
-            <Link href="/account/orders">Back to orders</Link>
-          </Button>
-          <div className="mt-5 flex flex-wrap items-center gap-2">
-            <Badge variant="gold">{ORDER_STATUS_LABELS[order.status]}</Badge>
-            <span className="text-xs text-muted-foreground">
-              Created {formatDateTime(order.created_at)}
-            </span>
-          </div>
-          <h2 className="mt-3 font-display text-title-lg text-paper">
-            {order.order_number}
-          </h2>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">
-            {ORDER_STATUS_HELP[order.status]}
-          </p>
+    <div className={styles.cards}>
+      <div className={styles.contentHead}>
+        <Link className={styles.btnLink} href="/account/orders">
+          ← Siparislere Don
+        </Link>
+        <div className={styles.cardTop} style={{ marginTop: "1.25rem" }}>
+          <span className={`${styles.badge} ${statusBadgeClass(order.status)}`}>
+            {ORDER_STATUS_LABELS[order.status]}
+          </span>
+          <span className={styles.cardMono}>{formatDateTime(order.created_at)}</span>
         </div>
-        <div className="rounded-lg border border-border bg-card p-5 shadow-panel lg:min-w-72">
-          <p className="text-eyebrow uppercase text-muted-foreground">Total</p>
-          <p className="mt-2 font-display text-title-lg text-gold">
+        <h2 className={styles.contentTitle}>{order.order_number}</h2>
+        <p className={styles.contentLead}>{ORDER_STATUS_HELP[order.status]}</p>
+      </div>
+
+      <div className={styles.cardRow}>
+        <div className={styles.sectionPanel} style={{ flex: 1 }}>
+          <p className={styles.kicker}>TOPLAM</p>
+          <p className={styles.cardPrice} style={{ fontSize: "2rem" }}>
             {formatMoney(order.total_minor, order.currency)}
           </p>
-          <p className="mt-2 text-xs leading-5 text-muted-foreground">
-            Totals reflect the order snapshot captured at checkout.
+          <p className={styles.cardDesc}>
+            Toplam, checkout aninda snapshot olarak kaydedildi.
           </p>
         </div>
       </div>
 
-      <section className="rounded-lg border border-border bg-card p-5 shadow-panel">
-        <h3 className="font-display text-title-md text-paper">Items</h3>
+      <section className={styles.sectionPanel}>
+        <h3 className={styles.sectionTitle}>Urunler</h3>
         {hasDigitalItems && (order.status === "paid" || order.status === "fulfilled" || order.status === "completed") ? (
-          <div className="mt-4 rounded-md border border-gold/25 bg-gold/10 p-4 text-sm text-muted-foreground">
-            <p className="font-medium text-paper">Dijital kitabiniz hazir.</p>
-            <p className="mt-1 leading-6">
-              PDF/EPUB dosyalari mail eki olarak gonderilmez. Guvenli indirme linkleri
-              hesabinizdaki Indirmelerim sayfasinda uretilir.
-            </p>
-            <Button asChild className="mt-4" size="sm">
-              <Link href="/account/downloads">Indirmelerime git</Link>
-            </Button>
+          <div className={styles.noticeSuccess}>
+            <strong>Dijital kitabiniz hazir.</strong> PDF/EPUB dosyalari mail eki
+            olarak gonderilmez. Guvenli indirme linkleri Indirmelerim sayfasinda
+            uretilir.
+            <div style={{ marginTop: "0.75rem" }}>
+              <Link className={styles.btnLink} href="/account/downloads">
+                Indirmelerime Git
+              </Link>
+            </div>
           </div>
         ) : null}
-        <div className="mt-5 grid gap-3">
+        <div className={styles.cards}>
           {order.order_items.map((item) => (
-            <div
-              className="grid gap-3 border-b border-border pb-4 last:border-b-0 last:pb-0 md:grid-cols-[1fr_auto]"
-              key={item.id}
-            >
-              <div>
-                <p className="font-medium text-paper">
+            <div className={styles.cardRow} key={item.id} style={{ borderBottom: "1px solid rgba(242,239,232,0.08)", paddingBottom: "1rem" }}>
+              <div className={styles.cardMain}>
+                <p className={styles.profileValue}>
                   {readSnapshotText(item.product_snapshot, "title")}
                 </p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {readSnapshotText(item.variant_snapshot, "title")} - SKU{" "}
+                <p className={styles.cardMono}>
+                  {readSnapshotText(item.variant_snapshot, "title")} / SKU{" "}
                   {readSnapshotText(item.variant_snapshot, "sku")}
                 </p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Quantity: {item.quantity}
-                </p>
+                <p className={styles.cardMono}>Adet: <b>{item.quantity}</b></p>
               </div>
-              <p className="font-display text-title-md text-gold">
+              <span className={styles.cardPrice}>
                 {formatMoney(item.total_minor, order.currency)}
-              </p>
+              </span>
             </div>
           ))}
         </div>
       </section>
 
-      <div className="grid gap-5 lg:grid-cols-2">
-        <section className="rounded-lg border border-border bg-card p-5 shadow-panel">
-          <h3 className="font-display text-title-md text-paper">Totals</h3>
-          <dl className="mt-5 grid gap-3 text-sm">
-            <div className="flex justify-between gap-4">
-              <dt className="text-muted-foreground">Subtotal</dt>
-              <dd className="text-paper">{formatMoney(order.subtotal_minor, order.currency)}</dd>
+      <div className={styles.grid2}>
+        <section className={styles.sectionPanel}>
+          <h3 className={styles.sectionTitle}>Tutarlar</h3>
+          <div className={styles.cards}>
+            <div className={styles.cardRow}>
+              <span className={styles.cardMono}>Ara toplam</span>
+              <span className={styles.profileValue}>{formatMoney(order.subtotal_minor, order.currency)}</span>
             </div>
-            <div className="flex justify-between gap-4">
-              <dt className="text-muted-foreground">Discount</dt>
-              <dd className="text-paper">{formatMoney(order.discount_minor, order.currency)}</dd>
+            <div className={styles.cardRow}>
+              <span className={styles.cardMono}>Indirim</span>
+              <span className={styles.profileValue}>{formatMoney(order.discount_minor, order.currency)}</span>
             </div>
-            <div className="flex justify-between gap-4">
-              <dt className="text-muted-foreground">Shipping</dt>
-              <dd className="text-paper">{formatMoney(order.shipping_minor, order.currency)}</dd>
+            <div className={styles.cardRow}>
+              <span className={styles.cardMono}>Kargo</span>
+              <span className={styles.profileValue}>{formatMoney(order.shipping_minor, order.currency)}</span>
             </div>
-            <div className="flex justify-between gap-4">
-              <dt className="text-muted-foreground">Tax</dt>
-              <dd className="text-paper">{formatMoney(order.tax_minor, order.currency)}</dd>
+            <div className={styles.cardRow}>
+              <span className={styles.cardMono}>Vergi</span>
+              <span className={styles.profileValue}>{formatMoney(order.tax_minor, order.currency)}</span>
             </div>
-            <div className="flex justify-between gap-4 border-t border-border pt-3">
-              <dt className="font-medium text-paper">Total</dt>
-              <dd className="font-display text-title-md text-gold">
-                {formatMoney(order.total_minor, order.currency)}
-              </dd>
+            <div className={styles.cardRow} style={{ borderTop: "1px solid rgba(242,239,232,0.08)", paddingTop: "0.75rem" }}>
+              <span className={styles.profileValue}>Toplam</span>
+              <span className={styles.cardPrice}>{formatMoney(order.total_minor, order.currency)}</span>
             </div>
-          </dl>
+          </div>
         </section>
 
-        <section className="rounded-lg border border-border bg-card p-5 shadow-panel">
-          <h3 className="font-display text-title-md text-paper">Shipping</h3>
+        <section className={styles.sectionPanel}>
+          <h3 className={styles.sectionTitle}>Kargo</h3>
           {order.fulfillment_shipments.length === 0 ? (
-            <p className="mt-4 text-sm leading-6 text-muted-foreground">
-              No shipment has been created yet. Once fulfillment starts, carrier and
-              tracking information will appear here.
+            <p className={styles.cardDesc}>
+              Henuz kargo olusturulmadi. Hazirlama basladiginda tasiyici ve takip
+              bilgisi burada gorunecek.
             </p>
           ) : (
-            <div className="mt-5 grid gap-4">
+            <div className={styles.cards}>
               {order.fulfillment_shipments.map((shipment) => (
-                <div className="rounded-md border border-border bg-ink-soft p-4" key={shipment.id}>
-                  <Badge variant="outline">{SHIPMENT_STATUS_LABELS[shipment.status]}</Badge>
-                  <dl className="mt-4 grid gap-2 text-sm">
-                    <div>
-                      <dt className="text-muted-foreground">Carrier</dt>
-                      <dd className="text-paper">{shipment.provider ?? "Not assigned"}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-muted-foreground">Tracking number</dt>
-                      <dd className="text-paper">{shipment.tracking_number ?? "Not available yet"}</dd>
-                    </div>
-                    {shipment.tracking_url ? (
-                      <div>
-                        <dt className="text-muted-foreground">Tracking link</dt>
-                        <dd>
-                          <Link className="text-gold hover:underline" href={shipment.tracking_url}>
-                            Open carrier tracking
-                          </Link>
-                        </dd>
-                      </div>
-                    ) : null}
-                    <div>
-                      <dt className="text-muted-foreground">Shipped</dt>
-                      <dd className="text-paper">{formatDateTime(shipment.shipped_at)}</dd>
-                    </div>
-                  </dl>
+                <div key={shipment.id} className={styles.card} style={{ padding: "1.25rem" }}>
+                  <span className={`${styles.badge} ${styles.badgeGold}`}>
+                    {SHIPMENT_STATUS_LABELS[shipment.status]}
+                  </span>
+                  <div className={styles.cardRow}>
+                    <span className={styles.cardMono}>Tasiyici</span>
+                    <span className={styles.profileValue}>{shipment.provider ?? "Atanmadi"}</span>
+                  </div>
+                  <div className={styles.cardRow}>
+                    <span className={styles.cardMono}>Takip no</span>
+                    <span className={styles.profileValue}>{shipment.tracking_number ?? "Henuz yok"}</span>
+                  </div>
+                  {shipment.tracking_url ? (
+                    <Link className={styles.btnLink} href={shipment.tracking_url}>
+                      Takip Linkini Ac
+                    </Link>
+                  ) : null}
+                  <p className={styles.cardMono}>Gonderim: <b>{formatDateTime(shipment.shipped_at)}</b></p>
                 </div>
               ))}
             </div>
@@ -185,27 +182,24 @@ export default async function AccountOrderDetailPage({
         </section>
       </div>
 
-      <section className="rounded-lg border border-border bg-card p-5 shadow-panel">
-        <h3 className="font-display text-title-md text-paper">Payment verification</h3>
-        <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          Payment provider redirects are treated as a user experience signal. The order
-          is marked paid only after backend verification.
+      <section className={styles.sectionPanel}>
+        <h3 className={styles.sectionTitle}>Odeme Dogrulama</h3>
+        <p className={styles.cardDesc}>
+          Odeme provider yonlendirmesi kullanici deneyimi sinyali olarak kabul
+          edilir. Siparis yalnizca backend dogrulamasi sonrasi odendi olarak
+          isaretlenir.
         </p>
-        <div className="mt-4 grid gap-3">
+        <div className={styles.cards}>
           {order.payment_attempts.map((attempt) => (
-            <div className="rounded-md border border-border bg-ink-soft p-4 text-sm" key={attempt.created_at}>
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge variant="secondary">{attempt.provider}</Badge>
-                <Badge variant="outline">{attempt.status}</Badge>
+            <div key={attempt.created_at} className={styles.card} style={{ padding: "1.25rem" }}>
+              <div className={styles.cardTop}>
+                <span className={`${styles.badge} ${styles.badgeBlue}`}>{attempt.provider}</span>
+                <span className={styles.badge}>{attempt.status}</span>
               </div>
-              <p className="mt-3 text-muted-foreground">
-                Provider status: {attempt.provider_status ?? "not reported"}
-              </p>
-              <p className="mt-1 text-muted-foreground">
-                Verified: {formatDateTime(attempt.verified_at)}
-              </p>
+              <p className={styles.cardMono}>Provider durumu: <b>{attempt.provider_status ?? "Bildirilmedi"}</b></p>
+              <p className={styles.cardMono}>Dogrulandi: <b>{formatDateTime(attempt.verified_at)}</b></p>
               {attempt.failure_reason ? (
-                <p className="mt-1 text-burgundy-soft">Reason: {attempt.failure_reason}</p>
+                <p className={styles.cardDesc} style={{ color: "#f07e72" }}>Sebep: {attempt.failure_reason}</p>
               ) : null}
             </div>
           ))}

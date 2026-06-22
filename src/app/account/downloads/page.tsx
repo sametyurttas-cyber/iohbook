@@ -1,10 +1,9 @@
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { listAccountDownloads } from "@/features/account/queries";
 import { downloadEntitlement } from "@/features/entitlements/actions";
 import { isEntitlementCurrentlyAccessible } from "@/features/entitlements/entitlement-utils";
 import { formatDateTime } from "@/features/account/account-utils";
+import styles from "@/features/account/account-scene.module.css";
 
 type DownloadsPageProps = {
   searchParams?: Promise<{
@@ -30,22 +29,10 @@ function readSnapshotText(snapshot: Record<string, unknown> | undefined, key: st
 }
 
 function getDownloadStatusLabel(status: string) {
-  if (status === "active") {
-    return "Aktif";
-  }
-
-  if (status === "pending") {
-    return "Hazirlaniyor";
-  }
-
-  if (status === "expired") {
-    return "Suresi doldu";
-  }
-
-  if (status === "revoked") {
-    return "Iptal edildi";
-  }
-
+  if (status === "active") return "Aktif";
+  if (status === "pending") return "Hazirlaniyor";
+  if (status === "expired") return "Suresi Doldu";
+  if (status === "revoked") return "Iptal Edildi";
   return status;
 }
 
@@ -53,10 +40,11 @@ export default async function AccountDownloadsPage({ searchParams }: DownloadsPa
   const [downloads, params] = await Promise.all([listAccountDownloads(), searchParams]);
 
   return (
-    <div className="grid gap-5">
-      <div className="max-w-3xl">
-        <h2 className="font-display text-title-lg text-paper">Indirmelerim</h2>
-        <p className="mt-2 text-sm leading-6 text-muted-foreground">
+    <div className={styles.cards}>
+      <div className={styles.contentHead}>
+        <p className={styles.kicker}>02 / INDIRMELERIM</p>
+        <h2 className={styles.contentTitle}>Dijital Kutuphanem</h2>
+        <p className={styles.contentLead}>
           Dijital urunler odeme backend tarafinda dogrulandiktan sonra burada
           gorunur. Indirme baglantilari her tiklamada kisa sureli ve guvenli
           olarak uretilir.
@@ -64,24 +52,27 @@ export default async function AccountDownloadsPage({ searchParams }: DownloadsPa
       </div>
 
       {params?.error ? (
-        <div className="rounded-md border border-burgundy-bright/30 bg-burgundy-bright/10 p-3 text-sm text-burgundy-soft">
-          Indirme baslatilamadi: {downloadErrorMessages[params.error] ?? params.error}
+        <div className={styles.notices}>
+          <div className={styles.noticeError}>
+            Indirme baslatilamadi: {downloadErrorMessages[params.error] ?? params.error}
+          </div>
         </div>
       ) : null}
 
       {downloads.length === 0 ? (
-        <div className="rounded-lg border border-border bg-card p-8 shadow-panel">
-          <h3 className="font-display text-title-md text-paper">Henuz dijital erisim yok</h3>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
+        <div className={styles.emptyState}>
+          <div className={styles.emptyVisual}>IOH</div>
+          <h3 className={styles.emptyTitle}>Henuz dijital erisim yok</h3>
+          <p className={styles.emptyDesc}>
             Dijital veya hibrit bir urun satin aldiginizda erisim haklari burada
             listelenir.
           </p>
-          <Button asChild className="mt-6">
-            <Link href="/books">Kitaplari incele</Link>
-          </Button>
+          <Link className={styles.emptyCta} href="/books">
+            Kitaplari Incele
+          </Link>
         </div>
       ) : (
-        <div className="grid gap-3">
+        <div className={styles.cards}>
           {downloads.map((download) => {
             const item = download.order_items;
             const canDownload =
@@ -95,52 +86,48 @@ export default async function AccountDownloadsPage({ searchParams }: DownloadsPa
                 download.download_count < download.download_limit);
 
             return (
-              <article
-                className="grid gap-4 rounded-lg border border-border bg-card p-5 shadow-panel md:grid-cols-[1fr_auto] md:items-center"
-                key={download.id}
-              >
-                <div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Badge variant={download.status === "active" ? "gold" : "outline"}>
-                      {getDownloadStatusLabel(download.status)}
-                    </Badge>
-                    <Badge variant="secondary">
-                      {download.kind === "hybrid" ? "Hibrit" : "Dijital"}
-                    </Badge>
-                    {item?.orders ? (
-                      <span className="text-xs text-muted-foreground">
-                        {item.orders.order_number} - {formatDateTime(item.orders.created_at)}
+              <article className={styles.card} key={download.id}>
+                <div className={styles.cardRow}>
+                  <div className={styles.cardMain}>
+                    <div className={styles.cardTop}>
+                      <span className={`${styles.badge} ${download.status === "active" ? styles.badgeGold : ""}`}>
+                        {getDownloadStatusLabel(download.status)}
                       </span>
+                      <span className={styles.badge}>
+                        {download.kind === "hybrid" ? "Hibrit" : "Dijital"}
+                      </span>
+                      {item?.orders ? (
+                        <span className={styles.cardMono}>
+                          {item.orders.order_number} / {formatDateTime(item.orders.created_at)}
+                        </span>
+                      ) : null}
+                    </div>
+                    <h3 className={styles.cardTitle}>
+                      {readSnapshotText(item?.product_snapshot, "title")}
+                    </h3>
+                    <p className={styles.cardMono}>
+                      {readSnapshotText(item?.variant_snapshot, "title")} / Format{" "}
+                      <b>{readSnapshotText(item?.variant_snapshot, "format")}</b>
+                    </p>
+                    <p className={styles.cardMono}>
+                      Indirme: <b>{download.download_count}</b>
+                      {download.download_limit === null ? "" : ` / ${download.download_limit}`}
+                      {download.expires_at ? ` / Son: ${formatDateTime(download.expires_at)}` : ""}
+                    </p>
+                    {download.status === "pending" ? (
+                      <p className={styles.cardDesc}>
+                        Dosya henuz teslimata baglanmamis. Destek ekibi tamamladiginda
+                        indirme aktif olur.
+                      </p>
                     ) : null}
                   </div>
-                  <h3 className="mt-3 font-display text-title-md text-paper">
-                    {readSnapshotText(item?.product_snapshot, "title")}
-                  </h3>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {readSnapshotText(item?.variant_snapshot, "title")} - SKU{" "}
-                    {readSnapshotText(item?.variant_snapshot, "sku")}
-                  </p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Format: {readSnapshotText(item?.variant_snapshot, "format")}
-                  </p>
-                  <p className="mt-2 text-xs text-muted-foreground">
-                    Indirme: {download.download_count}
-                    {download.download_limit === null ? "" : ` / ${download.download_limit}`}
-                    {download.expires_at ? ` - Son tarih: ${formatDateTime(download.expires_at)}` : ""}
-                  </p>
-                  {download.status === "pending" ? (
-                    <p className="mt-2 text-xs text-muted-foreground">
-                      Dosya henuz teslimata baglanmamis. Destek ekibi tamamladiginda
-                      indirme aktif olur.
-                    </p>
-                  ) : null}
+                  <form action={downloadEntitlement}>
+                    <input name="entitlement_id" type="hidden" value={download.id} />
+                    <button className={styles.btnPrimary} disabled={!canDownload} type="submit">
+                      Guvenli Indir
+                    </button>
+                  </form>
                 </div>
-                <form action={downloadEntitlement}>
-                  <input name="entitlement_id" type="hidden" value={download.id} />
-                  <Button disabled={!canDownload} type="submit">
-                    Guvenli indir
-                  </Button>
-                </form>
               </article>
             );
           })}
