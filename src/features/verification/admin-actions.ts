@@ -120,7 +120,7 @@ export async function createAdminReply(formData: FormData) {
 
   const { data: submission } = await supabase
     .from("verification_submissions")
-    .select("status, profile_id")
+    .select("status, profile_id, title")
     .eq("id", submissionId)
     .maybeSingle();
 
@@ -160,10 +160,51 @@ export async function createAdminReply(formData: FormData) {
     reply_length: body.length
   });
 
-  // TODO: Send email notification to customer about admin reply.
-  // Requires: sendVerificationReplyEmail({ to: customerEmail, submissionTitle, reply: body })
-  // Current email infrastructure (src/features/email/events.ts) does not have a verification reply template.
-  // This will be added in a future prompt. Email failure must not block the admin action.
+  // Get customer profile details for notification
+  let customerEmail = "";
+  let customerName = "";
+  if (submission?.profile_id) {
+    try {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("email, full_name")
+        .eq("id", submission.profile_id)
+        .maybeSingle();
+      if (profile) {
+        customerEmail = profile.email ?? "";
+        customerName = profile.full_name ?? "";
+      }
+    } catch (profileErr) {
+      console.error("Failed to select customer profile name", profileErr);
+    }
+  }
+
+  // Trigger admin reply email notification
+  if (customerEmail) {
+    try {
+      const { sendTransactionalEmail } = await import("@/features/email/service");
+      await sendTransactionalEmail({
+        templateKey: "amazon_admin_reply",
+        to: customerEmail,
+        profileId: submission.profile_id,
+        variables: {
+          userName: customerName || "Değerli Okurumuz",
+          verificationTitle: submission.title || "Amazon Başvurusu",
+          adminReply: body.length > 200 ? body.substring(0, 197) + "..." : body,
+          accountUrl: `${process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"}/account/rewards/${submissionId}`
+        },
+        metadata: {
+          submission_id: submissionId
+        }
+      });
+    } catch (emailErr) {
+      captureError(emailErr, {
+        operation: "email.amazon_admin_reply",
+        submission_id: submissionId,
+        profile_id: submission.profile_id
+      });
+    }
+  }
 
   logInfo("verification.admin_reply", { submission_id: submissionId, actor: user.id });
 
@@ -201,7 +242,7 @@ export async function rejectSubmission(formData: FormData) {
       status: "rejected" as SubmissionStatus
     })
     .eq("id", submissionId)
-    .select("profile_id, kind, book_slug")
+    .select("profile_id, kind, book_slug, title")
     .maybeSingle();
 
   if (error) {
@@ -231,6 +272,52 @@ export async function rejectSubmission(formData: FormData) {
       path: "/admin/verifications",
       profileId: rejectedSubmission.profile_id
     });
+  }
+
+  // Get customer profile details for notification
+  let customerEmail = "";
+  let customerName = "";
+  if (rejectedSubmission?.profile_id) {
+    try {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("email, full_name")
+        .eq("id", rejectedSubmission.profile_id)
+        .maybeSingle();
+      if (profile) {
+        customerEmail = profile.email ?? "";
+        customerName = profile.full_name ?? "";
+      }
+    } catch (profileErr) {
+      console.error("Failed to select customer profile name", profileErr);
+    }
+  }
+
+  // Trigger rejected email notification
+  if (customerEmail && rejectedSubmission) {
+    try {
+      const { sendTransactionalEmail } = await import("@/features/email/service");
+      await sendTransactionalEmail({
+        templateKey: "amazon_verification_rejected",
+        to: customerEmail,
+        profileId: rejectedSubmission.profile_id,
+        variables: {
+          userName: customerName || "Değerli Okurumuz",
+          verificationTitle: rejectedSubmission.title || "Amazon Başvurusu",
+          adminReply: rejectionReason,
+          accountUrl: `${process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"}/account/rewards/${submissionId}`
+        },
+        metadata: {
+          submission_id: submissionId
+        }
+      });
+    } catch (emailErr) {
+      captureError(emailErr, {
+        operation: "email.amazon_verification_rejected",
+        submission_id: submissionId,
+        profile_id: rejectedSubmission.profile_id
+      });
+    }
   }
 
   revalidatePath("/admin/verifications");
@@ -342,7 +429,7 @@ export async function approveSubmission(formData: FormData) {
   const supabase = createSupabaseServiceRoleClient();
   const { data: submission, error: submissionError } = await supabase
     .from("verification_submissions")
-    .select("kind, profile_id, book_slug")
+    .select("kind, profile_id, book_slug, title")
     .eq("id", submissionId)
     .maybeSingle();
 
@@ -382,9 +469,75 @@ export async function approveSubmission(formData: FormData) {
     redirect(`/admin/verifications/${submissionId}?error=approve_${errorCode}`);
   }
 
-  // TODO: Send email notification to customer about approval + reward.
-  // Current email infrastructure (src/features/email/events.ts) does not have a verification approval template.
-  // This will be added in a future prompt. Email failure must not block the approval action.
+  // Get customer profile details for notification
+  let customerEmail = "";
+  let customerName = "";
+  if (submission?.profile_id) {
+    try {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("email, full_name")
+        .eq("id", submission.profile_id)
+        .maybeSingle();
+      if (profile) {
+        customerEmail = profile.email ?? "";
+        customerName = profile.full_name ?? "";
+      }
+    } catch (profileErr) {
+      console.error("Failed to select customer profile name", profileErr);
+    }
+  }
+
+  // Trigger approved email notification
+  if (customerEmail && submission) {
+    try {
+      const { sendTransactionalEmail } = await import("@/features/email/service");
+      await sendTransactionalEmail({
+        templateKey: "amazon_verification_approved",
+        to: customerEmail,
+        profileId: submission.profile_id,
+        variables: {
+          userName: customerName || "Değerli Okurumuz",
+          verificationTitle: submission.title || "Amazon Başvurusu",
+          pointsAmount: rewardAmount,
+          accountUrl: `${process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"}/account/rewards/${submissionId}`
+        },
+        metadata: {
+          submission_id: submissionId
+        }
+      });
+    } catch (emailErr) {
+      captureError(emailErr, {
+        operation: "email.amazon_verification_approved",
+        submission_id: submissionId,
+        profile_id: submission.profile_id
+      });
+    }
+  }
+
+  // Trigger points email notification (side-effect isolated)
+  if (rewardAmount > 0 && result?.ledger_id && submission?.profile_id) {
+    try {
+      let rewardReason = "manual_adjustment_credit";
+      if (submission.kind === "amazon_purchase") {
+        rewardReason = "amazon_purchase_verification";
+      } else if (submission.kind === "amazon_review") {
+        rewardReason = "amazon_review_verification";
+      }
+
+      const { sendPointsAwardedEmailIfNeeded } = await import("@/features/points/service");
+      await sendPointsAwardedEmailIfNeeded({
+        profileId: submission.profile_id,
+        amount: rewardAmount,
+        reason: rewardReason,
+        balance: result.balance ?? 0,
+        ledgerId: result.ledger_id,
+        supabase
+      });
+    } catch (emailErr) {
+      console.error("Failed to send points award email on verification approval", emailErr);
+    }
+  }
 
   logInfo("verification.approve", {
     actor: user.id,

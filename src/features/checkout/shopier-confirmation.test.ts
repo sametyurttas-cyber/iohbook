@@ -1,6 +1,10 @@
 import { createHmac } from "node:crypto";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { sendPaymentConfirmedEmail } from "@/features/email/events";
+import {
+  sendPaymentConfirmedEmail,
+  sendDigitalDeliveryReadyEmail,
+  sendPaymentFailedEmail
+} from "@/features/email/events";
 import { createEntitlementsForPaidOrder } from "@/features/entitlements/service";
 import { awardBookOrderRewardForPaidOrder } from "@/features/points/service";
 import { approveTokenAllocationsForPaidOrder } from "@/features/token-sale/service";
@@ -13,7 +17,9 @@ vi.mock("@/features/analytics/business-events", () => ({
 }));
 
 vi.mock("@/features/email/events", () => ({
-  sendPaymentConfirmedEmail: vi.fn()
+  sendPaymentConfirmedEmail: vi.fn(),
+  sendDigitalDeliveryReadyEmail: vi.fn(),
+  sendPaymentFailedEmail: vi.fn()
 }));
 
 vi.mock("@/features/entitlements/service", () => ({
@@ -397,6 +403,7 @@ describe("shopier confirmation persistence", () => {
       supabase: expect.anything()
     });
     expect(sendPaymentConfirmedEmail).toHaveBeenCalledWith("order-id");
+    expect(sendDigitalDeliveryReadyEmail).toHaveBeenCalledWith("order-id");
     expect(trackServerAnalyticsEvent).toHaveBeenCalledWith({
       eventName: "order_paid",
       idempotencyKey: "order-id",
@@ -426,6 +433,7 @@ describe("shopier confirmation persistence", () => {
       providerTransactionId: "PAY-1"
     });
     expect(sendPaymentConfirmedEmail).toHaveBeenCalledWith("order-id");
+    expect(sendDigitalDeliveryReadyEmail).toHaveBeenCalledWith("order-id");
     expect(captureError).toHaveBeenCalledWith(expect.any(Error), {
       operation: "email.payment_confirmed",
       order_id: "order-id",
@@ -459,6 +467,7 @@ describe("shopier confirmation persistence", () => {
       supabase: expect.anything()
     });
     expect(sendPaymentConfirmedEmail).toHaveBeenCalledWith("order-id");
+    expect(sendDigitalDeliveryReadyEmail).toHaveBeenCalledWith("order-id");
     expect(retrieveShopierOrder).toHaveBeenCalledWith("SHOPIER-ORDER-1");
   });
 
@@ -537,5 +546,35 @@ describe("shopier confirmation persistence", () => {
         supabase: createSuccessfulShopierWebhookSupabaseMock() as never
       })
     ).rejects.toThrow("Shopier webhook signature is invalid");
+  });
+
+  it("triggers payment failed email when Shopier payment is failed", async () => {
+    function failedShopierPayload() {
+      const signature = createHmac("sha256", "secret")
+        .update("IOH-1|PAY-1|failed|10.00")
+        .digest("base64");
+
+      return {
+        payment_id: "PAY-1",
+        platform_order_id: "IOH-1",
+        currency: "TRY",
+        signature,
+        status: "failed",
+        total_order_value: "10.00"
+      };
+    }
+
+    const result = await confirmShopierPayment({
+      payload: failedShopierPayload(),
+      supabase: createSuccessfulShopierSupabaseMock() as never
+    });
+
+    expect(result).toEqual({
+      idempotent: false,
+      orderId: "order-id",
+      paid: false,
+      providerTransactionId: "PAY-1"
+    });
+    expect(sendPaymentFailedEmail).toHaveBeenCalledWith("order-id");
   });
 });

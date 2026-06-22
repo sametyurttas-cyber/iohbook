@@ -24,6 +24,58 @@ export type StaffRoleRow = {
   updated_at: string;
 };
 
+export type EmailBatch = {
+  id: string;
+  title: string;
+  template_key: string | null;
+  subject: string;
+  body_html: string;
+  body_text: string;
+  segment_key: string;
+  status: "draft" | "scheduled" | "sending" | "completed" | "failed" | "cancelled";
+  total_recipients: number;
+  sent_count: number;
+  failed_count: number;
+  skipped_count: number;
+  created_by: string | null;
+  scheduled_at: string | null;
+  started_at: string | null;
+  completed_at: string | null;
+  created_at: string;
+};
+
+export type EmailBatchRecipient = {
+  id: string;
+  batch_id: string;
+  profile_id: string | null;
+  email: string;
+  status: "pending" | "sent" | "failed" | "skipped";
+  error_message: string | null;
+  provider_message_id: string | null;
+  sent_at: string | null;
+  created_at: string;
+};
+
+export type EmailPreference = {
+  profile_id: string;
+  transactional_enabled: boolean;
+  marketing_enabled: boolean;
+  product_updates_enabled: boolean;
+  community_enabled: boolean;
+  amazon_rewards_enabled: boolean;
+  updated_at: string;
+};
+
+export type EmailUnsubscribeToken = {
+  id: string;
+  profile_id: string;
+  token_hash: string;
+  category: string;
+  expires_at: string | null;
+  used_at: string | null;
+  created_at: string;
+};
+
 export type AddressType = "shipping" | "billing";
 
 export type Address = {
@@ -423,19 +475,34 @@ export type ConsentEvent = {
   created_at: string;
 };
 
+export type EmailTemplate = {
+  id: string;
+  key: string;
+  subject: string;
+  preview_text: string | null;
+  body_html: string;
+  body_text: string;
+  variables: Record<string, unknown>;
+  active: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
 export type EmailEvent = {
   id: string;
   event_type: string;
+  template_key: string | null;
   provider: string;
   recipient: string;
   subject: string;
-  status: "queued" | "sent" | "failed" | "skipped";
+  status: "pending" | "queued" | "sent" | "failed" | "skipped";
   order_id: string | null;
   profile_id: string | null;
   provider_message_id: string | null;
   error_message: string | null;
   payload: Record<string, unknown>;
   created_at: string;
+  sent_at: string | null;
 };
 
 export type WalletLink = {
@@ -732,6 +799,54 @@ export type Database = {
         Update: Partial<StaffRoleRow>;
         Relationships: [];
       };
+      email_batches: {
+        Row: EmailBatch;
+        Insert: Partial<EmailBatch> & Pick<EmailBatch, "title" | "subject" | "body_html" | "body_text" | "segment_key">;
+        Update: Partial<EmailBatch>;
+        Relationships: [];
+      };
+      email_batch_recipients: {
+        Row: EmailBatchRecipient;
+        Insert: Partial<EmailBatchRecipient> & Pick<EmailBatchRecipient, "batch_id" | "email">;
+        Update: Partial<EmailBatchRecipient>;
+        Relationships: [
+          {
+            foreignKeyName: "email_batch_recipients_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ];
+      };
+      email_preferences: {
+        Row: EmailPreference;
+        Insert: Partial<EmailPreference> & Pick<EmailPreference, "profile_id">;
+        Update: Partial<EmailPreference>;
+        Relationships: [
+          {
+            foreignKeyName: "email_preferences_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ];
+      };
+      email_unsubscribe_tokens: {
+        Row: EmailUnsubscribeToken;
+        Insert: Partial<EmailUnsubscribeToken> & Pick<EmailUnsubscribeToken, "profile_id" | "token_hash" | "category">;
+        Update: Partial<EmailUnsubscribeToken>;
+        Relationships: [
+          {
+            foreignKeyName: "email_unsubscribe_tokens_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ];
+      };
       addresses: {
         Row: Address;
         Insert: Partial<Address> & Pick<Address, "type" | "full_name" | "city" | "line1">;
@@ -847,6 +962,13 @@ export type Database = {
         Insert: Partial<EmailEvent> &
           Pick<EmailEvent, "event_type" | "provider" | "recipient" | "subject" | "status">;
         Update: Partial<EmailEvent>;
+        Relationships: [];
+      };
+      email_templates: {
+        Row: EmailTemplate;
+        Insert: Partial<EmailTemplate> &
+          Pick<EmailTemplate, "key" | "subject" | "body_html" | "body_text">;
+        Update: Partial<EmailTemplate>;
         Relationships: [];
       };
       web3_networks: {

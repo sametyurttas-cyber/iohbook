@@ -6,6 +6,7 @@ import {
   listAccountPointLedger,
   requireAccountUser
 } from "@/features/account/queries";
+import { getAccountEmailPreferences } from "@/features/email/preferences-actions";
 import { formatDateTime } from "@/features/account/account-utils";
 import { formatIohPointReason } from "@/features/points/queries";
 import styles from "@/features/account/account-scene.module.css";
@@ -25,6 +26,7 @@ export default async function AccountProfilePage({ searchParams }: AccountProfil
     listAccountPointLedger(5),
     getAccountOrderCount()
   ]);
+  const emailPrefs = await getAccountEmailPreferences(profile?.id || user.id);
   const params = await searchParams;
   const pointProgress = Math.min(points.balance, 100);
 
@@ -170,37 +172,108 @@ export default async function AccountProfilePage({ searchParams }: AccountProfil
       ) : null}
 
       <form action={updateCommunicationPreferences} className={styles.sectionPanel}>
-        <h3 className={styles.sectionTitle}>Iletisim Izinleri</h3>
+        <h3 className={styles.sectionTitle}>Iletisim Tercihleri & İzinleri</h3>
         <p className={styles.cardDesc}>
-          Bu alanlar acik riza kapsamindadir; KVKK aydinlatma metnini okumakla
-          pazarlama izni vermis olmazsiniz. Izinleri istediginiz zaman
-          kapatabilirsiniz.
+          Tercihlerinizi istediğiniz zaman güncelleyebilirsiniz. Pazarlama ve duyuru iletişimleri açık rıza kapsamındadır.
         </p>
-        <div className={styles.cards}>
-          <label className={styles.card} style={{ padding: "1rem 1.25rem", display: "flex", gap: "0.75rem", alignItems: "flex-start" }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          {/* Transactional (Mandatory) */}
+          <label className={styles.card} style={{ padding: "1rem 1.25rem", display: "flex", gap: "0.75rem", alignItems: "flex-start", opacity: 0.8 }}>
             <input
-              defaultChecked={profile?.marketing_email_opt_in ?? false}
+              checked={true}
+              disabled={true}
+              type="checkbox"
+              style={{ marginTop: "0.2rem", accentColor: "var(--a-gold)", cursor: "not-allowed" }}
+            />
+            <div className="flex flex-col gap-0.5">
+              <span className="text-xs font-mono text-[#f2efe8] font-bold">İşlemsel E-postalar (Sipariş ve Sistem Bildirimleri)</span>
+              <span className={styles.cardDesc} style={{ fontSize: "10px" }}>
+                Sipariş onayları, dijital teslimat ve hesap doğrulama e-postaları. Kapatılamaz (Zorunlu).
+              </span>
+            </div>
+          </label>
+
+          {/* Marketing */}
+          <label className={styles.card} style={{ padding: "1rem 1.25rem", display: "flex", gap: "0.75rem", alignItems: "flex-start", cursor: "pointer" }}>
+            <input
+              defaultChecked={emailPrefs.marketing_enabled}
               name="email_marketing_consent"
               type="checkbox"
               style={{ marginTop: "0.2rem", accentColor: "var(--a-gold)" }}
             />
-            <span className={styles.cardDesc}>
-              E-posta ile kampanya, yeni kitap ve koleksiyon duyurulari almak istiyorum.
-            </span>
+            <div className="flex flex-col gap-0.5">
+              <span className="text-xs font-mono text-[#f2efe8] font-bold">Kampanya ve Pazarlama E-postaları</span>
+              <span className={styles.cardDesc} style={{ fontSize: "10px" }}>
+                Yeni kitap duyuruları, indirimler ve dönemsel kampanyalar.
+              </span>
+            </div>
           </label>
-          <label className={styles.card} style={{ padding: "1rem 1.25rem", display: "flex", gap: "0.75rem", alignItems: "flex-start" }}>
+
+          {/* Product Updates */}
+          <label className={styles.card} style={{ padding: "1rem 1.25rem", display: "flex", gap: "0.75rem", alignItems: "flex-start", cursor: "pointer" }}>
+            <input
+              defaultChecked={emailPrefs.product_updates_enabled}
+              name="email_product_updates"
+              type="checkbox"
+              style={{ marginTop: "0.2rem", accentColor: "var(--a-gold)" }}
+            />
+            <div className="flex flex-col gap-0.5">
+              <span className="text-xs font-mono text-[#f2efe8] font-bold">Ürün ve İçerik Güncellemeleri</span>
+              <span className={styles.cardDesc} style={{ fontSize: "10px" }}>
+                Platforma eklenen yeni özellikler ve dijital format güncellemeleri.
+              </span>
+            </div>
+          </label>
+
+          {/* Community */}
+          <label className={styles.card} style={{ padding: "1rem 1.25rem", display: "flex", gap: "0.75rem", alignItems: "flex-start", cursor: "pointer" }}>
+            <input
+              defaultChecked={emailPrefs.community_enabled}
+              name="email_community"
+              type="checkbox"
+              style={{ marginTop: "0.2rem", accentColor: "var(--a-gold)" }}
+            />
+            <div className="flex flex-col gap-0.5">
+              <span className="text-xs font-mono text-[#f2efe8] font-bold">Topluluk ve Duyurular</span>
+              <span className={styles.cardDesc} style={{ fontSize: "10px" }}>
+                Evren güncellemeleri, ansiklopedi girdileri ve yazar mesajları.
+              </span>
+            </div>
+          </label>
+
+          {/* Amazon Rewards */}
+          <label className={styles.card} style={{ padding: "1rem 1.25rem", display: "flex", gap: "0.75rem", alignItems: "flex-start", cursor: "pointer" }}>
+            <input
+              defaultChecked={emailPrefs.amazon_rewards_enabled}
+              name="email_amazon_rewards"
+              type="checkbox"
+              style={{ marginTop: "0.2rem", accentColor: "var(--a-gold)" }}
+            />
+            <div className="flex flex-col gap-0.5">
+              <span className="text-xs font-mono text-[#f2efe8] font-bold">Amazon Ödül Bildirimleri (Önerilen)</span>
+              <span className={styles.cardDesc} style={{ fontSize: "10px" }}>
+                Amazon yorum/satın alma onaylarınız ve IOH puan hareketleriniz.
+              </span>
+            </div>
+          </label>
+
+          {/* SMS Consent */}
+          <label className={styles.card} style={{ padding: "1rem 1.25rem", display: "flex", gap: "0.75rem", alignItems: "flex-start", cursor: "pointer" }}>
             <input
               defaultChecked={profile?.marketing_sms_opt_in ?? false}
               name="sms_marketing_consent"
               type="checkbox"
               style={{ marginTop: "0.2rem", accentColor: "var(--a-gold)" }}
             />
-            <span className={styles.cardDesc}>
-              SMS/telefon kanaliyla kampanya ve siparis disi duyuru almak istiyorum.
-            </span>
+            <div className="flex flex-col gap-0.5">
+              <span className="text-xs font-mono text-[#f2efe8] font-bold">SMS / Telefon İletişimleri</span>
+              <span className={styles.cardDesc} style={{ fontSize: "10px" }}>
+                SMS kanalıyla sipariş dışı duyurular ve özel kampanya bildirimleri.
+              </span>
+            </div>
           </label>
         </div>
-        <button className={styles.btnPrimary} type="submit">Izinleri Kaydet</button>
+        <button className={styles.btnPrimary} type="submit">İzinleri ve Tercihleri Kaydet</button>
       </form>
     </div>
   );

@@ -4,6 +4,103 @@ import { trackServerAnalyticsEvent } from "@/features/analytics/business-events"
 
 type ServiceClient = SupabaseClient<Database>;
 
+export const POINTS_EMAIL_CONFIG = {
+  sendEmailForPointReasons: [
+    "amazon_review_verification",
+    "amazon_purchase_verification",
+    "manual_adjustment_credit",
+    "bulk_campaign_reward"
+  ] as string[],
+  minimumPointsForEmail: 1
+};
+
+export function getPointsReasonLabel(reason: string): string {
+  switch (reason) {
+    case "amazon_review_verification":
+      return "Amazon yorum doğrulaması";
+    case "amazon_purchase_verification":
+      return "Amazon satın alma doğrulaması";
+    case "book_order_reward":
+      return "Kitap satın alma";
+    case "manual_adjustment_credit":
+      return "Admin ödülü";
+    case "bulk_campaign_reward":
+      return "Kampanya ödülü";
+    case "friend_invite":
+      return "Arkadaş daveti ödülü";
+    default:
+      return "Puan ödülü";
+  }
+}
+
+export async function sendPointsAwardedEmailIfNeeded(input: {
+  profileId: string;
+  amount: number;
+  reason: string;
+  balance: number;
+  ledgerId: string | null;
+  orderId?: string | null;
+  supabase: ServiceClient;
+}): Promise<void> {
+  if (input.amount <= 0) {
+    return; // Do not notify on deductions
+  }
+
+  const shouldSendEmail =
+    POINTS_EMAIL_CONFIG.sendEmailForPointReasons.includes(input.reason) &&
+    input.amount >= POINTS_EMAIL_CONFIG.minimumPointsForEmail;
+
+  if (!shouldSendEmail) {
+    return;
+  }
+
+  try {
+    const { data: profile, error: profileError } = await input.supabase
+      .from("profiles")
+      .select("email, full_name")
+      .eq("id", input.profileId)
+      .maybeSingle();
+
+    if (profileError) {
+      console.warn("Failed to fetch profile for points email", profileError);
+      return;
+    }
+
+    if (profile && profile.email) {
+      const { sendTransactionalEmail } = await import("@/features/email/service");
+      await sendTransactionalEmail({
+        templateKey: "points_awarded",
+        to: profile.email,
+        profileId: input.profileId,
+        orderId: input.orderId ?? null,
+        variables: {
+          userName: profile.full_name || "Değerli Okurumuz",
+          pointsAmount: input.amount,
+          pointsReason: getPointsReasonLabel(input.reason),
+          currentBalance: input.balance,
+          accountUrl: `${process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/account`
+        },
+        metadata: {
+          ledger_id: input.ledgerId
+        }
+      });
+    }
+  } catch (err) {
+    console.error("sendPointsAwardedEmailIfNeeded failed", err);
+    try {
+      const { captureError } = await import("@/lib/observability");
+      captureError(err, {
+        operation: "points.send_email_notification",
+        profile_id: input.profileId,
+        ledger_id: input.ledgerId ?? undefined,
+        reason: input.reason
+      });
+    } catch (obsErr) {
+      console.error("Observability captureError failed", obsErr);
+    }
+  }
+}
+
 export const SIGNUP_BONUS_POINTS = 10;
 export const BOOK_ORDER_REWARD_POINTS = 30;
 
@@ -96,6 +193,16 @@ export async function awardIohPoints(input: AwardPointsInput) {
       },
       path: "/account/profile",
       profileId: input.profileId
+    });
+
+    await sendPointsAwardedEmailIfNeeded({
+      profileId: input.profileId,
+      amount: input.amount,
+      reason: input.reason,
+      balance: result.balance,
+      ledgerId: result.ledgerId,
+      orderId: input.orderId,
+      supabase: input.supabase
     });
   }
 

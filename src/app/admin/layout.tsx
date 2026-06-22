@@ -46,6 +46,11 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
     },
     {
       allowedRoles: ["owner", "admin_ops", "support"],
+      href: "/admin/emails",
+      label: "Mailler"
+    },
+    {
+      allowedRoles: ["owner", "admin_ops", "support"],
       href: "/admin/analytics",
       label: "Analitik"
     },

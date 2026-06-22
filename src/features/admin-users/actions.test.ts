@@ -65,6 +65,53 @@ function buildSupabaseMock(balance = 10) {
           };
         }
 
+        if (table === "profiles") {
+          return {
+            select: vi.fn(() => ({
+              eq: vi.fn(() => ({
+                maybeSingle: vi.fn(async () => ({
+                  data: { email: "customer@example.com", full_name: "Test Customer" },
+                  error: null
+                }))
+              }))
+            }))
+          };
+        }
+
+        if (table === "email_templates") {
+          return {
+            select: vi.fn(() => ({
+              eq: vi.fn(() => ({
+                eq: vi.fn(() => ({
+                  maybeSingle: vi.fn(async () => ({
+                    data: null,
+                    error: null
+                  }))
+                }))
+              }))
+            }))
+          };
+        }
+
+        if (table === "email_events") {
+          return {
+            insert: vi.fn(() => ({
+              select: vi.fn(() => ({
+                single: vi.fn(async () => ({
+                  data: { id: "event-id" },
+                  error: null
+                }))
+              }))
+            })),
+            update: vi.fn(() => ({
+              eq: vi.fn(async () => ({
+                data: null,
+                error: null
+              }))
+            }))
+          };
+        }
+
         throw new Error(`Unexpected table ${table}`);
       }),
       rpc

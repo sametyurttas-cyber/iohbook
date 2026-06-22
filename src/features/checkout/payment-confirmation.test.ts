@@ -1,6 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createEntitlementsForPaidOrder } from "@/features/entitlements/service";
-import { sendPaymentConfirmedEmail } from "@/features/email/events";
+import {
+  sendPaymentConfirmedEmail,
+  sendDigitalDeliveryReadyEmail,
+  sendPaymentFailedEmail
+} from "@/features/email/events";
 import { awardBookOrderRewardForPaidOrder } from "@/features/points/service";
 import { captureError } from "@/lib/observability";
 import { confirmIyzicoCheckoutPayment } from "./payment-confirmation";
@@ -10,7 +14,9 @@ vi.mock("@/features/analytics/business-events", () => ({
 }));
 
 vi.mock("@/features/email/events", () => ({
-  sendPaymentConfirmedEmail: vi.fn()
+  sendPaymentConfirmedEmail: vi.fn(),
+  sendDigitalDeliveryReadyEmail: vi.fn(),
+  sendPaymentFailedEmail: vi.fn()
 }));
 
 vi.mock("@/features/entitlements/service", () => ({
@@ -380,6 +386,7 @@ describe("payment confirmation idempotency", () => {
       source: "callback"
     });
     expect(sendPaymentConfirmedEmail).toHaveBeenCalledWith("order-id");
+    expect(sendDigitalDeliveryReadyEmail).toHaveBeenCalledWith("order-id");
     expect(trackServerAnalyticsEvent).toHaveBeenCalledWith({
       eventName: "order_paid",
       idempotencyKey: "order-id",
@@ -417,6 +424,7 @@ describe("payment confirmation idempotency", () => {
       providerTransactionId: "payment-id"
     });
     expect(sendPaymentConfirmedEmail).toHaveBeenCalledWith("order-id");
+    expect(sendDigitalDeliveryReadyEmail).toHaveBeenCalledWith("order-id");
     expect(captureError).toHaveBeenCalledWith(expect.any(Error), {
       operation: "email.payment_confirmed",
       order_id: "order-id",
@@ -444,5 +452,31 @@ describe("payment confirmation idempotency", () => {
     ).resolves.toMatchObject({ paid: true, orderId: "order-id" });
     expect(createEntitlementsForPaidOrder).toHaveBeenCalled();
     expect(sendPaymentConfirmedEmail).toHaveBeenCalled();
+    expect(sendDigitalDeliveryReadyEmail).toHaveBeenCalled();
+  });
+
+  it("triggers payment failed email when payment is not paid", async () => {
+    const result = await confirmIyzicoCheckoutPayment({
+      retrievePayment: async () => ({
+        currency: "TRY",
+        paidPrice: 10,
+        paymentId: "payment-id",
+        paymentStatus: "FAILURE",
+        status: "failure",
+        errorCode: "1000",
+        errorMessage: "Card expired"
+      }),
+      source: "callback",
+      supabase: createSuccessfulPaidSupabaseMock() as never,
+      token: "checkout-token"
+    });
+
+    expect(result).toEqual({
+      idempotent: false,
+      orderId: "order-id",
+      paid: false,
+      providerTransactionId: "payment-id"
+    });
+    expect(sendPaymentFailedEmail).toHaveBeenCalledWith("order-id");
   });
 });

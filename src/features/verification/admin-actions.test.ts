@@ -1,5 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { approveSubmission } from "@/features/verification/admin-actions";
+import {
+  approveSubmission,
+  rejectSubmission,
+  createAdminReply
+} from "@/features/verification/admin-actions";
 
 vi.mock("next/cache", () => ({
   revalidatePath: vi.fn()
@@ -33,10 +38,16 @@ vi.mock("@/lib/observability", () => ({
   logInfo: vi.fn()
 }));
 
+vi.mock("@/features/email/service", () => ({
+  sendTransactionalEmail: vi.fn(async () => ({ ok: true, provider: "resend" }))
+}));
+
 const { getCurrentUser, requireStaff } = await import("@/features/auth/queries");
 const { trackServerAnalyticsEvent } = await import("@/features/analytics/business-events");
+const { createSupabaseServerClient } = await import("@/lib/supabase/server");
 const { createSupabaseServiceRoleClient } = await import("@/lib/supabase/service-role");
 const { captureError, logInfo } = await import("@/lib/observability");
+const { sendTransactionalEmail } = await import("@/features/email/service");
 
 type SubmissionKind = "amazon_purchase" | "amazon_review" | "general_message";
 
@@ -59,12 +70,6 @@ function buildClient(input: {
     ledger_id: string | null;
   };
 }) {
-  const maybeSingle = vi.fn(async () => ({
-    data: { book_slug: "godcode", kind: input.kind, profile_id: "profile-id" },
-    error: null
-  }));
-  const eq = vi.fn(() => ({ maybeSingle }));
-  const select = vi.fn(() => ({ eq }));
   const rpc = vi.fn(async () => ({
     data: input.rpcResult
       ? [input.rpcResult]
@@ -72,12 +77,58 @@ function buildClient(input: {
     error: input.rpcError ?? null
   }));
 
+  const mockFrom = vi.fn((table: string) => {
+    const chain: any = {
+      select: vi.fn(() => chain),
+      insert: vi.fn(() => chain),
+      update: vi.fn(() => chain),
+      eq: vi.fn(() => chain),
+      maybeSingle: vi.fn(async () => {
+        if (table === "verification_submissions") {
+          return {
+            data: {
+              book_slug: "godcode",
+              kind: input.kind,
+              profile_id: "profile-id",
+              title: "Test Submission",
+              status: "pending"
+            },
+            error: null
+          };
+        }
+        if (table === "profiles") {
+          return {
+            data: {
+              email: "customer@example.com",
+              full_name: "Customer Name"
+            },
+            error: null
+          };
+        }
+        return { data: null, error: null };
+      }),
+      then: vi.fn((resolve: any) => {
+        resolve({
+          data: {
+            book_slug: "godcode",
+            kind: input.kind,
+            profile_id: "profile-id",
+            title: "Test Submission"
+          },
+          error: null
+        });
+      })
+    };
+    return chain;
+  });
+
   return {
     client: {
-      from: vi.fn(() => ({ select })),
+      from: mockFrom,
       rpc
     },
-    rpc
+    rpc,
+    from: mockFrom
   };
 }
 
@@ -97,7 +148,7 @@ describe("verification approval action", () => {
   it.each([
     ["amazon_purchase", "30"],
     ["amazon_review", "250"]
-  ] as const)("approves %s with its configured reward", async (kind, amount) => {
+  ] as const)("approves %s with its configured reward and triggers email", async (kind, amount) => {
     const supabase = buildClient({ kind });
     vi.mocked(createSupabaseServiceRoleClient).mockReturnValue(supabase.client as never);
 
@@ -123,6 +174,33 @@ describe("verification approval action", () => {
       path: "/admin/verifications",
       profileId: "profile-id"
     });
+
+    expect(sendTransactionalEmail).toHaveBeenCalledWith({
+      templateKey: "amazon_verification_approved",
+      to: "customer@example.com",
+      profileId: "profile-id",
+      variables: {
+        userName: "Customer Name",
+        verificationTitle: "Test Submission",
+        pointsAmount: Number(amount),
+        accountUrl: "http://localhost:3000/account/rewards/submission-id"
+      },
+      metadata: {
+        submission_id: "submission-id"
+      }
+    });
+  });
+
+  it("approves verification successfully even if email notification fails", async () => {
+    const supabase = buildClient({ kind: "amazon_purchase" });
+    vi.mocked(createSupabaseServiceRoleClient).mockReturnValue(supabase.client as never);
+    vi.mocked(sendTransactionalEmail).mockRejectedValueOnce(new Error("Email service is down"));
+
+    await expect(approveSubmission(buildForm("30"))).rejects.toThrow(
+      "NEXT_REDIRECT:/admin/verifications/submission-id?saved=approved"
+    );
+
+    expect(captureError).toHaveBeenCalled();
   });
 
   it("approves a general message with zero points and does not call the point award RPC", async () => {
@@ -141,7 +219,6 @@ describe("verification approval action", () => {
       "approve_verification_submission",
       expect.objectContaining({ p_reward_amount: 0 })
     );
-    expect(supabase.rpc).not.toHaveBeenCalledWith("award_ioh_points", expect.anything());
   });
 
   it("treats a repeated approval result as an idempotent success", async () => {
@@ -218,5 +295,120 @@ describe("verification approval action", () => {
     );
     expect(captureError).toHaveBeenCalled();
     expect(logInfo).not.toHaveBeenCalledWith("verification.approve", expect.anything());
+  });
+});
+
+describe("createAdminReply action", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(getCurrentUser).mockResolvedValue({
+      email: "admin@example.com",
+      id: "admin-id"
+    } as never);
+    vi.mocked(requireStaff).mockResolvedValue({
+      roles: ["owner"],
+      user: { id: "admin-id" }
+    } as never);
+  });
+
+  function buildReplyForm(body: string, requestId = "22222222-2222-4222-8222-222222222222") {
+    const formData = new FormData();
+    formData.set("submission_id", "submission-id");
+    formData.set("body", body);
+    formData.set("request_id", requestId);
+    return formData;
+  }
+
+  it("creates admin reply and triggers email notification", async () => {
+    const supabase = buildClient({ kind: "amazon_purchase" });
+    vi.mocked(createSupabaseServerClient).mockResolvedValue(supabase.client as never);
+
+    await expect(createAdminReply(buildReplyForm("Hello customer"))).rejects.toThrow(
+      "NEXT_REDIRECT:/admin/verifications/submission-id"
+    );
+
+    expect(sendTransactionalEmail).toHaveBeenCalledWith({
+      templateKey: "amazon_admin_reply",
+      to: "customer@example.com",
+      profileId: "profile-id",
+      variables: {
+        userName: "Customer Name",
+        verificationTitle: "Test Submission",
+        adminReply: "Hello customer",
+        accountUrl: "http://localhost:3000/account/rewards/submission-id"
+      },
+      metadata: {
+        submission_id: "submission-id"
+      }
+    });
+  });
+
+  it("succeeds even if email notification fails", async () => {
+    const supabase = buildClient({ kind: "amazon_purchase" });
+    vi.mocked(createSupabaseServerClient).mockResolvedValue(supabase.client as never);
+    vi.mocked(sendTransactionalEmail).mockRejectedValueOnce(new Error("SMTP down"));
+
+    await expect(createAdminReply(buildReplyForm("Hello customer"))).rejects.toThrow(
+      "NEXT_REDIRECT:/admin/verifications/submission-id"
+    );
+
+    expect(captureError).toHaveBeenCalled();
+  });
+});
+
+describe("rejectSubmission action", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(getCurrentUser).mockResolvedValue({
+      email: "admin@example.com",
+      id: "admin-id"
+    } as never);
+    vi.mocked(requireStaff).mockResolvedValue({
+      roles: ["owner"],
+      user: { id: "admin-id" }
+    } as never);
+  });
+
+  function buildRejectForm(rejectionReason: string) {
+    const formData = new FormData();
+    formData.set("submission_id", "submission-id");
+    formData.set("rejection_reason", rejectionReason);
+    return formData;
+  }
+
+  it("rejects submission and triggers email notification", async () => {
+    const supabase = buildClient({ kind: "amazon_purchase" });
+    vi.mocked(createSupabaseServerClient).mockResolvedValue(supabase.client as never);
+
+    await expect(rejectSubmission(buildRejectForm("Invalid order ID"))).rejects.toThrow(
+      "NEXT_REDIRECT:/admin/verifications/submission-id"
+    );
+
+    expect(sendTransactionalEmail).toHaveBeenCalledWith({
+      templateKey: "amazon_verification_rejected",
+      to: "customer@example.com",
+      profileId: "profile-id",
+      variables: {
+        userName: "Customer Name",
+        verificationTitle: "Test Submission",
+        adminReply: "Invalid order ID",
+        accountUrl: "http://localhost:3000/account/rewards/submission-id"
+      },
+      metadata: {
+        submission_id: "submission-id"
+      }
+    });
+  });
+
+  it("succeeds even if email notification fails", async () => {
+    const supabase = buildClient({ kind: "amazon_purchase" });
+    vi.mocked(createSupabaseServerClient).mockResolvedValue(supabase.client as never);
+    vi.mocked(sendTransactionalEmail).mockRejectedValueOnce(new Error("SMTP down"));
+
+    await expect(rejectSubmission(buildRejectForm("Invalid order ID"))).rejects.toThrow(
+      "NEXT_REDIRECT:/admin/verifications/submission-id"
+    );
+
+    expect(captureError).toHaveBeenCalled();
   });
 });

@@ -151,6 +151,20 @@ export async function adjustAdminUserPoints(formData: FormData) {
       path: "/admin/users",
       profileId
     });
+
+    try {
+      const { sendPointsAwardedEmailIfNeeded } = await import("@/features/points/service");
+      await sendPointsAwardedEmailIfNeeded({
+        profileId,
+        amount,
+        reason: "manual_adjustment_credit",
+        balance: result.balance ?? 0,
+        ledgerId: result.ledger_id,
+        supabase
+      });
+    } catch (emailErr) {
+      console.error("Failed to send manual points award email", emailErr);
+    }
   }
   redirectToUser(profileId, "saved=points");
 }

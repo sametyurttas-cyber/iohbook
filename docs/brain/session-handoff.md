@@ -1,5 +1,17 @@
 # Session Handoff
 
+## 2026-06-23 Production Release
+
+- Analytics, admin dashboard, transactional email, admin email center,
+  campaigns, email preferences and unsubscribe application code passed lint,
+  typecheck, all 215 unit tests and the production build.
+- The application code is being released through the GitHub-connected Vercel
+  production project.
+- Supabase migrations `20260622120000` through `20260623100000` could not be
+  confirmed from this machine because no linked Supabase CLI session exists.
+  Database-backed analytics and email features require those migrations to be
+  applied in order before they can be considered live-ready.
+
 ## Verification Duplicate and Messaging Repair
 
 - Verification submission and customer/admin reply actions now use deterministic
@@ -121,17 +133,61 @@ after they are completed and verified.
   database and PostgREST.
 - Attachment objects are accessed only by server-side service-role storage
   calls after ownership/staff authorization through the application tables.
-- Verification reply/approved/rejected email templates remain a documented
-  TODO; no email failure can currently affect an admin action.
+- Verification reply/approved/rejected email templates and points email templates are implemented locally; no email failure can currently affect an admin action or points reward.
 - This work is not committed or deployed in the current session.
+
+## Unreleased IOH Points Email Work
+
+- Points email notifications for Amazon verification reviews, Amazon verification purchases, manual adjustments, and campaigns are implemented locally.
+- Config object `POINTS_EMAIL_CONFIG` in Points Service regulates allowed reasons and minimum point threshold.
+- Spam and duplicates are prevented via configuration and by checking database transaction application result (`applied: true` and `ledgerId` validity).
+- Email failure is fully caught and logged via observability `captureError`, completely isolating database writes.
+- Migration `20260622180000_prompt_5_points_email_template.sql` is ready to update the points_awarded template in DB.
+- This work is not committed or deployed in the current session.
+
+## Unreleased Email Control Center & Logs (Prompt 6)
+
+- Gated admin routes `/admin/emails`, `/admin/emails/logs`, and `/admin/emails/templates` are implemented.
+- Supports dashboard statistics, detailed audit logs with dynamic template variables metadata inspector, resending transactional failed emails, and template details preview.
+- Support staff has read-only access (actions disabled). Non-authorized roles are redirected.
+- Migration `20260622190000_prompt_6_email_rls.sql` is ready to be applied.
+- This work is not committed or deployed.
+
+## Unreleased Manual Email Sending (Prompt 7)
+
+- Gated admin route `/admin/emails/send` and form page are implemented.
+- Autocomplete user search, template select pre-population, live previews, test email triggers, and a confirmation modal overlay are integrated.
+- Only owner/admin_ops can trigger sends or tests. Support has a read-only preview.
+- This work is not committed or deployed.
+
+## Unreleased Bulk Mail / Campaign Mail System (Prompt 8)
+
+- Created database migration `20260622200000_prompt_8_campaign_tables.sql` for campaign tables.
+- Added `campaign_email` fallback template to `service.ts` with unsubscribe variables.
+- Implemented segment resolver queries in `campaign-queries.ts` for all 7 user segments.
+- Implemented Server Actions in `campaign-actions.ts` (create, test, process, pause, retry).
+- Updated `EmailSubNav` tab component in all email pages.
+- Created listing, creation, and detail routes under `/admin/emails/campaigns`.
+- Created client components `new-campaign-form.tsx` and `campaign-manager.tsx`.
+- Implemented unit tests in `campaign.test.ts`.
+- This work is not committed or deployed.
+
+## Unreleased Mail Preferences & Unsubscribe (Prompt 9)
+
+- Created database migration `20260623100000_prompt_9_email_preferences.sql` for e-mail preferences and unsubscribe tokens.
+- Added preference settings checkboxes UI to the profile page at `/account/profile` (system/transactional emails locked as mandatory).
+- Created public secure unsubscribe landing page route at `/unsubscribe?token=...` using cryptographically hashed tokens.
+- Integrated consent controls and tokenized unsubscribe links inside the campaign builder/sender and user segment queries.
+- Added unit tests in `preferences.test.ts` and updated mocks in `campaign.test.ts`.
+- This work is not committed or deployed.
 
 ## Last Verification
 
 - `npm run typecheck`: passed.
 - `npm run lint`: passed.
-- `npm test`: 35 files, 120 tests passed.
-- `npm run build`: passed; 57 pages generated and all account/admin verification
-  routes were included in the route manifest.
+- `npm test`: 50 files, 215 tests passed.
+- `npm run test:e2e`: 3 passed, 1 skipped (due to missing admin credentials, as expected).
+- `npm run build`: passed; all routes compiled successfully.
 
 ## Live Repair
 

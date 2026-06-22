@@ -184,6 +184,46 @@ export async function createVerificationSubmission(formData: FormData) {
     });
   }
 
+  // Get user profile details for userName
+  let userName = user.email || "Değerli Okurumuz";
+  try {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("full_name")
+      .eq("id", user.id)
+      .maybeSingle();
+    if (profile?.full_name) {
+      userName = profile.full_name;
+    }
+  } catch (profileErr) {
+    console.error("Failed to select profile name", profileErr);
+  }
+
+  // Trigger received email notification
+  try {
+    const { sendTransactionalEmail } = await import("@/features/email/service");
+    await sendTransactionalEmail({
+      templateKey: "amazon_verification_received",
+      to: user.email ?? "",
+      profileId: user.id,
+      variables: {
+        userName,
+        verificationTitle: title,
+        accountUrl: `${process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"}/account/rewards/${submissionId}`
+      },
+      metadata: {
+        submission_id: submissionId,
+        kind
+      }
+    });
+  } catch (emailErr) {
+    captureError(emailErr, {
+      operation: "email.amazon_verification_received",
+      submission_id: submissionId,
+      profile_id: user.id
+    });
+  }
+
   revalidatePath("/account/rewards");
   redirect(`/account/rewards/${submissionId}`);
 }

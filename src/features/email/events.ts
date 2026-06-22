@@ -1,14 +1,13 @@
-import { sendTransactionalEmail } from "@/features/email/delivery";
+import { sendTransactionalEmail as sendNewTransactionalEmail } from "@/features/email/service";
+import { sendTransactionalEmail as sendOldTransactionalEmail } from "@/features/email/delivery";
 import {
-  renderOrderReceivedEmail,
-  renderOrderShippedEmail,
-  renderPaymentConfirmedEmail,
   renderSecurityNoticeEmail,
   renderPasswordResetEmail,
   type OrderEmailData
 } from "@/features/email/templates";
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/service-role";
-import type { FulfillmentShipment, Order, OrderItem } from "@/types/database";
+import type { FulfillmentShipment, Order, OrderItem, FulfillmentType } from "@/types/database";
+import { grantsDigitalAccess } from "@/features/entitlements/entitlement-utils";
 
 type EmailOrder = Order & {
   fulfillment_shipments: FulfillmentShipment[];
@@ -74,65 +73,170 @@ async function getOrderEmailData(orderId: string): Promise<(OrderEmailData & {
 
 export async function sendOrderReceivedEmail(orderId: string) {
   const data = await getOrderEmailData(orderId);
-
   if (!data) {
     return null;
   }
 
-  const template = renderOrderReceivedEmail(data);
-  return sendTransactionalEmail({
-    ...template,
-    eventType: "order_received",
-    orderId: data.orderId,
-    payload: { order_number: data.orderNumber },
+  return sendNewTransactionalEmail({
+    templateKey: "order_received",
+    to: data.to,
     profileId: data.profileId,
-    to: data.to
+    orderId: data.orderId,
+    variables: {
+      userName: data.customerName || "Değerli Okurumuz",
+      orderCode: data.orderNumber,
+      accountUrl: `${buildSiteUrl()}/account/orders/${data.orderId}`
+    },
+    metadata: {
+      order_number: data.orderNumber
+    }
   });
 }
 
 export async function sendPaymentConfirmedEmail(orderId: string) {
   const data = await getOrderEmailData(orderId);
-
   if (!data) {
     return null;
   }
 
-  const template = renderPaymentConfirmedEmail(data);
-  return sendTransactionalEmail({
-    ...template,
-    eventType: "payment_confirmed",
-    orderId: data.orderId,
-    payload: { order_number: data.orderNumber },
+  return sendNewTransactionalEmail({
+    templateKey: "order_paid",
+    to: data.to,
     profileId: data.profileId,
-    to: data.to
+    orderId: data.orderId,
+    variables: {
+      userName: data.customerName || "Değerli Okurumuz",
+      orderCode: data.orderNumber,
+      accountUrl: `${buildSiteUrl()}/account/orders/${data.orderId}`
+    },
+    metadata: {
+      order_number: data.orderNumber
+    }
   });
 }
 
 export async function sendOrderShippedEmail(orderId: string) {
   const data = await getOrderEmailData(orderId);
-
   if (!data) {
     return null;
   }
 
-  const template = renderOrderShippedEmail(data);
-  return sendTransactionalEmail({
-    ...template,
-    eventType: "order_shipped",
-    orderId: data.orderId,
-    payload: {
-      order_number: data.orderNumber,
-      tracking_number: data.trackingNumber,
-      tracking_url: data.trackingUrl
-    },
+  return sendNewTransactionalEmail({
+    templateKey: "order_shipped",
+    to: data.to,
     profileId: data.profileId,
-    to: data.to
+    orderId: data.orderId,
+    variables: {
+      userName: data.customerName || "Değerli Okurumuz",
+      orderCode: data.orderNumber,
+      trackingNumber: data.trackingNumber ?? "Kargo takip numarası hazırlanıyor",
+      trackingUrl: data.trackingUrl ?? `${buildSiteUrl()}/account/orders/${data.orderId}`
+    },
+    metadata: {
+      order_number: data.orderNumber,
+      tracking_number: data.trackingNumber
+    }
+  });
+}
+
+export async function sendDigitalDeliveryReadyEmail(orderId: string) {
+  const data = await getOrderEmailData(orderId);
+  if (!data) {
+    return null;
+  }
+
+  const digitalLines = data.lines.filter((l) => grantsDigitalAccess(l.fulfillmentType as FulfillmentType));
+  if (digitalLines.length === 0) {
+    return null;
+  }
+
+  const bookTitle = digitalLines.map((l) => l.title).join(", ");
+
+  return sendNewTransactionalEmail({
+    templateKey: "digital_delivery_ready",
+    to: data.to,
+    profileId: data.profileId,
+    orderId: data.orderId,
+    variables: {
+      userName: data.customerName || "Değerli Okurumuz",
+      bookTitle,
+      downloadUrl: `${buildSiteUrl()}/account/downloads`
+    },
+    metadata: {
+      order_number: data.orderNumber
+    }
+  });
+}
+
+export async function sendPaymentFailedEmail(orderId: string) {
+  const data = await getOrderEmailData(orderId);
+  if (!data) {
+    return null;
+  }
+
+  return sendNewTransactionalEmail({
+    templateKey: "payment_failed",
+    to: data.to,
+    profileId: data.profileId,
+    orderId: data.orderId,
+    variables: {
+      userName: data.customerName || "Değerli Okurumuz",
+      orderCode: data.orderNumber,
+      checkoutUrl: `${buildSiteUrl()}/checkout`
+    },
+    metadata: {
+      order_number: data.orderNumber
+    }
+  });
+}
+
+export async function sendOrderCancelledEmail(orderId: string) {
+  const data = await getOrderEmailData(orderId);
+  if (!data) {
+    return null;
+  }
+
+  return sendNewTransactionalEmail({
+    templateKey: "order_cancelled",
+    to: data.to,
+    profileId: data.profileId,
+    orderId: data.orderId,
+    variables: {
+      userName: data.customerName || "Değerli Okurumuz",
+      orderCode: data.orderNumber,
+      accountUrl: `${buildSiteUrl()}/account/orders/${data.orderId}`
+    },
+    metadata: {
+      order_number: data.orderNumber
+    }
+  });
+}
+
+export async function sendOrderRefundedEmail(orderId: string) {
+  const data = await getOrderEmailData(orderId);
+  if (!data) {
+    return null;
+  }
+
+  return sendNewTransactionalEmail({
+    templateKey: "order_refunded",
+    to: data.to,
+    profileId: data.profileId,
+    orderId: data.orderId,
+    variables: {
+      userName: data.customerName || "Değerli Okurumuz",
+      orderCode: data.orderNumber,
+      accountUrl: `${buildSiteUrl()}/account/orders/${data.orderId}`
+    },
+    metadata: {
+      order_number: data.orderNumber
+    }
   });
 }
 
 export async function sendPasswordResetEmail(input: { email: string; resetUrl: string }) {
   const template = renderPasswordResetEmail(input);
-  return sendTransactionalEmail({
+  return sendOldTransactionalEmail({
     ...template,
     eventType: "password_reset",
     payload: { email: input.email },
@@ -142,7 +246,7 @@ export async function sendPasswordResetEmail(input: { email: string; resetUrl: s
 
 export async function sendAccountSecurityEmail(input: { email: string; message: string; profileId?: string | null }) {
   const template = renderSecurityNoticeEmail(input);
-  return sendTransactionalEmail({
+  return sendOldTransactionalEmail({
     ...template,
     eventType: "account_security",
     payload: { message: input.message },

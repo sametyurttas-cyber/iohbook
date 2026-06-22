@@ -1,27 +1,55 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   awardBookOrderRewardForPaidOrder,
   awardSignupBonus,
   BOOK_ORDER_REWARD_POINTS,
-  SIGNUP_BONUS_POINTS
+  SIGNUP_BONUS_POINTS,
+  POINTS_EMAIL_CONFIG
 } from "./service";
 
 vi.mock("@/features/analytics/business-events", () => ({
   trackServerAnalyticsEvent: vi.fn()
 }));
 
+vi.mock("@/features/email/service", () => ({
+  sendTransactionalEmail: vi.fn(() => Promise.resolve({ ok: true, provider: "resend", messageId: "msg-id" }))
+}));
+
+vi.mock("@/lib/observability", () => ({
+  captureError: vi.fn(),
+  logInfo: vi.fn(),
+  logWarning: vi.fn(),
+  observeAsync: vi.fn((_name, _context, op) => op())
+}));
+
 const { trackServerAnalyticsEvent } = await import("@/features/analytics/business-events");
+const { sendTransactionalEmail } = await import("@/features/email/service");
 
 function createRpcSupabaseMock(
-  row = { applied: true, balance: 10, ledger_id: "ledger-id" as string | null }
+  row = { applied: true, balance: 10, ledger_id: "ledger-id" as string | null },
+  profileRow = { email: "customer@example.com", full_name: "Test Customer" }
 ) {
   const rpc = vi.fn(async () => ({
     data: [row],
     error: null
   }));
 
+  const from = vi.fn(() => ({
+    select() {
+      return this;
+    },
+    eq() {
+      return this;
+    },
+    maybeSingle: async () => ({
+      data: profileRow,
+      error: null
+    })
+  }));
+
   return {
-    rpc
+    rpc,
+    from
   };
 }
 
@@ -34,14 +62,29 @@ function createOrderLookupSupabaseMock(input: {
   fulfillmentType?: string;
   profileId: string | null;
   productType: string | null;
+  profileRow?: { email: string; full_name: string } | null;
 }) {
   const rpc = vi.fn(async () => ({
     data: [input.awardRow ?? { applied: true, balance: 40, ledger_id: "ledger-id" }],
     error: null
   }));
 
-  return {
-    from: vi.fn(() => ({
+  const from = vi.fn((table: string) => {
+    if (table === "profiles") {
+      return {
+        select() {
+          return this;
+        },
+        eq() {
+          return this;
+        },
+        maybeSingle: async () => ({
+          data: input.profileRow !== undefined ? input.profileRow : { email: "customer@example.com", full_name: "Test Customer" },
+          error: null
+        })
+      };
+    }
+    return {
       select() {
         return this;
       },
@@ -65,7 +108,11 @@ function createOrderLookupSupabaseMock(input: {
         },
         error: null
       })
-    })),
+    };
+  });
+
+  return {
+    from,
     rpc
   };
 }
@@ -241,5 +288,111 @@ describe("IOH points service", () => {
     });
 
     expect(supabase.rpc).not.toHaveBeenCalled();
+  });
+
+  describe("points email notifications", () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+      // Restore default config before each test
+      POINTS_EMAIL_CONFIG.sendEmailForPointReasons = [
+        "amazon_review_verification",
+        "amazon_purchase_verification",
+        "manual_adjustment_credit",
+        "bulk_campaign_reward"
+      ];
+      POINTS_EMAIL_CONFIG.minimumPointsForEmail = 1;
+    });
+
+    it("triggers email for allowed reasons and points amount", async () => {
+      const supabase = createRpcSupabaseMock();
+
+      const { awardIohPoints } = await import("./service");
+      await awardIohPoints({
+        amount: 30,
+        profileId: "profile-id",
+        reason: "amazon_review_verification",
+        supabase: supabase as never
+      });
+
+      expect(sendTransactionalEmail).toHaveBeenCalledWith({
+        templateKey: "points_awarded",
+        to: "customer@example.com",
+        profileId: "profile-id",
+        orderId: null,
+        variables: {
+          userName: "Test Customer",
+          pointsAmount: 30,
+          pointsReason: "Amazon yorum doğrulaması",
+          currentBalance: 10,
+          accountUrl: expect.stringContaining("/account")
+        },
+        metadata: {
+          ledger_id: "ledger-id"
+        }
+      });
+    });
+
+    it("skips email if point reason is not configured in sendEmailForPointReasons", async () => {
+      const supabase = createRpcSupabaseMock();
+
+      const { awardIohPoints } = await import("./service");
+      await awardIohPoints({
+        amount: 30,
+        profileId: "profile-id",
+        reason: "signup_bonus",
+        supabase: supabase as never
+      });
+
+      expect(sendTransactionalEmail).not.toHaveBeenCalled();
+    });
+
+    it("skips email if point amount is less than minimumPointsForEmail", async () => {
+      POINTS_EMAIL_CONFIG.minimumPointsForEmail = 50;
+      const supabase = createRpcSupabaseMock();
+
+      const { awardIohPoints } = await import("./service");
+      await awardIohPoints({
+        amount: 30,
+        profileId: "profile-id",
+        reason: "amazon_review_verification",
+        supabase: supabase as never
+      });
+
+      expect(sendTransactionalEmail).not.toHaveBeenCalled();
+    });
+
+    it("skips email on duplicate/not-applied point transactions", async () => {
+      const supabase = createRpcSupabaseMock({
+        applied: false,
+        balance: 10,
+        ledger_id: null
+      });
+
+      const { awardIohPoints } = await import("./service");
+      await awardIohPoints({
+        amount: 30,
+        profileId: "profile-id",
+        reason: "amazon_review_verification",
+        supabase: supabase as never
+      });
+
+      expect(sendTransactionalEmail).not.toHaveBeenCalled();
+    });
+
+    it("isolates side-effects and does not fail point award even if email fails", async () => {
+      vi.mocked(sendTransactionalEmail).mockRejectedValueOnce(new Error("Email server dead"));
+      const supabase = createRpcSupabaseMock();
+
+      const { awardIohPoints } = await import("./service");
+      const result = await awardIohPoints({
+        amount: 30,
+        profileId: "profile-id",
+        reason: "amazon_review_verification",
+        supabase: supabase as never
+      });
+
+      expect(result.applied).toBe(true);
+      expect(sendTransactionalEmail).toHaveBeenCalled();
+    });
   });
 });

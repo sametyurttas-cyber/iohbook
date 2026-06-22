@@ -12,7 +12,11 @@ import {
   assertPaymentTransition
 } from "@/features/checkout/payment-state";
 import { updateOrThrow } from "@/features/checkout/persistence";
-import { sendPaymentConfirmedEmail } from "@/features/email/events";
+import {
+  sendPaymentConfirmedEmail,
+  sendDigitalDeliveryReadyEmail,
+  sendPaymentFailedEmail
+} from "@/features/email/events";
 import { createEntitlementsForPaidOrder } from "@/features/entitlements/service";
 import { awardBookOrderRewardForPaidOrder } from "@/features/points/service";
 import { captureError, logInfo } from "@/lib/observability";
@@ -249,6 +253,16 @@ export async function confirmIyzicoCheckoutPayment(input: {
       supabase: input.supabase
     });
     try {
+      await sendDigitalDeliveryReadyEmail(attempt.order_id);
+    } catch (error) {
+      captureError(error, {
+        operation: "email.digital_delivery_ready",
+        order_id: attempt.order_id,
+        provider,
+        source: input.source
+      });
+    }
+    try {
       await awardBookOrderRewardForPaidOrder({
         orderId: attempt.order_id,
         supabase: input.supabase
@@ -266,6 +280,17 @@ export async function confirmIyzicoCheckoutPayment(input: {
     } catch (error) {
       captureError(error, {
         operation: "email.payment_confirmed",
+        order_id: attempt.order_id,
+        provider,
+        source: input.source
+      });
+    }
+  } else {
+    try {
+      await sendPaymentFailedEmail(attempt.order_id);
+    } catch (error) {
+      captureError(error, {
+        operation: "email.payment_failed",
         order_id: attempt.order_id,
         provider,
         source: input.source

@@ -10,6 +10,9 @@ export async function updateCommunicationPreferences(formData: FormData) {
   const user = await requireAccountUser();
   const emailMarketing = formData.get("email_marketing_consent") === "on";
   const smsMarketing = formData.get("sms_marketing_consent") === "on";
+  const productUpdates = formData.get("email_product_updates") === "on";
+  const community = formData.get("email_community") === "on";
+  const amazonRewards = formData.get("email_amazon_rewards") === "on";
   const supabase = await createSupabaseServerClient();
 
   const { error: profileError } = await supabase
@@ -22,6 +25,21 @@ export async function updateCommunicationPreferences(formData: FormData) {
 
   if (profileError) {
     redirect("/account/profile?error=preferences");
+  }
+
+  // Sync with granular email_preferences table
+  const { error: prefError } = await supabase
+    .from("email_preferences")
+    .upsert({
+      profile_id: user.id,
+      marketing_enabled: emailMarketing,
+      product_updates_enabled: productUpdates,
+      community_enabled: community,
+      amazon_rewards_enabled: amazonRewards
+    });
+
+  if (prefError) {
+    redirect("/account/profile?error=preferences-sync");
   }
 
   const events = [
