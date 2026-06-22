@@ -2,6 +2,7 @@ import {
   IYZICO_CHECKOUT_RETRIEVE_PATH,
   requestIyzico
 } from "@/features/checkout/checkout-utils";
+import { trackServerAnalyticsEvent } from "@/features/analytics/business-events";
 import {
   isIyzicoPaymentPaid,
   type IyzicoCheckoutRetrieveResponse
@@ -109,7 +110,7 @@ export async function confirmIyzicoCheckoutPayment(input: {
 
   const { data: order, error: orderError } = await input.supabase
     .from("orders")
-    .select("id, cart_id, status")
+    .select("id, cart_id, profile_id, status")
     .eq("id", attempt.order_id)
     .single();
 
@@ -231,6 +232,18 @@ export async function confirmIyzicoCheckoutPayment(input: {
   }
 
   if (paid) {
+    await trackServerAnalyticsEvent({
+      eventName: "order_paid",
+      idempotencyKey: attempt.order_id,
+      metadata: {
+        currency: attempt.currency,
+        order_id: attempt.order_id,
+        provider,
+        revenue_minor: attempt.amount_minor
+      },
+      path: "/checkout/success",
+      profileId: order.profile_id
+    });
     await createEntitlementsForPaidOrder({
       orderId: attempt.order_id,
       supabase: input.supabase

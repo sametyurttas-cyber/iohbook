@@ -1,5 +1,6 @@
 import type { Database, IohPointsReason } from "@/types/database";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { trackServerAnalyticsEvent } from "@/features/analytics/business-events";
 
 type ServiceClient = SupabaseClient<Database>;
 
@@ -81,7 +82,24 @@ export async function awardIohPoints(input: AwardPointsInput) {
     throw error;
   }
 
-  return normalizeAwardRows(data);
+  const result = normalizeAwardRows(data);
+
+  if (result.applied) {
+    await trackServerAnalyticsEvent({
+      eventName: "ioh_points_awarded",
+      ...(result.ledgerId ? { idempotencyKey: result.ledgerId } : {}),
+      metadata: {
+        amount: input.amount,
+        ledger_id: result.ledgerId,
+        order_id: input.orderId ?? null,
+        reason: input.reason
+      },
+      path: "/account/profile",
+      profileId: input.profileId
+    });
+  }
+
+  return result;
 }
 
 export async function awardSignupBonus(input: {

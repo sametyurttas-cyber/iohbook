@@ -618,6 +618,105 @@ export type IohPointLedger = {
   created_at: string;
 };
 
+export type AnalyticsEventName =
+  | "page_view"
+  | "signup"
+  | "login"
+  | "profile_completed"
+  | "product_view"
+  | "book_view"
+  | "add_to_cart"
+  | "checkout_started"
+  | "order_paid"
+  | "download_started"
+  | "download_completed"
+  | "download_failed"
+  | "amazon_verification_submitted"
+  | "amazon_verification_approved"
+  | "amazon_verification_rejected"
+  | "ioh_points_awarded"
+  | "encyclopedia_view";
+
+export type AnalyticsDeviceType = "desktop" | "mobile" | "tablet" | "unknown";
+
+export type AnalyticsEvent = {
+  id: string;
+  event_name: AnalyticsEventName;
+  profile_id: string | null;
+  anonymous_id: string | null;
+  session_id: string | null;
+  path: string;
+  route_group: string | null;
+  referrer: string | null;
+  utm_source: string | null;
+  utm_medium: string | null;
+  utm_campaign: string | null;
+  utm_content: string | null;
+  utm_term: string | null;
+  device_type: AnalyticsDeviceType | null;
+  user_agent_hash: string | null;
+  country: string | null;
+  city: string | null;
+  metadata: Record<string, unknown>;
+  created_at: string;
+};
+
+export type AnalyticsSession = {
+  id: string;
+  anonymous_id: string;
+  profile_id: string | null;
+  first_seen_at: string;
+  last_seen_at: string;
+  entry_path: string;
+  last_path: string;
+  referrer: string | null;
+  utm_source: string | null;
+  utm_medium: string | null;
+  utm_campaign: string | null;
+  device_type: AnalyticsDeviceType | null;
+  page_view_count: number;
+};
+
+export type AnalyticsDailyRollup = {
+  day: string;
+  page_views: number;
+  unique_visitors: number;
+  signups: number;
+  orders_paid: number;
+  revenue_minor: number;
+  downloads: number;
+  amazon_submissions: number;
+  ioh_points_awarded: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type AdminDashboardMetrics = {
+  total_users: number;
+  new_users_7d: number;
+  paid_orders: number;
+  total_revenue_minor: number;
+  total_ioh_distributed: number;
+  pending_verifications: number;
+  total_downloads: number;
+  visitors_today: number;
+  page_views_24h: number;
+};
+
+export type AdminDashboardSeriesPoint = {
+  day: string;
+  page_views: number;
+  new_users: number;
+  paid_orders: number;
+  revenue_minor: number;
+  ioh_points: number;
+};
+
+export type AdminDashboardTopPage = {
+  path: string;
+  views: number;
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -848,6 +947,25 @@ export type Database = {
         Update: Partial<SubmissionReply>;
         Relationships: [];
       };
+      analytics_events: {
+        Row: AnalyticsEvent;
+        Insert: Partial<AnalyticsEvent> & Pick<AnalyticsEvent, "event_name" | "path">;
+        Update: Partial<AnalyticsEvent>;
+        Relationships: [];
+      };
+      analytics_sessions: {
+        Row: AnalyticsSession;
+        Insert: Partial<AnalyticsSession> &
+          Pick<AnalyticsSession, "id" | "anonymous_id" | "entry_path" | "last_path">;
+        Update: Partial<AnalyticsSession>;
+        Relationships: [];
+      };
+      analytics_daily_rollups: {
+        Row: AnalyticsDailyRollup;
+        Insert: Partial<AnalyticsDailyRollup> & Pick<AnalyticsDailyRollup, "day">;
+        Update: Partial<AnalyticsDailyRollup>;
+        Relationships: [];
+      };
       verification_attachments: {
         Row: VerificationAttachment;
         Insert: Partial<VerificationAttachment> &
@@ -861,6 +979,61 @@ export type Database = {
     };
     Views: Record<string, never>;
     Functions: {
+      get_admin_analytics_report: {
+        Args: { p_actor_profile_id: string; p_days?: number };
+        Returns: Record<string, unknown>;
+      };
+      get_admin_dashboard_metrics: {
+        Args: { p_actor_profile_id: string };
+        Returns: AdminDashboardMetrics[];
+      };
+      get_admin_dashboard_series: {
+        Args: { p_actor_profile_id: string; p_days?: number };
+        Returns: AdminDashboardSeriesPoint[];
+      };
+      get_admin_dashboard_top_pages: {
+        Args: { p_actor_profile_id: string; p_limit?: number };
+        Returns: AdminDashboardTopPage[];
+      };
+      refresh_analytics_daily_rollups: {
+        Args: { p_days?: number };
+        Returns: number;
+      };
+      record_business_analytics_event: {
+        Args: {
+          p_event_id: string;
+          p_event_name: AnalyticsEventName;
+          p_profile_id: string | null;
+          p_anonymous_id: string | null;
+          p_path: string;
+          p_route_group: string | null;
+          p_metadata: Record<string, unknown>;
+        };
+        Returns: boolean;
+      };
+      record_analytics_event: {
+        Args: {
+          p_event_id: string;
+          p_event_name: AnalyticsEventName;
+          p_profile_id: string | null;
+          p_anonymous_id: string;
+          p_session_id: string;
+          p_path: string;
+          p_route_group: string | null;
+          p_referrer: string | null;
+          p_utm_source: string | null;
+          p_utm_medium: string | null;
+          p_utm_campaign: string | null;
+          p_utm_content: string | null;
+          p_utm_term: string | null;
+          p_device_type: AnalyticsDeviceType;
+          p_user_agent_hash: string;
+          p_country: string | null;
+          p_city: string | null;
+          p_metadata: Record<string, unknown>;
+        };
+        Returns: boolean;
+      };
       award_ioh_points: {
         Args: {
           p_amount: number;

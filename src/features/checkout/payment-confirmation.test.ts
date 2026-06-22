@@ -5,6 +5,10 @@ import { awardBookOrderRewardForPaidOrder } from "@/features/points/service";
 import { captureError } from "@/lib/observability";
 import { confirmIyzicoCheckoutPayment } from "./payment-confirmation";
 
+vi.mock("@/features/analytics/business-events", () => ({
+  trackServerAnalyticsEvent: vi.fn()
+}));
+
 vi.mock("@/features/email/events", () => ({
   sendPaymentConfirmedEmail: vi.fn()
 }));
@@ -21,6 +25,8 @@ vi.mock("@/lib/observability", () => ({
   captureError: vi.fn(),
   logInfo: vi.fn()
 }));
+
+const { trackServerAnalyticsEvent } = await import("@/features/analytics/business-events");
 
 function createPaidAttemptSupabaseMock() {
   return {
@@ -374,6 +380,18 @@ describe("payment confirmation idempotency", () => {
       source: "callback"
     });
     expect(sendPaymentConfirmedEmail).toHaveBeenCalledWith("order-id");
+    expect(trackServerAnalyticsEvent).toHaveBeenCalledWith({
+      eventName: "order_paid",
+      idempotencyKey: "order-id",
+      metadata: {
+        currency: "TRY",
+        order_id: "order-id",
+        provider: "iyzico",
+        revenue_minor: 1000
+      },
+      path: "/checkout/success",
+      profileId: undefined
+    });
   });
 
   it("keeps payment successful when payment confirmation email fails", async () => {
@@ -405,5 +423,26 @@ describe("payment confirmation idempotency", () => {
       provider: "iyzico",
       source: "callback"
     });
+  });
+
+  it("keeps payment successful when analytics storage is unavailable", async () => {
+    vi.mocked(trackServerAnalyticsEvent).mockResolvedValueOnce(false);
+
+    await expect(
+      confirmIyzicoCheckoutPayment({
+        retrievePayment: async () => ({
+          currency: "TRY",
+          paidPrice: 10,
+          paymentId: "payment-id",
+          paymentStatus: "SUCCESS",
+          status: "success"
+        }),
+        source: "callback",
+        supabase: createSuccessfulPaidSupabaseMock() as never,
+        token: "checkout-token"
+      })
+    ).resolves.toMatchObject({ paid: true, orderId: "order-id" });
+    expect(createEntitlementsForPaidOrder).toHaveBeenCalled();
+    expect(sendPaymentConfirmedEmail).toHaveBeenCalled();
   });
 });

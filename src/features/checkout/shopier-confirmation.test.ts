@@ -8,6 +8,10 @@ import { captureError } from "@/lib/observability";
 import { retrieveShopierOrder } from "@/features/checkout/shopier";
 import { confirmShopierOrderCreatedWebhook, confirmShopierPayment } from "./shopier-confirmation";
 
+vi.mock("@/features/analytics/business-events", () => ({
+  trackServerAnalyticsEvent: vi.fn()
+}));
+
 vi.mock("@/features/email/events", () => ({
   sendPaymentConfirmedEmail: vi.fn()
 }));
@@ -27,6 +31,8 @@ vi.mock("@/features/token-sale/service", () => ({
 vi.mock("@/lib/observability", () => ({
   captureError: vi.fn()
 }));
+
+const { trackServerAnalyticsEvent } = await import("@/features/analytics/business-events");
 
 vi.mock("@/features/checkout/shopier", async (importOriginal) => {
   const original = await importOriginal<typeof import("@/features/checkout/shopier")>();
@@ -391,6 +397,18 @@ describe("shopier confirmation persistence", () => {
       supabase: expect.anything()
     });
     expect(sendPaymentConfirmedEmail).toHaveBeenCalledWith("order-id");
+    expect(trackServerAnalyticsEvent).toHaveBeenCalledWith({
+      eventName: "order_paid",
+      idempotencyKey: "order-id",
+      metadata: {
+        currency: "TRY",
+        order_id: "order-id",
+        provider: "shopier",
+        revenue_minor: 1000
+      },
+      path: "/checkout/success",
+      profileId: undefined
+    });
   });
 
   it("keeps Shopier payment successful when payment confirmation email fails", async () => {

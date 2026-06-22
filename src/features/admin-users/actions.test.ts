@@ -5,6 +5,10 @@ vi.mock("next/cache", () => ({
   revalidatePath: vi.fn()
 }));
 
+vi.mock("@/features/analytics/business-events", () => ({
+  trackServerAnalyticsEvent: vi.fn()
+}));
+
 vi.mock("next/navigation", () => ({
   redirect: (url: string) => {
     throw new Error(`NEXT_REDIRECT:${url}`);
@@ -29,6 +33,7 @@ vi.mock("@/lib/supabase/service-role", () => ({
 }));
 
 const { createSupabaseServiceRoleClient } = await import("@/lib/supabase/service-role");
+const { trackServerAnalyticsEvent } = await import("@/features/analytics/business-events");
 
 function buildForm(amount: string) {
   const formData = new FormData();
@@ -91,6 +96,18 @@ describe("admin users actions", () => {
       p_reason_text: "Destek duzeltmesi"
     });
     expect(supabase.rpc).toHaveBeenCalledTimes(1);
+    expect(trackServerAnalyticsEvent).toHaveBeenCalledWith({
+      eventName: "ioh_points_awarded",
+      idempotencyKey: "ledger-id",
+      metadata: {
+        amount: 5,
+        ledger_id: "ledger-id",
+        order_id: null,
+        reason: "manual_adjustment_credit"
+      },
+      path: "/admin/users",
+      profileId: "profile-id"
+    });
   });
 
   it("prevents negative IOH point balances before writing ledger or audit", async () => {

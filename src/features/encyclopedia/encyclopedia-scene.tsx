@@ -7,8 +7,13 @@ import {
 } from "@/components/layout/ioh-scene-header";
 import { BooksIndexFooter } from "@/features/catalog/books-index-scene";
 import { IohIndexStyles } from "@/features/home/ioh-index-landing";
+import { EncyclopediaTracker } from "@/features/analytics/encyclopedia-tracker";
 import { characters, cities, factions, technologies, timeline } from "./encyclopedia-data";
 import styles from "./encyclopedia-scene.module.css";
+
+function toEntitySlug(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
 
 function ArchiveKicker({ children }: { children: ReactNode }) {
   return <p className={styles.kicker}>{children}</p>;
@@ -115,6 +120,10 @@ function CharactersSection() {
         {characters.map((character, index) => (
           <article
             className={styles.characterScene}
+            data-analytics-encyclopedia
+            data-analytics-entity-slug={character.id}
+            data-analytics-entity-title={character.name}
+            data-analytics-entity-type="character"
             id={character.id}
             key={character.id}
             style={{ "--archive-accent": character.accent } as CSSProperties}
@@ -167,6 +176,10 @@ function CitiesSection() {
         {cities.map((city, index) => (
           <article
             className={styles.cityScene}
+            data-analytics-encyclopedia
+            data-analytics-entity-slug={city.id}
+            data-analytics-entity-title={city.name}
+            data-analytics-entity-type="city"
             id={city.id}
             key={city.id}
             style={{ "--archive-accent": city.accent } as CSSProperties}
@@ -223,6 +236,10 @@ function FactionsSection() {
           {factions.map((faction, index) => (
             <article
               className={styles.factionRow}
+              data-analytics-encyclopedia
+              data-analytics-entity-slug={toEntitySlug(faction.name)}
+              data-analytics-entity-title={faction.name}
+              data-analytics-entity-type="faction"
               key={faction.name}
               style={{ "--archive-accent": faction.accent } as CSSProperties}
             >
@@ -262,6 +279,10 @@ function TechnologiesSection() {
             {technologies.map((technology) => (
               <article
                 className={styles.technologyRow}
+                data-analytics-encyclopedia
+                data-analytics-entity-slug={toEntitySlug(technology.name)}
+                data-analytics-entity-title={technology.name}
+                data-analytics-entity-type="technology"
                 key={technology.name}
                 style={{ "--archive-accent": technology.accent } as CSSProperties}
               >
@@ -296,7 +317,13 @@ function TimelineSection() {
         />
         <ol className={styles.timelineLine}>
           {timeline.map((entry) => (
-            <li key={entry.year}>
+            <li
+              data-analytics-encyclopedia
+              data-analytics-entity-slug={entry.year}
+              data-analytics-entity-title={entry.title}
+              data-analytics-entity-type="timeline"
+              key={entry.year}
+            >
               <span className={styles.timelineNode} aria-hidden="true" />
               <time>{entry.year}</time>
               <h3>{entry.title}</h3>
@@ -331,6 +358,7 @@ export function EncyclopediaScene({ user }: { user: IohSceneHeaderUser }) {
       <div className={styles.vignette} aria-hidden="true" />
       <div className={styles.grain} aria-hidden="true" />
       <IohSceneHeader user={user} />
+      <EncyclopediaTracker />
       <ArchiveRail />
       <main className={styles.main} id="main-content">
         <EncyclopediaHero />

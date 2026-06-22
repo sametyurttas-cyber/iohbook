@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import Link from "next/link";
 import { SubmissionForm } from "@/features/verification/submission-form";
 import styles from "@/features/account/account-scene.module.css";
@@ -22,7 +23,8 @@ const errorMessages: Record<string, string> = {
   attachment_size_exceeded: "Dosya boyutu 10MB ustunde olamaz.",
   attachment_filename_invalid: "Gecersiz dosya adi.",
   setup_required: "Dogrulama modulu veritabani kurulumu henuz tamamlanmadi.",
-  insert_failed: "Gonderi olusturulamadi. Lutfen tekrar dene."
+  insert_failed: "Gonderi olusturulamadi. Lutfen tekrar dene.",
+  request_invalid: "Gonderi guvenlik anahtari olusturulamadi. Sayfayi yenileyip tekrar dene."
 };
 
 export default async function NewSubmissionPage({ searchParams }: NewSubmissionPageProps) {
@@ -47,7 +49,10 @@ export default async function NewSubmissionPage({ searchParams }: NewSubmissionP
           <h3 className={styles.panelTitle}>Gonderi Formu</h3>
           <p className={styles.kicker}>FORM</p>
         </div>
-        <SubmissionForm error={params?.error ? errorMessages[params.error] ?? params.error : undefined} />
+        <SubmissionForm
+          error={params?.error ? errorMessages[params.error] ?? params.error : undefined}
+          requestId={randomUUID()}
+        />
       </section>
     </div>
   );

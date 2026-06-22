@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -196,33 +197,29 @@ export default async function SubmissionDetailPage({
         {replies.length === 0 ? (
           <p className={styles.sectionLead}>Henuz mesaj yok.</p>
         ) : (
-          <div className={styles.ledger}>
+          <div className={styles.messageThread}>
             {replies.map((reply) => (
               <div
                 key={reply.id}
-                className={styles.panel}
-                style={{
-                  padding: "1rem 1.25rem",
-                  borderColor: reply.is_staff ? "rgba(231,197,116,0.22)" : undefined,
-                  background: reply.is_staff ? "rgba(231,197,116,0.04)" : undefined
-                }}
+                className={`${styles.messageBubble} ${
+                  reply.is_staff ? styles.messageBubbleStaff : styles.messageBubbleOwn
+                }`}
               >
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                <div className={styles.messageHeader}>
                   <span className={`${styles.badge} ${reply.is_staff ? styles.badgeGold : ""}`}>
                     {reply.is_staff ? "IOH Ekibi" : "Sen"}
                   </span>
                   <span className={styles.detailMeta}>{formatDateTime(reply.created_at)}</span>
                 </div>
-                <p className={styles.sectionLead}>{reply.body}</p>
+                <p className={styles.messageBody}>{reply.body}</p>
               </div>
             ))}
           </div>
         )}
 
         {replyAllowed ? (
-          <div style={{ marginTop: "1.5rem", paddingTop: "1.25rem", borderTop: "1px solid var(--a-line)" }}>
-            <p className={styles.kicker} style={{ marginBottom: "0.75rem" }}>YANIT YAZ</p>
-            <ReplyForm submissionId={submission.id} />
+          <div>
+            <ReplyForm requestId={randomUUID()} submissionId={submission.id} />
           </div>
         ) : (
           <div style={{ marginTop: "1rem", paddingTop: "1rem", borderTop: "1px solid var(--a-line)" }}>

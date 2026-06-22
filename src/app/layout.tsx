@@ -2,7 +2,8 @@ import "@/styles/globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata, Viewport } from "next";
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
+import { AnalyticsTracker } from "@/features/analytics/client";
 import { siteConfig } from "@/lib/seo";
 
 export const metadata: Metadata = {
@@ -75,6 +76,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
           Icerige gec
         </a>
         {children}
+        <Suspense fallback={null}>
+          <AnalyticsTracker />
+        </Suspense>
         <Analytics />
         <SpeedInsights />
       </body>

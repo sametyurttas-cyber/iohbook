@@ -6,6 +6,7 @@ import {
   getSignUpRedirectError,
   getSignUpRedirectPath
 } from "@/features/auth/error-utils";
+import { trackServerAnalyticsEvent } from "@/features/analytics/business-events";
 import { mergeAnonymousCartIntoProfileCart } from "@/features/cart/merge";
 import { sendAccountSecurityEmail, sendPasswordResetEmail } from "@/features/email/events";
 import { awardSignupBonus } from "@/features/points/service";
@@ -43,6 +44,12 @@ export async function signInWithPassword(formData: FormData) {
 
   if (user) {
     await mergeAnonymousCartIntoProfileCart(user.id);
+    await trackServerAnalyticsEvent({
+      eventName: "login",
+      metadata: { method: "password" },
+      path: "/sign-in",
+      profileId: user.id
+    });
   }
 
   await sendAccountSecurityEmail({
@@ -89,6 +96,22 @@ export async function signUpWithPassword(formData: FormData) {
 
   if (data.user) {
     await mergeAnonymousCartIntoProfileCart(data.user.id);
+    await trackServerAnalyticsEvent({
+      eventName: "signup",
+      idempotencyKey: data.user.id,
+      metadata: { method: "password" },
+      path: "/sign-up",
+      profileId: data.user.id
+    });
+    if (fullName) {
+      await trackServerAnalyticsEvent({
+        eventName: "profile_completed",
+        idempotencyKey: data.user.id,
+        metadata: { source: "signup" },
+        path: "/sign-up",
+        profileId: data.user.id
+      });
+    }
     try {
       await awardSignupBonus({
         profileId: data.user.id,

@@ -10,6 +10,7 @@ import {
   verifyShopierCallbackSignature,
   verifyShopierWebhookSignature
 } from "@/features/checkout/shopier";
+import { trackServerAnalyticsEvent } from "@/features/analytics/business-events";
 import {
   assertOrderTransition,
   assertPaymentTransition,
@@ -41,6 +42,7 @@ type ShopierOrder = {
   cart_id: string | null;
   customer_email: string;
   id: string;
+  profile_id: string | null;
   status: OrderStatus;
 };
 
@@ -315,6 +317,18 @@ async function applyShopierPaymentResult(input: {
   }
 
   if (paid) {
+    await trackServerAnalyticsEvent({
+      eventName: "order_paid",
+      idempotencyKey: input.attempt.order_id,
+      metadata: {
+        currency: input.attempt.currency,
+        order_id: input.attempt.order_id,
+        provider: "shopier",
+        revenue_minor: input.attempt.amount_minor
+      },
+      path: "/checkout/success",
+      profileId: input.order.profile_id
+    });
     await reconcilePaidBookAccess({
       orderId: input.attempt.order_id,
       supabase: input.supabase
@@ -459,7 +473,7 @@ export async function confirmShopierPayment(input: {
 
   const { data: order, error: orderError } = await input.supabase
     .from("orders")
-    .select("id, cart_id, customer_email, status")
+    .select("id, cart_id, customer_email, profile_id, status")
     .eq("id", attempt.order_id)
     .single();
 
@@ -627,7 +641,7 @@ export async function confirmShopierOrderCreatedWebhook(input: {
 
   const { data: order, error: orderError } = await input.supabase
     .from("orders")
-    .select("id, cart_id, customer_email, status")
+    .select("id, cart_id, customer_email, profile_id, status")
     .eq("id", attempt.order_id)
     .single();
 

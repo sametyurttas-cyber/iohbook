@@ -6,6 +6,12 @@ import {
   SIGNUP_BONUS_POINTS
 } from "./service";
 
+vi.mock("@/features/analytics/business-events", () => ({
+  trackServerAnalyticsEvent: vi.fn()
+}));
+
+const { trackServerAnalyticsEvent } = await import("@/features/analytics/business-events");
+
 function createRpcSupabaseMock(
   row = { applied: true, balance: 10, ledger_id: "ledger-id" as string | null }
 ) {
@@ -87,6 +93,18 @@ describe("IOH points service", () => {
       p_order_id: null,
       p_profile_id: "profile-id",
       p_reason: "signup_bonus"
+    });
+    expect(trackServerAnalyticsEvent).toHaveBeenCalledWith({
+      eventName: "ioh_points_awarded",
+      idempotencyKey: "ledger-id",
+      metadata: {
+        amount: SIGNUP_BONUS_POINTS,
+        ledger_id: "ledger-id",
+        order_id: null,
+        reason: "signup_bonus"
+      },
+      path: "/account/profile",
+      profileId: "profile-id"
     });
   });
 

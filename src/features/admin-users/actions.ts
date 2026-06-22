@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { trackServerAnalyticsEvent } from "@/features/analytics/business-events";
 import {
   requireAdminUsersPointManager,
   requireAdminUsersReadStaff
@@ -137,5 +138,19 @@ export async function adjustAdminUserPoints(formData: FormData) {
     ledger_id: result?.ledger_id ?? null,
     profile_id: profileId
   });
+  if (amount > 0 && result?.ledger_id) {
+    await trackServerAnalyticsEvent({
+      eventName: "ioh_points_awarded",
+      idempotencyKey: result.ledger_id,
+      metadata: {
+        amount,
+        ledger_id: result.ledger_id,
+        order_id: null,
+        reason: "manual_adjustment_credit"
+      },
+      path: "/admin/users",
+      profileId
+    });
+  }
   redirectToUser(profileId, "saved=points");
 }

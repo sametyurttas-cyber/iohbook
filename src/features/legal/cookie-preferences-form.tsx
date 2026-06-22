@@ -40,6 +40,7 @@ export function CookiePreferencesForm() {
     document.cookie = `${COOKIE_NAME}=${value}; Path=/; Max-Age=31536000; SameSite=Lax`;
     setPreferences(next);
     setSaved(true);
+    window.dispatchEvent(new CustomEvent("ioh:cookie-preferences", { detail: next }));
   }
 
   return (

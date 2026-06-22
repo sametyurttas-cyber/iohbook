@@ -11,6 +11,10 @@ vi.mock("@/features/auth/queries", () => ({
   requireUser: vi.fn(async () => ({ email: "reader@example.com", id: "profile-id" }))
 }));
 
+vi.mock("@/features/analytics/business-events", () => ({
+  trackServerAnalyticsEvent: vi.fn()
+}));
+
 vi.mock("@/lib/observability", () => ({
   captureError: vi.fn(),
   logInfo: vi.fn()
@@ -21,6 +25,7 @@ vi.mock("@/lib/supabase/service-role", () => ({
 }));
 
 const { createSupabaseServiceRoleClient } = await import("@/lib/supabase/service-role");
+const { trackServerAnalyticsEvent } = await import("@/features/analytics/business-events");
 const { captureError } = await import("@/lib/observability");
 
 function buildFormData(entitlementId = "entitlement-id") {
@@ -152,6 +157,18 @@ describe("downloadEntitlement", () => {
         entity_id: "entitlement-id"
       })
     ]);
+    expect(trackServerAnalyticsEvent).toHaveBeenCalledWith({
+      eventName: "download_completed",
+      metadata: { entitlement_id: "entitlement-id" },
+      path: "/account/downloads",
+      profileId: "profile-id"
+    });
+    expect(JSON.stringify(vi.mocked(trackServerAnalyticsEvent).mock.calls)).not.toContain(
+      "signed.example"
+    );
+    expect(JSON.stringify(vi.mocked(trackServerAnalyticsEvent).mock.calls)).not.toContain(
+      "ebooks/godcode.pdf"
+    );
   });
 
   it("does not create a signed URL when the entitlement is not owned by the user", async () => {

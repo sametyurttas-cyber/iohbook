@@ -14,6 +14,10 @@ vi.mock("@/features/auth/queries", () => ({
   getCurrentUser: vi.fn(async () => null)
 }));
 
+vi.mock("@/features/analytics/business-events", () => ({
+  trackServerAnalyticsEvent: vi.fn()
+}));
+
 vi.mock("@/features/cart/cart-cookie", () => ({
   getOrCreateAnonymousCartId: vi.fn(async () => "anon-id")
 }));
@@ -23,6 +27,7 @@ vi.mock("@/lib/supabase/service-role", () => ({
 }));
 
 const { createSupabaseServiceRoleClient } = await import("@/lib/supabase/service-role");
+const { trackServerAnalyticsEvent } = await import("@/features/analytics/business-events");
 const { addToCart } = await import("./actions");
 
 const variantId = "11111111-1111-4111-8111-111111111111";
@@ -157,5 +162,11 @@ describe("addToCart MVP fulfillment guards", () => {
       unit_price_minor: 1000,
       variant_id: variantId
     });
+    expect(trackServerAnalyticsEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        eventName: "add_to_cart",
+        metadata: expect.objectContaining({ quantity: 1, variant_id: variantId })
+      })
+    );
   });
 });

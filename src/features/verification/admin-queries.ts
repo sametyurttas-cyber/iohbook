@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/features/auth/queries";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/service-role";
 import { VERIFICATION_BUCKET } from "@/features/verification/config";
+import { collapseDuplicateSubmissions } from "@/features/verification/idempotency";
 import type {
   Profile,
   SubmissionKind,
@@ -80,7 +81,9 @@ export async function listSubmissionsForAdmin(
     throw error;
   }
 
-  const submissions = (data ?? []) as unknown as VerificationSubmission[];
+  const submissions = collapseDuplicateSubmissions(
+    (data ?? []) as unknown as VerificationSubmission[]
+  );
   if (submissions.length === 0) {
     return [];
   }

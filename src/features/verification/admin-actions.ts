@@ -2,12 +2,17 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { trackServerAnalyticsEvent } from "@/features/analytics/business-events";
 import { requireStaff } from "@/features/auth/queries";
 import { getCurrentUser } from "@/features/auth/queries";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/service-role";
 import { captureError, logInfo } from "@/lib/observability";
 import { getVerificationRewardConfig } from "@/features/verification/config";
+import {
+  createVerificationRecordId,
+  isValidVerificationRequestId
+} from "@/features/verification/idempotency";
 import type { SubmissionStatus } from "@/types/database";
 
 async function requireAdminActor() {
@@ -98,10 +103,18 @@ export async function createAdminReply(formData: FormData) {
   const { user } = await requireAdminActor();
   const submissionId = String(formData.get("submission_id") ?? "");
   const body = String(formData.get("body") ?? "").trim();
+  const requestId = String(formData.get("request_id") ?? "");
 
-  if (!submissionId || !body) {
+  if (!submissionId || !body || !isValidVerificationRequestId(requestId)) {
     redirect(`/admin/verifications/${submissionId}?error=reply_empty`);
   }
+
+  const replyId = createVerificationRecordId(
+    "verification-admin-reply",
+    submissionId,
+    user.id,
+    requestId
+  );
 
   const supabase = await createSupabaseServerClient();
 
@@ -117,12 +130,17 @@ export async function createAdminReply(formData: FormData) {
 
   const { error: replyError } = await supabase.from("submission_replies").insert({
     body,
+    id: replyId,
     is_staff: true,
     profile_id: user.id,
     submission_id: submissionId
   });
 
   if (replyError) {
+    if (replyError.code === "23505") {
+      redirect(`/admin/verifications/${submissionId}`);
+    }
+
     captureError(replyError, { operation: "verification.admin_reply", submission_id: submissionId });
     redirect(`/admin/verifications/${submissionId}?error=reply_failed`);
   }
@@ -174,7 +192,7 @@ export async function rejectSubmission(formData: FormData) {
 
   const supabase = await createSupabaseServerClient();
 
-  const { error } = await supabase
+  const { data: rejectedSubmission, error } = await supabase
     .from("verification_submissions")
     .update({
       rejection_reason: rejectionReason,
@@ -182,7 +200,9 @@ export async function rejectSubmission(formData: FormData) {
       reviewed_by: user.id,
       status: "rejected" as SubmissionStatus
     })
-    .eq("id", submissionId);
+    .eq("id", submissionId)
+    .select("profile_id, kind, book_slug")
+    .maybeSingle();
 
   if (error) {
     captureError(error, { operation: "verification.reject", submission_id: submissionId });
@@ -195,6 +215,23 @@ export async function rejectSubmission(formData: FormData) {
   });
 
   logInfo("verification.reject", { submission_id: submissionId, actor: user.id });
+
+  if (
+    rejectedSubmission?.kind === "amazon_purchase" ||
+    rejectedSubmission?.kind === "amazon_review"
+  ) {
+    await trackServerAnalyticsEvent({
+      eventName: "amazon_verification_rejected",
+      idempotencyKey: submissionId,
+      metadata: {
+        book_slug: rejectedSubmission.book_slug,
+        kind: rejectedSubmission.kind,
+        submission_id: submissionId
+      },
+      path: "/admin/verifications",
+      profileId: rejectedSubmission.profile_id
+    });
+  }
 
   revalidatePath("/admin/verifications");
   revalidatePath(`/admin/verifications/${submissionId}`);
@@ -305,7 +342,7 @@ export async function approveSubmission(formData: FormData) {
   const supabase = createSupabaseServiceRoleClient();
   const { data: submission, error: submissionError } = await supabase
     .from("verification_submissions")
-    .select("kind")
+    .select("kind, profile_id, book_slug")
     .eq("id", submissionId)
     .maybeSingle();
 
@@ -355,6 +392,35 @@ export async function approveSubmission(formData: FormData) {
     reward_amount: rewardAmount,
     submission_id: submissionId
   });
+
+  if (submission.kind === "amazon_purchase" || submission.kind === "amazon_review") {
+    await trackServerAnalyticsEvent({
+      eventName: "amazon_verification_approved",
+      idempotencyKey: submissionId,
+      metadata: {
+        book_slug: submission.book_slug,
+        kind: submission.kind,
+        reward_amount: rewardAmount,
+        submission_id: submissionId
+      },
+      path: "/admin/verifications",
+      profileId: submission.profile_id
+    });
+  }
+  if (rewardAmount > 0 && result.ledger_id) {
+    await trackServerAnalyticsEvent({
+      eventName: "ioh_points_awarded",
+      idempotencyKey: result.ledger_id,
+      metadata: {
+        amount: rewardAmount,
+        ledger_id: result.ledger_id,
+        order_id: null,
+        reason: submission.kind
+      },
+      path: "/account/rewards",
+      profileId: submission.profile_id
+    });
+  }
 
   revalidatePath("/admin/verifications");
   revalidatePath(`/admin/verifications/${submissionId}`);

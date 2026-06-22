@@ -1,0 +1,233 @@
+.heroActions,
+.rangeNav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rangeNav {
+  padding: 0.25rem;
+  border: 1px solid var(--ad-line);
+  border-radius: 999px;
+  background: rgba(5, 6, 10, 0.5);
+}
+
+.rangeLink,
+.readOnly {
+  padding: 0.45rem 0.72rem;
+  border-radius: 999px;
+  color: var(--ad-muted);
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.rangeActive {
+  color: #08090d;
+  background: var(--ad-gold);
+}
+
+.readOnly {
+  border: 1px solid rgba(111, 155, 255, 0.3);
+  color: var(--ad-blue);
+}
+
+.notice {
+  margin-bottom: 1rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid rgba(231, 197, 116, 0.3);
+  border-radius: 8px;
+  color: var(--ad-gold);
+  background: rgba(231, 197, 116, 0.06);
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.metric,
+.panel {
+  border: 1px solid var(--ad-line);
+  border-radius: 10px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0.006));
+}
+
+.metric {
+  min-height: 104px;
+  padding: 1rem;
+}
+
+.metric p {
+  margin: 0;
+  color: var(--ad-muted);
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.metric strong {
+  display: block;
+  margin-top: 1.2rem;
+  color: var(--ad-gold);
+  font-family: var(--font-mono);
+  font-size: clamp(1.05rem, 2vw, 1.5rem);
+}
+
+.panel {
+  min-width: 0;
+  margin-bottom: 1rem;
+  padding: 1.1rem;
+}
+
+.panelHeading {
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--ad-line);
+}
+
+.panelTitle {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 550;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.timeline {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(3px, 1fr);
+  align-items: end;
+  gap: 3px;
+  height: 150px;
+  overflow: hidden;
+  border-bottom: 1px solid var(--ad-line);
+}
+
+.timelineBar {
+  min-height: 1px;
+  border-radius: 2px 2px 0 0;
+  background: var(--ad-blue);
+  opacity: 0.8;
+}
+
+.breakdown,
+.funnel {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.breakdownMeta,
+.funnelRow {
+  display: grid;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+}
+
+.breakdownMeta {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.breakdownMeta span {
+  overflow: hidden;
+  color: var(--ad-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.barTrack {
+  height: 5px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.barFill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--ad-gold);
+}
+
+.funnelRow {
+  grid-template-columns: 32px minmax(0, 1fr) auto 70px;
+  min-height: 44px;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid rgba(242, 239, 232, 0.07);
+  border-radius: 6px;
+}
+
+.stepNumber,
+.conversion,
+.mono,
+.subtle {
+  font-family: var(--font-mono);
+}
+
+.stepNumber { color: var(--ad-gold); font-size: 0.55rem; }
+.funnelName { color: var(--ad-muted); }
+.conversion { color: var(--ad-blue); font-size: 0.58rem; text-align: right; }
+
+.panel :global(.dark-panel) {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.empty,
+.emptyCell {
+  color: var(--ad-muted) !important;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.empty { padding: 2rem 1rem; }
+.emptyCell { height: 96px; }
+.mono { font-size: 0.72rem; }
+
+.typeBadge {
+  display: inline-flex;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid rgba(111, 155, 255, 0.3);
+  border-radius: 999px;
+  color: var(--ad-blue);
+  font-family: var(--font-mono);
+  font-size: 0.48rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.subtle {
+  display: block;
+  margin-top: 0.3rem;
+  color: var(--ad-muted);
+  font-size: 0.6rem;
+}
+
+@media (max-width: 1180px) {
+  .metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 760px) {
+  .metrics,
+  .grid2 { grid-template-columns: 1fr; }
+  .heroActions { align-items: flex-start; }
+  .funnelRow { grid-template-columns: 28px minmax(0, 1fr) auto; }
+  .conversion { grid-column: 2 / -1; text-align: left; }
+}

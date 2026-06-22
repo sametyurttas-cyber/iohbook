@@ -3,11 +3,16 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAccountUser } from "@/features/account/queries";
+import { trackServerAnalyticsEvent } from "@/features/analytics/business-events";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/service-role";
 import { captureError, logInfo } from "@/lib/observability";
 import { VERIFICATION_BUCKET } from "@/features/verification/config";
 import { isVerificationSchemaUnavailableError } from "@/features/verification/errors";
+import {
+  createVerificationRecordId,
+  isValidVerificationRequestId
+} from "@/features/verification/idempotency";
 import {
   sanitizeFileName,
   requiresAttachment,
@@ -30,6 +35,13 @@ export async function createVerificationSubmission(formData: FormData) {
   const amazonOrderId = String(formData.get("amazon_order_id") ?? "").trim() || null;
   const amazonReviewUrl = String(formData.get("amazon_review_url") ?? "").trim() || null;
   const amazonProfileName = String(formData.get("amazon_profile_name") ?? "").trim() || null;
+  const requestId = String(formData.get("request_id") ?? "");
+
+  if (!isValidVerificationRequestId(requestId)) {
+    redirect("/account/rewards/new?error=request_invalid");
+  }
+
+  const submissionId = createVerificationRecordId("verification-submission", user.id, requestId);
 
   const input: SubmissionInput = {
     amazonOrderId: amazonOrderId ?? undefined,
@@ -75,6 +87,7 @@ export async function createVerificationSubmission(formData: FormData) {
   const { data: submission, error: insertError } = await supabase
     .from("verification_submissions")
     .insert({
+      id: submissionId,
       amazon_order_id: amazonOrderId,
       amazon_profile_name: amazonProfileName,
       amazon_review_url: amazonReviewUrl,
@@ -88,6 +101,19 @@ export async function createVerificationSubmission(formData: FormData) {
     .single();
 
   if (insertError || !submission) {
+    if (insertError?.code === "23505") {
+      const { data: existing } = await supabase
+        .from("verification_submissions")
+        .select("id")
+        .eq("id", submissionId)
+        .eq("profile_id", user.id)
+        .maybeSingle();
+
+      if (existing) {
+        redirect(`/account/rewards/${existing.id}`);
+      }
+    }
+
     captureError(insertError, {
       operation: "verification.create_submission",
       profile_id: user.id
@@ -98,8 +124,6 @@ export async function createVerificationSubmission(formData: FormData) {
         : "/account/rewards/new?error=insert_failed"
     );
   }
-
-  const submissionId = submission.id;
 
   for (const { file, sanitized } of validAttachments) {
     const storagePath = `${user.id}/${submissionId}/${sanitized}`;
@@ -146,6 +170,20 @@ export async function createVerificationSubmission(formData: FormData) {
     submission_id: submissionId
   });
 
+  if (kind === "amazon_purchase" || kind === "amazon_review") {
+    await trackServerAnalyticsEvent({
+      eventName: "amazon_verification_submitted",
+      idempotencyKey: submissionId,
+      metadata: {
+        book_slug: bookSlug,
+        kind,
+        submission_id: submissionId
+      },
+      path: "/account/rewards/new",
+      profileId: user.id
+    });
+  }
+
   revalidatePath("/account/rewards");
   redirect(`/account/rewards/${submissionId}`);
 }
@@ -156,10 +194,18 @@ export async function createSubmissionReply(formData: FormData) {
 
   const submissionId = String(formData.get("submission_id") ?? "");
   const body = String(formData.get("body") ?? "").trim();
+  const requestId = String(formData.get("request_id") ?? "");
 
-  if (!submissionId || !body) {
+  if (!submissionId || !body || !isValidVerificationRequestId(requestId)) {
     redirect(`/account/rewards/${submissionId}?error=reply_empty`);
   }
+
+  const replyId = createVerificationRecordId(
+    "verification-customer-reply",
+    submissionId,
+    user.id,
+    requestId
+  );
 
   const { data: submission } = await supabase
     .from("verification_submissions")
@@ -181,12 +227,17 @@ export async function createSubmissionReply(formData: FormData) {
 
   const { error } = await supabase.from("submission_replies").insert({
     body,
+    id: replyId,
     is_staff: false,
     profile_id: user.id,
     submission_id: submissionId
   });
 
   if (error) {
+    if (error.code === "23505") {
+      redirect(`/account/rewards/${submissionId}`);
+    }
+
     captureError(error, {
       operation: "verification.create_reply",
       profile_id: user.id,

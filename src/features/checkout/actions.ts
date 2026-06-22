@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { getCurrentUser } from "@/features/auth/queries";
+import { trackServerAnalyticsEvent } from "@/features/analytics/business-events";
 import { getActiveCartSnapshot } from "@/features/cart/queries";
 import { validateCartQuantity } from "@/features/cart/cart-rules";
 import { getDeliveryOption } from "@/features/checkout/delivery-options";
@@ -473,6 +474,22 @@ export async function startCheckoutPayment(formData: FormData) {
     order_id: order.id,
     provider: provider.id,
     status: paymentResult.normalizedStatus
+  });
+
+  await trackServerAnalyticsEvent({
+    anonymousId: cart.cart.anonymous_id,
+    eventName: "checkout_started",
+    idempotencyKey: order.id,
+    metadata: {
+      amount_minor: totalMinor,
+      cart_id: cart.cart.id,
+      currency: order.currency,
+      item_count: cart.lines.reduce((total, line) => total + line.quantity, 0),
+      order_id: order.id,
+      provider: provider.id
+    },
+    path: "/checkout",
+    profileId: user?.id ?? null
   });
 
   await sendOrderReceivedEmail(order.id);

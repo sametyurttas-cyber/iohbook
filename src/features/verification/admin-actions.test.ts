@@ -5,6 +5,10 @@ vi.mock("next/cache", () => ({
   revalidatePath: vi.fn()
 }));
 
+vi.mock("@/features/analytics/business-events", () => ({
+  trackServerAnalyticsEvent: vi.fn()
+}));
+
 vi.mock("next/navigation", () => ({
   redirect: (url: string) => {
     throw new Error(`NEXT_REDIRECT:${url}`);
@@ -30,6 +34,7 @@ vi.mock("@/lib/observability", () => ({
 }));
 
 const { getCurrentUser, requireStaff } = await import("@/features/auth/queries");
+const { trackServerAnalyticsEvent } = await import("@/features/analytics/business-events");
 const { createSupabaseServiceRoleClient } = await import("@/lib/supabase/service-role");
 const { captureError, logInfo } = await import("@/lib/observability");
 
@@ -55,7 +60,7 @@ function buildClient(input: {
   };
 }) {
   const maybeSingle = vi.fn(async () => ({
-    data: { kind: input.kind },
+    data: { book_slug: "godcode", kind: input.kind, profile_id: "profile-id" },
     error: null
   }));
   const eq = vi.fn(() => ({ maybeSingle }));
@@ -105,6 +110,18 @@ describe("verification approval action", () => {
       p_actor_profile_id: "admin-id",
       p_reward_amount: Number(amount),
       p_submission_id: "submission-id"
+    });
+    expect(trackServerAnalyticsEvent).toHaveBeenCalledWith({
+      eventName: "amazon_verification_approved",
+      idempotencyKey: "submission-id",
+      metadata: {
+        book_slug: "godcode",
+        kind,
+        reward_amount: Number(amount),
+        submission_id: "submission-id"
+      },
+      path: "/admin/verifications",
+      profileId: "profile-id"
     });
   });
 

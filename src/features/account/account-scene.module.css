@@ -846,6 +846,342 @@
   font-weight: 500;
 }
 
+/* ---------- VERIFICATION / MESSAGES ---------- */
+.panel {
+  display: grid;
+  gap: 1.25rem;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border: 1px solid var(--a-line);
+  border-radius: 12px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0.008));
+}
+
+.panelHead,
+.detailHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.25rem;
+}
+
+.detailHead {
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.panelTitle,
+.detailTitle {
+  margin: 0;
+  color: var(--a-ink);
+  font-size: clamp(1.15rem, 2vw, 1.45rem);
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.detailTitle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+}
+
+.detailMeta,
+.formHint {
+  color: var(--a-muted);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  line-height: 1.6;
+}
+
+.backLink {
+  color: var(--a-ink);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.backLink:hover,
+.backLink:focus-visible {
+  color: var(--a-gold);
+}
+
+.verificationForm,
+.formGrid,
+.formLabel,
+.replyComposer {
+  display: grid;
+}
+
+.verificationForm {
+  gap: 1.75rem;
+}
+
+.formGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.1rem;
+}
+
+.formLabel,
+.replyComposer {
+  gap: 0.65rem;
+}
+
+.formWide {
+  grid-column: 1 / -1;
+}
+
+.formLabelText,
+.formLegend {
+  color: var(--a-ink);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.formLabel input,
+.formLabel select,
+.formLabel textarea {
+  width: 100%;
+  min-height: 48px;
+  padding: 0.8rem 0.95rem;
+  border: 1px solid rgba(242, 239, 232, 0.14);
+  border-radius: 7px;
+  outline: none;
+  background: rgba(5, 6, 10, 0.72);
+  color: var(--a-ink);
+  font: inherit;
+  line-height: 1.5;
+  transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+
+.formLabel textarea {
+  min-height: 138px;
+  resize: vertical;
+}
+
+.formLabel input:focus,
+.formLabel select:focus,
+.formLabel textarea:focus {
+  border-color: rgba(231, 197, 116, 0.62);
+  background: rgba(8, 9, 14, 0.94);
+  box-shadow: 0 0 0 3px rgba(231, 197, 116, 0.08);
+}
+
+.formLabel input::placeholder,
+.formLabel textarea::placeholder {
+  color: rgba(158, 160, 173, 0.72);
+}
+
+.kindFieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.formLegend {
+  margin-bottom: 0.85rem;
+}
+
+.kindGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.kindOption {
+  display: grid;
+  align-content: start;
+  gap: 0.5rem;
+  min-height: 132px;
+  padding: 1rem;
+  border: 1px solid var(--a-line);
+  border-radius: 8px;
+  background: rgba(5, 6, 10, 0.48);
+  color: var(--a-muted);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 180ms ease, background 180ms ease, color 180ms ease;
+}
+
+.kindOption strong {
+  color: var(--a-ink);
+  font-size: 0.92rem;
+}
+
+.kindOption > span:last-child {
+  font-size: 0.72rem;
+  line-height: 1.55;
+}
+
+.kindOption:hover,
+.kindOption:focus-visible,
+.kindOptionActive {
+  border-color: rgba(231, 197, 116, 0.55);
+  background: rgba(231, 197, 116, 0.07);
+}
+
+.kindIndex {
+  color: var(--a-gold);
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.14em;
+}
+
+.formModeIntro {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.9rem 1rem;
+  border-left: 2px solid var(--a-gold);
+  background: rgba(231, 197, 116, 0.04);
+}
+
+.formModeIntro p,
+.formFooter p {
+  margin: 0;
+  color: var(--a-muted);
+  font-size: 0.78rem;
+  line-height: 1.6;
+}
+
+.fileInput {
+  padding: 0.55rem !important;
+}
+
+.fileInput::file-selector-button {
+  margin-right: 0.8rem;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid rgba(231, 197, 116, 0.35);
+  border-radius: 5px;
+  background: rgba(231, 197, 116, 0.08);
+  color: var(--a-gold);
+  cursor: pointer;
+}
+
+.fileList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.fileList span {
+  padding: 0.35rem 0.55rem;
+  border: 1px solid var(--a-line);
+  border-radius: 999px;
+  color: var(--a-muted);
+  font-size: 0.7rem;
+}
+
+.formFooter,
+.replyActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--a-line);
+}
+
+.dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 0;
+}
+
+.dl > div {
+  display: grid;
+  gap: 0.3rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid rgba(242, 239, 232, 0.07);
+}
+
+.dt {
+  color: var(--a-muted);
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.dd,
+.ddGold {
+  margin: 0;
+  color: var(--a-ink);
+  font-size: 0.88rem;
+  overflow-wrap: anywhere;
+}
+
+.ddGold {
+  color: var(--a-gold);
+}
+
+.sectionLead {
+  margin: 0;
+  color: var(--a-muted);
+  font-size: 0.88rem;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.messageThread {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.messageBubble {
+  display: grid;
+  gap: 0.65rem;
+  width: min(82%, 720px);
+  padding: 1rem 1.1rem;
+  border: 1px solid rgba(242, 239, 232, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.messageBubbleOwn {
+  justify-self: end;
+  border-color: rgba(111, 155, 255, 0.22);
+  background: rgba(111, 155, 255, 0.055);
+}
+
+.messageBubbleStaff {
+  justify-self: start;
+  border-color: rgba(231, 197, 116, 0.25);
+  background: rgba(231, 197, 116, 0.055);
+}
+
+.messageHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.messageBody {
+  margin: 0;
+  color: var(--a-ink);
+  font-size: 0.88rem;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.replyComposer {
+  gap: 1rem;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--a-line);
+}
+
 /* ---------- LEDGER ---------- */
 .ledger {
   display: grid;
@@ -1023,6 +1359,20 @@
 
   .pointsStats {
     grid-template-columns: 1fr;
+  }
+
+  .kindGrid,
+  .formGrid,
+  .dl {
+    grid-template-columns: 1fr;
+  }
+
+  .formWide {
+    grid-column: auto;
+  }
+
+  .messageBubble {
+    width: 94%;
   }
 }
 

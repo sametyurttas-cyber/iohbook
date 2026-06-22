@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -14,12 +15,12 @@ import {
 } from "@/features/verification/labels";
 import {
   closeSubmission,
-  createAdminReply,
   markSubmissionUnderReview,
   rejectSubmission,
   updateAdminNotes,
   approveSubmission
 } from "@/features/verification/admin-actions";
+import { AdminReplyForm } from "@/features/verification/admin-reply-form";
 import { VERIFICATION_REWARDS } from "@/features/verification/config";
 import { requireStaff } from "@/features/auth/queries";
 import { formatDateTime } from "@/features/account/account-utils";
@@ -277,25 +278,24 @@ export default async function AdminSubmissionDetailPage({
         {replies.length === 0 ? (
           <p className={styles.sectionLead}>Henuz mesaj yok.</p>
         ) : (
-          <div className={styles.grid}>
+          <div className={styles.adminMessageThread}>
             {replies.map((reply) => (
               <div
                 key={reply.id}
-                className={styles.panel}
-                style={{
-                  padding: "1rem 1.25rem",
-                  borderColor: reply.is_staff ? "rgba(231,197,116,0.22)" : undefined,
-                  background: reply.is_staff ? "rgba(231,197,116,0.04)" : undefined
-                }}
+                className={`${styles.adminMessageBubble} ${
+                  reply.is_staff
+                    ? styles.adminMessageBubbleStaff
+                    : styles.adminMessageBubbleCustomer
+                }`}
               >
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                <div className={styles.adminMessageHeader}>
                   <span className={`${styles.badge} ${reply.is_staff ? styles.badgeGold : ""}`}>
                     {reply.is_staff ? "Admin" : "Kullanici"}
                     {reply.is_staff && reply.profile_name ? ` · ${reply.profile_name}` : ""}
                   </span>
                   <span className={styles.detailMeta}>{formatDateTime(reply.created_at)}</span>
                 </div>
-                <p className={styles.sectionLead}>{reply.body}</p>
+                <p className={styles.adminMessageBody}>{reply.body}</p>
               </div>
             ))}
           </div>
@@ -304,19 +304,13 @@ export default async function AdminSubmissionDetailPage({
 
       <div className={styles.grid2}>
         {canReply ? (
-          <form action={createAdminReply} className={styles.panel}>
+          <section className={styles.panel}>
             <div className={styles.panelHead}>
               <h3 className={styles.panelTitle}>Yanıt Yaz</h3>
               <p className={styles.kicker}>REPLY</p>
             </div>
-            <input name="submission_id" type="hidden" value={submission.id} />
-            <Textarea
-              name="body"
-              placeholder="Kullaniciya yanit yazin..."
-              rows={4}
-            />
-            <Button type="submit">Yanıtı Gonder</Button>
-          </form>
+            <AdminReplyForm requestId={randomUUID()} submissionId={submission.id} />
+          </section>
         ) : null}
 
         {canApprove ? (

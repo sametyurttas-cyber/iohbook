@@ -551,6 +551,62 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.adminMessageThread {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.adminMessageBubble {
+  display: grid;
+  gap: 0.6rem;
+  width: min(82%, 760px);
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--ad-line);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.adminMessageBubbleStaff {
+  justify-self: end;
+  border-color: rgba(231, 197, 116, 0.25);
+  background: rgba(231, 197, 116, 0.055);
+}
+
+.adminMessageBubbleCustomer {
+  justify-self: start;
+  border-color: rgba(111, 155, 255, 0.22);
+  background: rgba(111, 155, 255, 0.05);
+}
+
+.adminMessageHeader,
+.adminReplyFooter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.adminMessageBody {
+  margin: 0;
+  color: var(--ad-ink);
+  font-size: 0.88rem;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.adminReplyComposer {
+  display: grid;
+  gap: 1rem;
+}
+
+.adminReplyFooter {
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--ad-line);
+  color: var(--ad-muted);
+  font-size: 0.72rem;
+}
+
 @media (max-width: 720px) {
   .formGrid2,
   .formGrid3 {

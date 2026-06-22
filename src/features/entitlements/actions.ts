@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { trackServerAnalyticsEvent } from "@/features/analytics/business-events";
 import { requireUser } from "@/features/auth/queries";
 import { isEntitlementCurrentlyAccessible } from "@/features/entitlements/entitlement-utils";
 import { STORAGE_BUCKETS } from "@/features/media/storage-config";
@@ -40,6 +41,23 @@ type DownloadEntitlementRow = Entitlement & {
 };
 
 const signedUrlTtlSeconds = 60 * 5;
+
+async function trackDownloadEvent(input: {
+  entitlementId: string;
+  eventName: "download_started" | "download_completed" | "download_failed";
+  profileId: string;
+  reason?: string;
+}) {
+  await trackServerAnalyticsEvent({
+    eventName: input.eventName,
+    metadata: {
+      entitlement_id: input.entitlementId,
+      ...(input.reason ? { reason: input.reason } : {})
+    },
+    path: "/account/downloads",
+    profileId: input.profileId
+  });
+}
 
 function getEntitlementOrderStatus(entitlement: DownloadEntitlementRow) {
   const orderItem = Array.isArray(entitlement.order_items)
@@ -123,10 +141,21 @@ export async function downloadEntitlement(formData: FormData) {
       profileId: user.id,
       reason: "not_found_or_not_owned"
     });
+    await trackDownloadEvent({
+      entitlementId,
+      eventName: "download_failed",
+      profileId: user.id,
+      reason: "not_found_or_not_owned"
+    });
     redirect("/account/downloads?error=download-not-found");
   }
 
   const entitlement = data as unknown as DownloadEntitlementRow;
+  await trackDownloadEvent({
+    entitlementId: entitlement.id,
+    eventName: "download_started",
+    profileId: user.id
+  });
   const orderStatus = getEntitlementOrderStatus(entitlement);
 
   if (!isPaidOrderStatus(orderStatus)) {
@@ -136,6 +165,7 @@ export async function downloadEntitlement(formData: FormData) {
       profileId: user.id,
       reason: "order_not_paid"
     });
+    await trackDownloadEvent({ entitlementId: entitlement.id, eventName: "download_failed", profileId: user.id, reason: "order_not_paid" });
     redirect("/account/downloads?error=download-order-not-paid");
   }
 
@@ -152,6 +182,7 @@ export async function downloadEntitlement(formData: FormData) {
       profileId: user.id,
       reason: "not_active"
     });
+    await trackDownloadEvent({ entitlementId: entitlement.id, eventName: "download_failed", profileId: user.id, reason: "not_active" });
     redirect("/account/downloads?error=download-not-active");
   }
 
@@ -162,6 +193,7 @@ export async function downloadEntitlement(formData: FormData) {
       profileId: user.id,
       reason: "file_missing"
     });
+    await trackDownloadEvent({ entitlementId: entitlement.id, eventName: "download_failed", profileId: user.id, reason: "file_missing" });
     redirect("/account/downloads?error=download-file-missing");
   }
 
@@ -175,6 +207,7 @@ export async function downloadEntitlement(formData: FormData) {
       profileId: user.id,
       reason: "limit_reached"
     });
+    await trackDownloadEvent({ entitlementId: entitlement.id, eventName: "download_failed", profileId: user.id, reason: "limit_reached" });
     redirect("/account/downloads?error=download-limit-reached");
   }
 
@@ -187,6 +220,7 @@ export async function downloadEntitlement(formData: FormData) {
       profileId: user.id,
       reason: "invalid_bucket"
     });
+    await trackDownloadEvent({ entitlementId: entitlement.id, eventName: "download_failed", profileId: user.id, reason: "invalid_bucket" });
     redirect("/account/downloads?error=download-bucket-invalid");
   }
 
@@ -199,6 +233,7 @@ export async function downloadEntitlement(formData: FormData) {
       entitlement_id: entitlement.id,
       operation: "entitlement.download.signed_url"
     });
+    await trackDownloadEvent({ entitlementId: entitlement.id, eventName: "download_failed", profileId: user.id, reason: "signed_url_failed" });
     redirect("/account/downloads?error=download-url-failed");
   }
 
@@ -213,6 +248,7 @@ export async function downloadEntitlement(formData: FormData) {
       entitlement_id: entitlement.id,
       operation: "entitlement.download.increment"
     });
+    await trackDownloadEvent({ entitlementId: entitlement.id, eventName: "download_failed", profileId: user.id, reason: "download_count_failed" });
     redirect("/account/downloads?error=download-log-failed");
   }
 
@@ -228,6 +264,12 @@ export async function downloadEntitlement(formData: FormData) {
   logInfo("entitlement.download_url_created", {
     entitlement_id: entitlement.id,
     profile_id: user.id
+  });
+
+  await trackDownloadEvent({
+    entitlementId: entitlement.id,
+    eventName: "download_completed",
+    profileId: user.id
   });
 
   redirect(signed.signedUrl);

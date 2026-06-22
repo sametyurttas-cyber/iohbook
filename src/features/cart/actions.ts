@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/features/auth/queries";
+import { trackServerAnalyticsEvent } from "@/features/analytics/business-events";
 import { getAnonymousCartId, getOrCreateAnonymousCartId } from "@/features/cart/cart-cookie";
 import { validateCartQuantity } from "@/features/cart/cart-rules";
 import { requiresPhysicalDelivery } from "@/features/checkout/fulfillment-utils";
@@ -212,6 +213,20 @@ export async function addToCart(formData: FormData) {
   if (mutation.error) {
     throw mutation.error;
   }
+
+  await trackServerAnalyticsEvent({
+    anonymousId: cart.anonymous_id,
+    eventName: "add_to_cart",
+    metadata: {
+      amount_minor: variant.price_minor * requestedQuantity,
+      currency: variant.currency,
+      product_id: variant.product_id,
+      quantity: requestedQuantity,
+      variant_id: variant.id
+    },
+    path: "/cart",
+    profileId: cart.profile_id
+  });
 
   revalidatePath("/cart");
   revalidatePath("/books");

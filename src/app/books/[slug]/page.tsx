@@ -9,6 +9,7 @@ import { Section } from "@/components/layout/section";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { JsonLd } from "@/components/seo/json-ld";
+import { CatalogViewTracker } from "@/features/analytics/catalog-view-tracker";
 import { BookGallery } from "@/features/catalog/book-gallery";
 import { BookInfoTabs } from "@/features/catalog/book-info-tabs";
 import {
@@ -99,6 +100,7 @@ export default async function BookDetailPage({ params }: BookDetailPageProps) {
 
   return (
     <>
+      <CatalogViewTracker productId={book.id} productSlug={book.slug} />
       <SiteHeader />
       <main id="main-content">
         <JsonLd

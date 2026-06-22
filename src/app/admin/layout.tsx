@@ -44,6 +44,11 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
       href: "/admin/verifications",
       label: "Dogrulamalar"
     },
+    {
+      allowedRoles: ["owner", "admin_ops", "support"],
+      href: "/admin/analytics",
+      label: "Analitik"
+    },
     { href: "/admin/content", label: "Icerik" },
     { href: "/admin/media", label: "Medya" }
   ] satisfies AdminNavItem[];

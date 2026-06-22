@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { signUpWithPassword } from "./actions";
+import { signInWithPassword, signUpWithPassword } from "./actions";
 
 vi.mock("next/navigation", () => ({
   redirect: (url: string) => {
@@ -9,6 +9,10 @@ vi.mock("next/navigation", () => ({
 
 vi.mock("@/features/cart/merge", () => ({
   mergeAnonymousCartIntoProfileCart: vi.fn()
+}));
+
+vi.mock("@/features/analytics/business-events", () => ({
+  trackServerAnalyticsEvent: vi.fn()
 }));
 
 vi.mock("@/features/email/events", () => ({
@@ -33,6 +37,7 @@ vi.mock("@/lib/supabase/service-role", () => ({
 }));
 
 const { mergeAnonymousCartIntoProfileCart } = await import("@/features/cart/merge");
+const { trackServerAnalyticsEvent } = await import("@/features/analytics/business-events");
 const { awardSignupBonus } = await import("@/features/points/service");
 const { createSupabaseServerClient } = await import("@/lib/supabase/server");
 const { createSupabaseServiceRoleClient } = await import("@/lib/supabase/service-role");
@@ -89,6 +94,34 @@ describe("auth signup points", () => {
     expect(awardSignupBonus).toHaveBeenCalledWith({
       profileId: "profile-id",
       supabase: serviceSupabase
+    });
+    expect(trackServerAnalyticsEvent).toHaveBeenCalledWith({
+      eventName: "signup",
+      idempotencyKey: "profile-id",
+      metadata: { method: "password" },
+      path: "/sign-up",
+      profileId: "profile-id"
+    });
+  });
+
+  it("tracks login only after Supabase confirms the user", async () => {
+    const serverSupabase = {
+      auth: {
+        getUser: vi.fn(async () => ({ data: { user: { id: "profile-id" } }, error: null })),
+        signInWithPassword: vi.fn(async () => ({ data: {}, error: null }))
+      }
+    };
+    vi.mocked(createSupabaseServerClient).mockResolvedValue(serverSupabase as never);
+    const formData = new FormData();
+    formData.set("email", "samet@example.com");
+    formData.set("password", "strong-password");
+
+    await expect(signInWithPassword(formData)).rejects.toThrow("NEXT_REDIRECT:/account");
+    expect(trackServerAnalyticsEvent).toHaveBeenCalledWith({
+      eventName: "login",
+      metadata: { method: "password" },
+      path: "/sign-in",
+      profileId: "profile-id"
     });
   });
 });
