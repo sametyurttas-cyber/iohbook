@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { confirmShopierPayment, confirmShopierPaymentByOrderId } from "@/features/checkout/shopier-confirmation";
-import { parseShopierCallback, getShopierOrderReference, verifyShopierOsbSignature, getShopierConfig } from "@/features/checkout/shopier";
+import { parseShopierCallback, getShopierOrderReference, verifyShopierOsbSignature, getShopierConfig, mapShopierStatus } from "@/features/checkout/shopier";
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/service-role";
 import { captureError } from "@/lib/observability";
 
@@ -98,11 +98,13 @@ export async function POST(request: NextRequest) {
       operation: "shopier.callback"
     });
 
+    const isActuallyPaid = mapShopierStatus(payload) === "paid";
+
     if (isTokenSale) {
-      return redirectTo(request, "/payment/failed");
+      return redirectTo(request, isActuallyPaid ? "/payment/success" : "/payment/failed");
     }
 
-    return redirectTo(request, "/checkout?error=shopier-callback-failed");
+    return redirectTo(request, isActuallyPaid ? "/checkout/success?provider=shopier" : "/checkout?error=shopier-callback-failed");
   }
 }
 
@@ -182,7 +184,25 @@ export async function GET(request: NextRequest) {
   }
 
   if (isTokenSale) {
-    return redirectTo(request, "/payment/failed");
+    // If the payment attempt explicitly failed or was cancelled, show the failed page.
+    // Otherwise, redirect to the success (pending/verifying) page.
+    if (orderReference) {
+      try {
+        const { data: attempt } = await supabase
+          .from("payment_attempts")
+          .select("status")
+          .eq("provider", "shopier")
+          .eq("provider_reference", orderReference)
+          .maybeSingle();
+
+        if (attempt?.status === "failed" || attempt?.status === "cancelled") {
+          return redirectTo(request, "/payment/failed");
+        }
+      } catch {
+        // ignore
+      }
+    }
+    return redirectTo(request, "/payment/success");
   }
 
   return redirectTo(request, "/checkout?notice=shopier-return-pending");
