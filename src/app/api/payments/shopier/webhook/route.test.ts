@@ -42,12 +42,13 @@ describe("Shopier webhook route", () => {
       payload: { id: "SHOPIER-ORDER-1" },
       rawBody: "{\"id\":\"SHOPIER-ORDER-1\"}",
       signature: "signature",
-      supabase: { service: true }
+      supabase: { service: true },
+      isOsbVerified: false
     });
   });
 
   it("returns 400 when webhook confirmation fails", async () => {
-    vi.mocked(confirmShopierOrderCreatedWebhook).mockRejectedValueOnce(new Error("bad signature"));
+    vi.mocked(confirmShopierOrderCreatedWebhook).mockRejectedValueOnce(new Error("database connection failed"));
 
     const response = await POST(
       new NextRequest("http://localhost:3000/api/payments/shopier/webhook", {

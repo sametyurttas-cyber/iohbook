@@ -29,8 +29,8 @@ export async function POST(request: NextRequest) {
 
   const supabase = createSupabaseServiceRoleClient();
 
+  let isOsbVerified = false;
   try {
-    let isOsbVerified = false;
     const isOsb = Boolean(payload.res && payload.hash);
 
     if (isOsb) {
@@ -38,7 +38,17 @@ export async function POST(request: NextRequest) {
       const merchantId = config.merchantId || "4dc1fa8ec28589b16f8d7c863509661c";
       const osbKey = process.env.SHOPIER_WEBHOOK_TOKEN ?? process.env.SHOPIER_SECRET ?? config.apiKey;
 
-      if (!verifyShopierOsbSignature(payload.res, payload.hash, merchantId, osbKey)) {
+      let isValid = verifyShopierOsbSignature(payload.res, payload.hash, merchantId, osbKey);
+      
+      // Fallback: If configured merchantId (e.g., store slug "sametyurttas") fails,
+      // retry with the default numeric/hex Shopier merchant ID "4dc1fa8ec28589b16f8d7c863509661c".
+      if (!isValid && merchantId !== "4dc1fa8ec28589b16f8d7c863509661c") {
+        console.log(`OSB Signature verification failed with merchantId "${merchantId}". Retrying with default "4dc1fa8ec28589b16f8d7c863509661c".`);
+        isValid = verifyShopierOsbSignature(payload.res, payload.hash, "4dc1fa8ec28589b16f8d7c863509661c", osbKey);
+      }
+
+      if (!isValid) {
+        console.error(`OSB Signature verification failed! Used merchantId: "${merchantId}", osbKey length: ${osbKey?.length ?? 0}, prefix: "${osbKey ? osbKey.substring(0, 4) : "none"}". Received hash: "${payload.hash}".`);
         throw new Error("Shopier OSB signature is invalid.");
       }
 
@@ -89,11 +99,18 @@ export async function POST(request: NextRequest) {
       isOsbVerified
     });
 
+    if (isOsbVerified) {
+      return new Response("success");
+    }
     return NextResponse.json({ ok: true });
   } catch (error: any) {
     captureError(error, {
       operation: "shopier.webhook"
     });
+
+    if (isOsbVerified) {
+      return new Response("success");
+    }
 
     const isValidationError =
       error.message?.includes("signature") ||
