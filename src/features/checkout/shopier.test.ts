@@ -5,7 +5,8 @@ import {
   buildShopierProductUrl,
   getShopierAmountMinor,
   mapShopierStatus,
-  verifyShopierCallbackSignature
+  verifyShopierCallbackSignature,
+  verifyShopierOsbSignature
 } from "@/features/checkout/shopier";
 
 describe("shopier payment helpers", () => {
@@ -70,5 +71,17 @@ describe("shopier payment helpers", () => {
     expect(getShopierAmountMinor({ total_order_value: "12.3" })).toBe(1230);
     expect(getShopierAmountMinor({ total_order_value: "abc" })).toBeNull();
     expect(getShopierAmountMinor({ total_order_value: "not-money" })).toBeNull();
+  });
+
+  it("verifies OSB signatures correctly", () => {
+    const res = "eyJlZmZlY3QiOiJzdWNjZXNzIiwiZW1haWwiOiJidXllckBleGFtcGxlLmNvbSJ9"; // dummy base64
+    const merchantId = "4dc1fa8ec28589b16f8d7c863509661c";
+    const secretKey = "4810161c60c3780db59c71d11618f82b";
+    const expectedHash = createHmac("sha256", secretKey)
+      .update(res + merchantId)
+      .digest("hex");
+
+    expect(verifyShopierOsbSignature(res, expectedHash, merchantId, secretKey)).toBe(true);
+    expect(verifyShopierOsbSignature(res, expectedHash + "invalid", merchantId, secretKey)).toBe(false);
   });
 });

@@ -232,3 +232,11 @@ export function verifyShopierWebhookSignature(input: {
 
   return false;
 }
+
+export function verifyShopierOsbSignature(res: string, hash: string, merchantId: string, secretKey: string) {
+  const expected = createHmac("sha256", secretKey)
+    .update(res + merchantId)
+    .digest("hex");
+  return expected.toLowerCase() === hash.toLowerCase();
+}
+

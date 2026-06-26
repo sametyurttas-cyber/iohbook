@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { confirmShopierPayment, confirmShopierPaymentByOrderId } from "@/features/checkout/shopier-confirmation";
-import { parseShopierCallback, getShopierOrderReference } from "@/features/checkout/shopier";
+import { parseShopierCallback, getShopierOrderReference, verifyShopierOsbSignature, getShopierConfig } from "@/features/checkout/shopier";
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/service-role";
 import { captureError } from "@/lib/observability";
 
@@ -10,8 +10,39 @@ function redirectTo(request: NextRequest, path: string) {
 
 export async function POST(request: NextRequest) {
   const formData = await request.formData();
-  const payload = parseShopierCallback(formData);
+  let payload = parseShopierCallback(formData);
   const supabase = createSupabaseServiceRoleClient();
+
+  const isOsb = Boolean(payload.res && payload.hash);
+  if (isOsb) {
+    const config = getShopierConfig();
+    const merchantId = config.merchantId || "4dc1fa8ec28589b16f8d7c863509661c";
+    const osbKey = process.env.SHOPIER_WEBHOOK_TOKEN ?? process.env.SHOPIER_SECRET ?? config.apiKey;
+
+    if (!verifyShopierOsbSignature(payload.res, payload.hash, merchantId, osbKey)) {
+      throw new Error("Shopier OSB signature is invalid.");
+    }
+
+    const decoded = JSON.parse(Buffer.from(payload.res, "base64").toString("utf-8"));
+    const currencyMap: Record<string, string> = {
+      "0": "TRY",
+      "1": "USD",
+      "2": "EUR"
+    };
+
+    payload = {
+      platform_order_id: decoded.customernote ?? "",
+      payment_id: decoded.orderid ?? "",
+      status: "success",
+      total_order_value: String(decoded.price ?? ""),
+      currency: currencyMap[String(decoded.currency)] ?? "TRY",
+      quantity: String(decoded.productcount ?? "1"),
+      product_id: String(decoded.productid ?? ""),
+      signature: payload.hash,
+      osb_verified: "true"
+    };
+  }
+
   const orderReference = getShopierOrderReference(payload);
 
   let isTokenSale = false;

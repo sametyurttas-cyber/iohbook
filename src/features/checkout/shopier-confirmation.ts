@@ -516,7 +516,8 @@ export async function confirmShopierPayment(input: {
     throw new Error("Shopier callback missing order reference.");
   }
 
-  if (!verifyShopierCallbackSignature(input.payload, config.secret)) {
+  const isOsbVerified = input.payload.osb_verified === "true";
+  if (!isOsbVerified && !verifyShopierCallbackSignature(input.payload, config.secret)) {
     throw new Error("Shopier callback signature is invalid.");
   }
 
@@ -692,6 +693,7 @@ export async function confirmShopierOrderCreatedWebhook(input: {
   rawBody: string;
   signature: string | null;
   supabase: ServiceClient;
+  isOsbVerified?: boolean;
 }): Promise<ShopierConfirmationResult> {
   const config = getShopierConfig();
 
@@ -704,7 +706,7 @@ export async function confirmShopierOrderCreatedWebhook(input: {
     };
   }
 
-  if (!verifyShopierWebhookSignature({
+  if (!input.isOsbVerified && !verifyShopierWebhookSignature({
     rawBody: input.rawBody,
     signature: input.signature,
     webhookToken: config.webhookToken
