@@ -1,4 +1,5 @@
 import { logInfo } from "@/lib/observability";
+import { awardIohPoints } from "@/features/points/service";
 import type { Database } from "@/types/database";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -11,7 +12,7 @@ export async function approveTokenAllocationsForPaidOrder(input: {
 }) {
   const { data: existing, error: existingError } = await input.supabase
     .from("token_allocations")
-    .select("id, status")
+    .select("id, status, profile_id, total_amount")
     .eq("order_id", input.orderId);
 
   if (existingError) {
@@ -35,6 +36,31 @@ export async function approveTokenAllocationsForPaidOrder(input: {
 
   if (error) {
     throw error;
+  }
+
+  // Award IOH points for the purchased amount
+  for (const allocation of pending) {
+    if (allocation.profile_id && typeof allocation.total_amount === "string") {
+      const amount = Math.floor(parseFloat(allocation.total_amount));
+      if (amount > 0) {
+        try {
+          await awardIohPoints({
+            amount,
+            metadata: {
+              source: "token_purchase",
+              token_allocation_id: allocation.id
+            },
+            orderId: input.orderId,
+            profileId: allocation.profile_id,
+            reason: "manual_adjustment_credit",
+            supabase: input.supabase
+          });
+        } catch (pointsErr) {
+          console.error(`Failed to award points for allocation ${allocation.id}:`, pointsErr);
+          // Don't crash the entire flow if points award ledger fails, as allocation is already approved.
+        }
+      }
+    }
   }
 
   logInfo("token_allocations.approved_for_paid_order", {

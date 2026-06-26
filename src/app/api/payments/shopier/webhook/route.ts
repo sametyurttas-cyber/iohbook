@@ -6,11 +6,13 @@ import { createSupabaseServiceRoleClient } from "@/lib/supabase/service-role";
 
 export async function POST(request: NextRequest) {
   const contentType = request.headers.get("content-type") ?? "";
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let payload: Record<string, any> = {};
   let rawBody = "";
 
   if (contentType.includes("form") || contentType.includes("urlencoded")) {
     const formData = await request.formData();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     rawBody = new URLSearchParams(formData as any).toString();
     for (const [key, value] of formData.entries()) {
       payload[key] = value;
@@ -103,6 +105,7 @@ export async function POST(request: NextRequest) {
       return new Response("success");
     }
     return NextResponse.json({ ok: true });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     captureError(error, {
       operation: "shopier.webhook"
