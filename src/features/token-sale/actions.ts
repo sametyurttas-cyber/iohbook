@@ -7,7 +7,8 @@ import { createOrderNumber } from "@/features/checkout/checkout-utils";
 import { commitTokenSalePaymentStart } from "@/features/checkout/persistence";
 import {
   buildShopierProductUrl,
-  isShopierConfigured
+  isShopierConfigured,
+  getShopierConfig
 } from "@/features/checkout/shopier";
 import {
   validateTokenAllocationUpdate,
@@ -217,7 +218,8 @@ export async function startTokenSalePayment(formData: FormData) {
   if (!hasAcceptedTokenSaleTerms(formData)) redirect("/token-sale?error=legal-required");
   if (!isShopierConfigured()) redirect("/token-sale?error=shopier-not-configured");
 
-  const shopierProductUrl = process.env.SHOPIER_TOKEN_SALE_PRODUCT_URL;
+  const config = getShopierConfig();
+  const shopierProductUrl = config.tokenSaleProductUrl;
   if (!shopierProductUrl) {
     console.error("SHOPIER_TOKEN_SALE_PRODUCT_URL is not set.");
     redirect("/token-sale?error=payment-not-configured");

@@ -660,7 +660,7 @@ export async function confirmShopierPayment(input: {
 
       // Product id / items doğrulaması
       const configuredProductId = isTokenSale
-        ? getConfiguredShopierProductId(process.env.SHOPIER_TOKEN_SALE_PRODUCT_URL ?? "")
+        ? getConfiguredShopierProductId(config.tokenSaleProductUrl)
         : getConfiguredShopierProductId(config.productUrl);
 
       await validateShopierOrderItems({
@@ -860,7 +860,7 @@ export async function confirmShopierOrderCreatedWebhook(input: {
   }
 
   const configuredProductId = isTokenSale
-    ? getConfiguredShopierProductId(process.env.SHOPIER_TOKEN_SALE_PRODUCT_URL ?? "")
+    ? getConfiguredShopierProductId(config.tokenSaleProductUrl)
     : getConfiguredShopierProductId(config.productUrl);
 
   await validateShopierOrderItems({
@@ -1032,7 +1032,7 @@ export async function confirmShopierPaymentByOrderId(input: {
   }
 
   const configuredProductId = isTokenSale
-    ? getConfiguredShopierProductId(process.env.SHOPIER_TOKEN_SALE_PRODUCT_URL ?? "")
+    ? getConfiguredShopierProductId(config.tokenSaleProductUrl)
     : getConfiguredShopierProductId(config.productUrl);
 
   await validateShopierOrderItems({

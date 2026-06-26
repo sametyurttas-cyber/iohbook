@@ -21,6 +21,9 @@ export function getShopierConfig() {
     productUrl:
       process.env.SHOPIER_GODCODE_PRODUCT_URL ??
       "https://www.shopier.com/sametyurttas/48021742",
+    tokenSaleProductUrl:
+      process.env.SHOPIER_TOKEN_SALE_PRODUCT_URL ??
+      "https://www.shopier.com/sametyurttas/48430323",
     secret: process.env.SHOPIER_SECRET ?? "",
     webhookToken: process.env.SHOPIER_WEBHOOK_TOKEN ?? process.env.SHOPIER_SECRET ?? apiKey
   };
