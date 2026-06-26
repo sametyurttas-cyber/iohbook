@@ -631,7 +631,7 @@ export async function confirmShopierPayment(input: {
       throw new Error("Shopier Personal Access Token (PAT) is not configured for token sale verification.");
     }
 
-    if (isShopierPatConfigured()) {
+    if (isShopierPatConfigured() && !isOsbVerified) {
       const restOrder = await retrieveShopierOrder<ShopierWebhookPayload>(transactionId);
 
       // note doğrulaması
@@ -757,12 +757,28 @@ export async function confirmShopierOrderCreatedWebhook(input: {
     };
   }
 
-  const restOrder = await retrieveShopierOrder<ShopierWebhookPayload>(shopierOrderId);
-  const orderReference = getShopierRestNote(restOrder);
-  const amountMinor = getShopierRestAmountMinor(restOrder);
-  const currency = getShopierRestCurrency(restOrder);
-  const quantity = getShopierRestQuantity(restOrder);
-  const providerStatus = getShopierRestStatus(restOrder);
+  let restOrder: ShopierWebhookPayload;
+  let orderReference: string | null;
+  let amountMinor: number | null;
+  let currency: string | null;
+  let quantity: number | null;
+  let providerStatus: string | null;
+
+  if (input.isOsbVerified) {
+    restOrder = input.payload;
+    orderReference = typeof input.payload.note === "string" ? input.payload.note : null;
+    amountMinor = typeof input.payload.total_amount === "string" ? Math.round(parseFloat(input.payload.total_amount) * 100) : null;
+    currency = typeof input.payload.currency === "string" ? input.payload.currency : null;
+    quantity = typeof input.payload.quantity === "number" ? input.payload.quantity : (typeof input.payload.quantity === "string" ? parseInt(input.payload.quantity, 10) : 1);
+    providerStatus = "success";
+  } else {
+    restOrder = await retrieveShopierOrder<ShopierWebhookPayload>(shopierOrderId);
+    orderReference = getShopierRestNote(restOrder);
+    amountMinor = getShopierRestAmountMinor(restOrder);
+    currency = getShopierRestCurrency(restOrder) ?? null;
+    quantity = getShopierRestQuantity(restOrder);
+    providerStatus = getShopierRestStatus(restOrder) ?? null;
+  }
 
   if (!orderReference) {
     throw new Error("Shopier REST order missing note reference.");
