@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { z } from "zod";
 import { getCurrentUser } from "@/features/auth/queries";
 import { trackServerAnalyticsEvent } from "@/features/analytics/business-events";
@@ -87,7 +88,17 @@ function buildAddress(formData: FormData, prefix: string): CheckoutAddress {
   };
 }
 
-function buildSiteUrl() {
+async function buildSiteUrl() {
+  try {
+    const headersList = await headers();
+    const host = headersList.get("host");
+    if (host) {
+      const protocol = host.includes("localhost") || host.includes("127.0.0.1") ? "http" : "https";
+      return `${protocol}://${host}`;
+    }
+  } catch {
+    // fallback
+  }
   return (
     process.env.NEXT_PUBLIC_SITE_URL ??
     process.env.VERCEL_URL?.replace(/^/, "https://") ??
@@ -382,10 +393,11 @@ export async function startCheckoutPayment(formData: FormData) {
     }
   }));
 
+  const siteUrl = await buildSiteUrl();
   const callbackUrl =
     provider.id === "iyzico"
-      ? `${buildSiteUrl()}/api/iyzico/callback`
-      : `${buildSiteUrl()}/api/payments/${provider.id}/callback`;
+      ? `${siteUrl}/api/iyzico/callback`
+      : `${siteUrl}/api/payments/${provider.id}/callback`;
   const paymentResult = await provider.startPayment({
     billingAddress: billingAddress ?? providerAddress,
     buyerId: user?.id ?? cart.cart.anonymous_id ?? cart.cart.id,

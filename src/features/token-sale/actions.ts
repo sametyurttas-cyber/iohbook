@@ -2,6 +2,7 @@
 
 import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { getCurrentUser, requireStaff } from "@/features/auth/queries";
 import { createOrderNumber } from "@/features/checkout/checkout-utils";
 import { commitTokenSalePaymentStart } from "@/features/checkout/persistence";
@@ -320,11 +321,10 @@ export async function startTokenSalePayment(formData: FormData) {
   const orderNumber = createOrderNumber();
   const now = new Date().toISOString();
 
-  const siteUrl = (
-    process.env.NEXT_PUBLIC_SITE_URL ??
-    process.env.VERCEL_URL?.replace(/^/, "https://") ??
-    "https://www.iohcoin.com"
-  ).replace(/\/$/, "");
+  const headersList = await headers();
+  const host = headersList.get("host") ?? "www.iohcoin.com";
+  const protocol = host.includes("localhost") || host.includes("127.0.0.1") ? "http" : "https";
+  const siteUrl = `${protocol}://${host}`;
 
   const paymentUrl = buildShopierProductUrl({
     callbackUrl: `${siteUrl}/api/payments/shopier/callback`,
