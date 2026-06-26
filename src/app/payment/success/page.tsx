@@ -47,7 +47,7 @@ export default function PaymentSuccessPage() {
 
             <div className="mt-10">
               <Button asChild size="lg">
-                <Link href="/account/token-rights">Token Haklarım</Link>
+                <Link href="/account/token-allocations">Token Haklarım</Link>
               </Button>
             </div>
           </Container>

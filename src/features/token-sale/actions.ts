@@ -405,7 +405,7 @@ export async function startTokenSalePayment(formData: FormData) {
     p_quantity: quantity
   });
 
-  redirect(paymentUrl);
+  return { paymentUrl, orderNumber };
 }
 
 export async function updateTokenAllocation(formData: FormData) {

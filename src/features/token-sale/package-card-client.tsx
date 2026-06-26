@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { formatMoney } from "@/features/products/product-utils";
 import { formatTokenAmount, multiplyTokenDecimal, calculateTotalTokenAmount } from "@/features/token-sale/utils";
 import { startTokenSalePayment } from "@/features/token-sale/actions";
@@ -19,6 +20,8 @@ export function PackageCardClient({ campaign, index, pkg, defaultQuantity }: Pac
   const initialQty = Math.max(1, Math.min(defaultQuantity ?? 1, maxLimit));
   const [quantity, setQuantity] = useState<number>(initialQty);
   const [manualText, setManualText] = useState<string>(String(initialQty));
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = parseInt(e.target.value, 10);
@@ -61,8 +64,34 @@ export function PackageCardClient({ campaign, index, pkg, defaultQuantity }: Pac
   const baseTokens = multiplyTokenDecimal(pkg.token_amount, quantity);
   const totalTokens = calculateTotalTokenAmount(baseTokens, campaign.bonus_bps);
 
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (isPending) return;
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    startTransition(async () => {
+      try {
+        const result = await startTokenSalePayment(formData);
+
+        if (result?.paymentUrl) {
+          // Open Shopier in a new tab
+          window.open(result.paymentUrl, "_blank", "noopener,noreferrer");
+
+          // Navigate current tab to pending page
+          const pendingUrl = `/payment/pending${result.orderNumber ? `?order=${encodeURIComponent(result.orderNumber)}` : ""}`;
+          router.push(pendingUrl);
+        }
+      } catch {
+        // Server action redirects (validation errors) throw NEXT_REDIRECT
+        // which is caught and handled by Next.js automatically
+      }
+    });
+  };
+
   return (
-    <form action={startTokenSalePayment} className={styles.packageCard}>
+    <form onSubmit={handleSubmit} className={styles.packageCard}>
       <input name="package_id" type="hidden" value={pkg.id} />
       <div className={styles.packageTop}>
         <span className={styles.packageNumber}>/ {String(index + 1).padStart(2, "0")}</span>
@@ -125,9 +154,10 @@ export function PackageCardClient({ campaign, index, pkg, defaultQuantity }: Pac
           olmadigini kabul ediyorum.
         </span>
       </label>
-      <button className={styles.submitButton} type="submit">
-        Shopier ile odeme yap
+      <button className={styles.submitButton} disabled={isPending} type="submit">
+        {isPending ? "İşleniyor..." : "Shopier ile odeme yap"}
       </button>
     </form>
   );
 }
+
