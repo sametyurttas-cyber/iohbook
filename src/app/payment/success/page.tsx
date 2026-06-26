@@ -38,13 +38,11 @@ export default function PaymentSuccessPage() {
             </div>
 
             <h1 className="mt-8 font-display text-display-sm text-paper">
-              Siparişiniz başarıyla alınmıştır.
+              Siparişiniz alınmıştır.
             </h1>
 
             <p className="mt-4 text-body leading-relaxed text-muted-foreground">
-              Token haklarınız ödeme doğrulandıktan sonra hesabınıza
-              işlenecektir. Token Haklarım sayfasına giderek durumunuzu takip
-              edebilirsiniz.
+              Token haklarınız ödeme doğrulandıktan sonra hesabınıza işlenecektir.
             </p>
 
             <div className="mt-10">
