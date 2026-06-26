@@ -16,7 +16,7 @@ import {
   saveAdminUserNotes
 } from "@/features/admin-users/actions";
 import { getAdminUserDetail } from "@/features/admin-users/queries";
-import { formatIohPointReason } from "@/features/points/queries";
+import { formatIohPointReason, getIohPointLedgerTitle } from "@/features/points/queries";
 import { formatDateTime, ORDER_STATUS_LABELS } from "@/features/orders/order-utils";
 import { formatMoney } from "@/features/products/product-utils";
 import styles from "@/features/admin/admin-scene.module.css";
@@ -260,7 +260,7 @@ export default async function AdminUserDetailPage({
                   ) : null}
                   {user.ledger.map((entry) => (
                     <TableRow key={entry.id}>
-                      <TableCell>{formatIohPointReason(entry.reason)}</TableCell>
+                      <TableCell>{getIohPointLedgerTitle(entry)}</TableCell>
                       <TableCell className={entry.amount > 0 ? "text-gold" : "text-burgundy-soft"}>
                         {entry.amount > 0 ? "+" : ""}
                         {entry.amount}

@@ -8,7 +8,7 @@ import {
 } from "@/features/account/queries";
 import { getAccountEmailPreferences } from "@/features/email/preferences-actions";
 import { formatDateTime } from "@/features/account/account-utils";
-import { formatIohPointReason } from "@/features/points/queries";
+import { formatIohPointReason, getIohPointLedgerDetail, getIohPointLedgerTitle } from "@/features/points/queries";
 import styles from "@/features/account/account-scene.module.css";
 
 type AccountProfilePageProps = {
@@ -156,11 +156,14 @@ export default async function AccountProfilePage({ searchParams }: AccountProfil
             {pointLedger.map((entry) => (
               <div className={styles.ledgerItem} key={entry.id}>
                 <div className={styles.ledgerInfo}>
-                  <span className={styles.ledgerReason}>{formatIohPointReason(entry.reason)}</span>
+                  <span className={styles.ledgerReason}>{getIohPointLedgerTitle(entry)}</span>
                   <span className={styles.ledgerDate}>
                     {formatDateTime(entry.created_at)}
                     {entry.order_id ? ` / Siparis: ${entry.order_id.slice(0, 8)}` : ""}
                   </span>
+                  {getIohPointLedgerDetail(entry) ? (
+                    <span className={styles.ledgerDetail}>{getIohPointLedgerDetail(entry)}</span>
+                  ) : null}
                 </div>
                 <span className={`${styles.ledgerAmount} ${entry.amount < 0 ? styles.ledgerAmountNegative : ""}`}>
                   {entry.amount > 0 ? "+" : ""}{entry.amount} IOH

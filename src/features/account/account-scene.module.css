@@ -1218,6 +1218,14 @@
   letter-spacing: 0.04em;
 }
 
+.ledgerDetail {
+  color: var(--a-muted);
+  font-size: 0.76rem;
+  line-height: 1.4;
+  margin-top: 0.15rem;
+  opacity: 0.85;
+}
+
 .ledgerAmount {
   font-family: Georgia, "Times New Roman", serif;
   font-size: 1.2rem;

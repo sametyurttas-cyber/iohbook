@@ -3,7 +3,7 @@ import {
   getAccountPointBalance,
   listAccountPointLedger
 } from "@/features/account/queries";
-import { formatIohPointReason } from "@/features/points/queries";
+import { formatIohPointReason, getIohPointLedgerDetail, getIohPointLedgerTitle } from "@/features/points/queries";
 import { formatMoney } from "@/features/products/product-utils";
 import { formatTokenAmount } from "@/features/token-sale/utils";
 import { formatDateTime } from "@/features/account/account-utils";
@@ -80,11 +80,14 @@ export default async function AccountTokenAllocationsPage() {
             {pointLedger.map((entry) => (
               <div className={styles.ledgerItem} key={entry.id}>
                 <div className={styles.ledgerInfo}>
-                  <span className={styles.ledgerReason}>{formatIohPointReason(entry.reason)}</span>
+                  <span className={styles.ledgerReason}>{getIohPointLedgerTitle(entry)}</span>
                   <span className={styles.ledgerDate}>
                     {formatDateTime(entry.created_at)}
                     {entry.order_id ? ` / Siparis: ${entry.order_id.slice(0, 8)}` : ""}
                   </span>
+                  {getIohPointLedgerDetail(entry) ? (
+                    <span className={styles.ledgerDetail}>{getIohPointLedgerDetail(entry)}</span>
+                  ) : null}
                 </div>
                 <span className={`${styles.ledgerAmount} ${entry.amount < 0 ? styles.ledgerAmountNegative : ""}`}>
                   {entry.amount > 0 ? "+" : ""}{entry.amount}
