@@ -747,7 +747,200 @@
 
   .line,
   .emptyCta,
-  .checkoutButton {
+  .checkoutButton,
+  .radioCard,
+  .legalCheck,
+  .submitBtn {
     transition: none;
   }
+}
+
+/* ---------- CHECKOUT SPECIFIC ---------- */
+
+/* Radio card for delivery options and payment providers */
+.radioCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  border: 1px solid var(--c-line);
+  border-radius: 10px;
+  background: rgba(5, 6, 10, 0.4);
+  cursor: pointer;
+  transition: border-color 180ms ease, background 180ms ease;
+}
+
+.radioCard:hover {
+  border-color: rgba(231, 197, 116, 0.35);
+  background: rgba(231, 197, 116, 0.03);
+}
+
+.radioCard input[type="radio"],
+.radioCard input[type="checkbox"] {
+  margin-top: 0.2rem;
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--c-gold);
+  flex-shrink: 0;
+}
+
+.radioCardBody {
+  display: grid;
+  gap: 0.25rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.radioCardTitle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-weight: 500;
+  color: var(--c-ink);
+  font-size: 0.92rem;
+}
+
+.radioCardPrice {
+  color: var(--c-gold);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.1rem;
+}
+
+.radioCardDesc {
+  color: var(--c-muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+/* Legal checkbox card */
+.legalCheck {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  border: 1px solid var(--c-line);
+  border-radius: 10px;
+  background: rgba(5, 6, 10, 0.4);
+  cursor: pointer;
+  transition: border-color 180ms ease;
+}
+
+.legalCheck:hover {
+  border-color: rgba(231, 197, 116, 0.25);
+}
+
+.legalCheckRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.legalCheckRow input[type="checkbox"] {
+  margin-top: 0.2rem;
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--c-gold);
+  flex-shrink: 0;
+}
+
+.legalCheckBody {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.legalCheckLabel {
+  font-weight: 500;
+  color: var(--c-ink);
+  font-size: 0.88rem;
+}
+
+.legalCheckDesc {
+  color: var(--c-muted);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.legalSectionHead {
+  color: var(--c-gold);
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Submit button */
+.submitBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  min-height: 56px;
+  width: 100%;
+  padding: 0 1.75rem;
+  border: 1px solid var(--c-gold);
+  border-radius: 999px;
+  background: var(--c-gold);
+  color: #08090d;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+  box-shadow: 0 12px 40px rgba(231, 197, 116, 0.18);
+}
+
+.submitBtn:hover,
+.submitBtn:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 50px rgba(231, 197, 116, 0.28);
+}
+
+.submitBtn:disabled {
+  border-color: var(--c-line);
+  background: rgba(5, 6, 10, 0.4);
+  color: var(--c-muted);
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Checkout form label (shared with cart) */
+.formField {
+  display: grid;
+  gap: 0.4rem;
+  font-family: var(--font-sans);
+}
+
+.formFieldLabel {
+  color: var(--c-muted);
+  font-family: var(--font-mono);
+  font-size: 0.54rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Page input styling for shadcn inputs inside checkout */
+.page :global(input[type="text"]),
+.page :global(input[type="email"]),
+.page :global(input[type="tel"]),
+.page :global(input[type="number"]),
+.page :global(input:not([type])),
+.page :global(textarea),
+.page :global(select) {
+  background: rgba(5, 6, 10, 0.5) !important;
+  border-color: var(--c-line) !important;
+  color: var(--c-ink) !important;
+  font-family: var(--font-sans) !important;
+  border-radius: 8px !important;
+}
+
+.page :global(input:focus),
+.page :global(textarea:focus),
+.page :global(select:focus) {
+  border-color: var(--c-gold) !important;
+  box-shadow: 0 0 0 1px rgba(231, 197, 116, 0.3) !important;
 }
