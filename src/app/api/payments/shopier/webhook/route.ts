@@ -5,6 +5,10 @@ import { createSupabaseServiceRoleClient } from "@/lib/supabase/service-role";
 
 export async function POST(request: NextRequest) {
   const rawBody = await request.text();
+  if (!rawBody || rawBody.trim() === "") {
+    return NextResponse.json({ ok: true, message: "ping" });
+  }
+
   const supabase = createSupabaseServiceRoleClient();
 
   try {
@@ -29,11 +33,20 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json({ ok: true });
-  } catch (error) {
+  } catch (error: any) {
     captureError(error, {
       operation: "shopier.webhook"
     });
 
-    return NextResponse.json({ ok: false }, { status: 400 });
+    const isValidationError = 
+      error.message?.includes("signature") || 
+      error.message?.includes("not found") || 
+      error.message?.includes("JSON") || 
+      error.message?.includes("missing");
+
+    return NextResponse.json(
+      { ok: false, error: error.message },
+      { status: isValidationError ? 200 : 400 }
+    );
   }
 }
