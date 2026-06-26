@@ -11,9 +11,12 @@ export default function robots(): MetadataRoute.Robots {
           "/books",
           "/collections",
           "/contact",
+          "/encyclopedia",
           "/faq",
           "/journal",
-          "/legal"
+          "/legal",
+          "/nft",
+          "/token-sale"
         ],
         disallow: [
           "/account",
@@ -23,7 +26,10 @@ export default function robots(): MetadataRoute.Robots {
           "/checkout",
           "/forgot-password",
           "/sign-in",
-          "/sign-up"
+          "/sign-up",
+          "/style-guide",
+          "/unauthorized",
+          "/unsubscribe"
         ],
         userAgent: "*"
       }

@@ -51,3 +51,19 @@ export function getSignUpRedirectPath(input: {
   const email = encodeURIComponent(input.email);
   return `/sign-in?pending-confirmation=1&email=${email}`;
 }
+
+export function isSafeRedirectPath(path: string): boolean {
+  if (!path) return false;
+  // Ensure it starts with exactly one '/' and is not protocol relative (e.g. '//')
+  if (!path.startsWith("/") || path.startsWith("//") || path.startsWith("\\")) {
+    return false;
+  }
+
+  // Ensure it does not contain colon in path part to reject schemes
+  const pathPart = path.split("?")[0];
+  if (pathPart.includes(":")) {
+    return false;
+  }
+
+  return true;
+}

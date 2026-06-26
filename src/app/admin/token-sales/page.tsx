@@ -60,7 +60,7 @@ export default async function AdminTokenSalesPage() {
                   {allocation.token_sale_campaigns?.title ?? "Token kampanyasi"}
                 </h3>
                 <p className={styles.detailMeta} style={{ wordBreak: "break-all", fontFamily: "var(--font-mono)" }}>
-                  {allocation.normalized_address}
+                  {allocation.normalized_address ?? "Wallet sonradan alinacak"}
                 </p>
               </div>
               <div style={{ textAlign: "right" }}>

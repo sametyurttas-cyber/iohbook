@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { getCurrentUser, requireStaff } from "@/features/auth/queries";
 import type { StaffRole } from "@/types/database";
@@ -13,6 +14,14 @@ type AdminNavItem = {
   allowedRoles?: StaffRole[];
   href: string;
   label: string;
+};
+
+export const metadata: Metadata = {
+  robots: {
+    follow: false,
+    index: false
+  },
+  title: "IOH Admin"
 };
 
 export default async function AdminLayout({ children }: AdminLayoutProps) {
@@ -43,6 +52,11 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
       allowedRoles: ["owner", "admin_ops", "support"],
       href: "/admin/verifications",
       label: "Dogrulamalar"
+    },
+    {
+      allowedRoles: ["owner", "admin_ops", "support"],
+      href: "/admin/referrals",
+      label: "Davetler"
     },
     {
       allowedRoles: ["owner", "admin_ops", "support"],

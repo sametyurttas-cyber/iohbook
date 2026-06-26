@@ -1,0 +1,7 @@
+export const REFERRAL_REFERRER_REWARD = 100;
+export const REFERRAL_REFERRED_REWARD = 100;
+export const REFERRAL_CODE_LENGTH = 8;
+export const REFERRAL_CODE_PREFIX = "IOH";
+export const REFERRAL_CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+export const REFERRAL_COOKIE_NAME = "ioh_referral_code";
+export const REFERRAL_COOKIE_MAX_AGE = 60 * 60 * 24 * 30;

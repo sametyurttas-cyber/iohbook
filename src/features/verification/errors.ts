@@ -12,6 +12,10 @@ export function isVerificationSchemaUnavailableError(error: unknown): boolean {
   const code = typeof candidate.code === "string" ? candidate.code : "";
   const message = typeof candidate.message === "string" ? candidate.message : "";
 
-  return code === "PGRST205"
-    && /verification_submissions|submission_replies|verification_attachments/.test(message);
+  return (
+    ["PGRST202", "PGRST205", "42P01", "42883"].includes(code) &&
+    /verification_submissions|submission_replies|verification_attachments|approve_verification_submission/.test(
+      message
+    )
+  );
 }

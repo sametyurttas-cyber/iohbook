@@ -9,6 +9,13 @@ describe("verification schema errors", () => {
     })).toBe(true);
   });
 
+  it("recognizes missing verification tables from Postgres", () => {
+    expect(isVerificationSchemaUnavailableError({
+      code: "42P01",
+      message: "relation \"public.verification_submissions\" does not exist"
+    })).toBe(true);
+  });
+
   it("does not hide unrelated Supabase errors", () => {
     expect(isVerificationSchemaUnavailableError({
       code: "42501",

@@ -15,7 +15,8 @@ export const ANALYTICS_EVENT_NAMES = [
   "amazon_verification_approved",
   "amazon_verification_rejected",
   "ioh_points_awarded",
-  "encyclopedia_view"
+  "encyclopedia_view",
+  "referral_rewarded"
 ] as const;
 
 export type AnalyticsEventName = (typeof ANALYTICS_EVENT_NAMES)[number];
@@ -64,5 +65,11 @@ export const ANALYTICS_METADATA_KEYS: Record<AnalyticsEventName, readonly string
   ],
   amazon_verification_rejected: ["submission_id", "kind", "book_slug"],
   ioh_points_awarded: ["ledger_id", "reason", "amount", "order_id"],
-  encyclopedia_view: ["entity_type", "entity_slug", "entity_title"]
+  encyclopedia_view: ["entity_type", "entity_slug", "entity_title"],
+  referral_rewarded: [
+    "referral_id",
+    "referrer_reward_ledger_id",
+    "referred_reward_ledger_id",
+    "reward_each"
+  ]
 };

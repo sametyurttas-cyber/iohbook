@@ -20,6 +20,15 @@ Last reviewed: 2026-06-18
   successful signup gives 10; a verified paid book order gives 30.
 - NFT, wallet, token allocation, and campaign foundations exist. Automatic NFT
   minting and automatic token transfer are not enabled.
+- Token package purchase requires a signed-in account but no wallet at purchase
+  time. Wallet details can be requested later for any manual transfer workflow.
+- Token sale uses an adaptive Three.js WebGL IOHcoin particle layer with
+  pointer parallax, scroll morphing, and click/drag cyan shockwaves. GSAP,
+  CDN scripts, and custom cursor hiding remain disabled to protect purchase UI
+  responsiveness.
+- Referral MVP is installed in live Supabase. Users can have referral codes,
+  `/sign-up?ref=KOD` links, pending referrals, and idempotent post-verification
+  IOH rewards.
 
 ## Brand Truth
 

@@ -33,12 +33,60 @@ export default async function CollectionsPage() {
       <SiteHeader />
       <main id="main-content">
         <JsonLd
-          data={{
-            "@context": "https://schema.org",
-            "@type": "CollectionPage",
-            name: "IOH Koleksiyonlar",
-            url: absoluteUrl("/collections")
-          }}
+          data={[
+            {
+              "@context": "https://schema.org",
+              "@type": "CollectionPage",
+              description:
+                "IOH evrenindeki kitap koleksiyonlari, limitli baskilar ve tematik yayin hatlari.",
+              hasPart:
+                collections.length > 0
+                  ? collections.map((collection) => ({
+                      "@type": "CreativeWorkSeries",
+                      name: collection.title,
+                      url: absoluteUrl("/collections")
+                    }))
+                  : [
+                      {
+                        "@type": "CreativeWorkSeries",
+                        name: "IOH Universe",
+                        url: absoluteUrl("/collections")
+                      }
+                    ],
+              mainEntity: {
+                "@type": "ItemList",
+                itemListElement: books.map((book, index) => ({
+                  "@type": "ListItem",
+                  item: {
+                    "@type": book.type === "book" ? "Book" : "Product",
+                    name: book.title,
+                    url: absoluteUrl(`/books/${book.slug}`)
+                  },
+                  position: index + 1
+                }))
+              },
+              name: "IOH Koleksiyonlar",
+              url: absoluteUrl("/collections")
+            },
+            {
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                {
+                  "@type": "ListItem",
+                  item: absoluteUrl("/"),
+                  name: "Ana Sayfa",
+                  position: 1
+                },
+                {
+                  "@type": "ListItem",
+                  item: absoluteUrl("/collections"),
+                  name: "Koleksiyonlar",
+                  position: 2
+                }
+              ]
+            }
+          ]}
         />
         <Section className="pb-10 pt-10">
           <Container>

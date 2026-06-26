@@ -1,5 +1,9 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { Button } from "@/components/ui/button";
+import { buildNoIndexMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildNoIndexMetadata("Yetkisiz erisim");
 
 export default function UnauthorizedPage() {
   return (

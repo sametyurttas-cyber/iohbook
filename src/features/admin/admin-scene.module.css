@@ -342,6 +342,41 @@
   font-weight: 600;
 }
 
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.statCard {
+  display: grid;
+  gap: 0.55rem;
+  min-height: 112px;
+  padding: 1.05rem;
+  border: 1px solid var(--ad-line);
+  border-radius: 12px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.028), rgba(255, 255, 255, 0.006));
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22);
+}
+
+.statLabel {
+  color: var(--ad-muted);
+  font-family: var(--font-mono);
+  font-size: 0.54rem;
+  letter-spacing: 0.13em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.statValue {
+  align-self: end;
+  color: var(--ad-ink);
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 2.5vw, 2rem);
+  font-weight: 600;
+  line-height: 1;
+}
+
 /* ---------- CARDS / PANELS ---------- */
 .panel {
   display: grid;
@@ -916,6 +951,10 @@
 
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 1020px) {
+  .statsGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .modules {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -944,12 +983,22 @@
     grid-template-columns: 1fr;
   }
 
+  .statsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .heroTop {
     flex-direction: column;
     align-items: flex-start;
   }
 
   .filters {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 460px) {
+  .statsGrid {
     grid-template-columns: 1fr;
   }
 }

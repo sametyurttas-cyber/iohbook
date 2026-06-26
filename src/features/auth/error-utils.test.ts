@@ -3,7 +3,8 @@ import {
   getSignInRedirectError,
   getSignUpRedirectError,
   getSignUpRedirectPath,
-  isEmailNotConfirmedError
+  isEmailNotConfirmedError,
+  isSafeRedirectPath
 } from "@/features/auth/error-utils";
 
 describe("auth error utils", () => {
@@ -38,5 +39,17 @@ describe("auth error utils", () => {
     expect(getSignUpRedirectPath({ email: "samet@example.com", hasSession: true })).toBe(
       "/account"
     );
+  });
+
+  it("validates safe internal redirect paths", () => {
+    expect(isSafeRedirectPath("/account")).toBe(true);
+    expect(isSafeRedirectPath("/token-sale?package_id=1&quantity=5")).toBe(true);
+    expect(isSafeRedirectPath("")).toBe(false);
+    expect(isSafeRedirectPath("http://evil.com")).toBe(false);
+    expect(isSafeRedirectPath("https://evil.com")).toBe(false);
+    expect(isSafeRedirectPath("//evil.com")).toBe(false);
+    expect(isSafeRedirectPath("\\\\evil.com")).toBe(false);
+    expect(isSafeRedirectPath("/http://evil.com")).toBe(false);
+    expect(isSafeRedirectPath("javascript:alert(1)")).toBe(false);
   });
 });

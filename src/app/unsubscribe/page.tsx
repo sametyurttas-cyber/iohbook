@@ -1,7 +1,13 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { consumeUnsubscribeToken } from "@/features/email/preferences-actions";
+import { buildNoIndexMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = buildNoIndexMetadata(
+  "E-posta tercihleri",
+  "IOH e-posta abonelikten cikma sayfasi."
+);
 
 type UnsubscribePageProps = {
   searchParams: Promise<{

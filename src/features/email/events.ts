@@ -6,8 +6,7 @@ import {
   type OrderEmailData
 } from "@/features/email/templates";
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/service-role";
-import type { FulfillmentShipment, Order, OrderItem, FulfillmentType } from "@/types/database";
-import { grantsDigitalAccess } from "@/features/entitlements/entitlement-utils";
+import type { FulfillmentShipment, Order, OrderItem } from "@/types/database";
 
 type EmailOrder = Order & {
   fulfillment_shipments: FulfillmentShipment[];
@@ -145,7 +144,9 @@ export async function sendDigitalDeliveryReadyEmail(orderId: string) {
     return null;
   }
 
-  const digitalLines = data.lines.filter((l) => grantsDigitalAccess(l.fulfillmentType as FulfillmentType));
+  const digitalLines = data.lines.filter(
+    (l) => l.fulfillmentType === "digital" || l.fulfillmentType === "hybrid"
+  );
   if (digitalLines.length === 0) {
     return null;
   }

@@ -172,7 +172,11 @@ export type IohPointsReason =
   | "manual_adjustment_credit"
   | "manual_adjustment_debit"
   | "amazon_purchase_verification"
-  | "amazon_review_verification";
+  | "amazon_review_verification"
+  | "referral_referrer_reward"
+  | "referral_referred_reward";
+
+export type ReferralStatus = "pending" | "qualified" | "rewarded" | "rejected";
 
 export type SubmissionKind = "amazon_purchase" | "amazon_review" | "general_message";
 
@@ -649,8 +653,8 @@ export type TokenAllocation = {
   order_id: string | null;
   payment_attempt_id: string | null;
   wallet_id: string | null;
-  wallet_address: string;
-  normalized_address: string;
+  wallet_address: string | null;
+  normalized_address: string | null;
   token_symbol: string;
   token_amount: string;
   bonus_amount: string;
@@ -685,6 +689,28 @@ export type IohPointLedger = {
   created_at: string;
 };
 
+export type ReferralCode = {
+  id: string;
+  profile_id: string;
+  code: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type Referral = {
+  id: string;
+  referrer_profile_id: string;
+  referred_profile_id: string;
+  referral_code: string;
+  status: ReferralStatus;
+  qualified_at: string | null;
+  rewarded_at: string | null;
+  referrer_reward_ledger_id: string | null;
+  referred_reward_ledger_id: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 export type AnalyticsEventName =
   | "page_view"
   | "signup"
@@ -702,7 +728,8 @@ export type AnalyticsEventName =
   | "amazon_verification_approved"
   | "amazon_verification_rejected"
   | "ioh_points_awarded"
-  | "encyclopedia_view";
+  | "encyclopedia_view"
+  | "referral_rewarded";
 
 export type AnalyticsDeviceType = "desktop" | "mobile" | "tablet" | "unknown";
 
@@ -1030,8 +1057,6 @@ export type Database = {
             TokenAllocation,
             | "campaign_id"
             | "profile_id"
-            | "wallet_address"
-            | "normalized_address"
             | "token_symbol"
             | "token_amount"
             | "total_amount"
@@ -1053,6 +1078,19 @@ export type Database = {
         Insert: Partial<IohPointLedger> &
           Pick<IohPointLedger, "profile_id" | "amount" | "reason">;
         Update: Partial<IohPointLedger>;
+        Relationships: [];
+      };
+      referral_codes: {
+        Row: ReferralCode;
+        Insert: Partial<ReferralCode> & Pick<ReferralCode, "profile_id" | "code">;
+        Update: Partial<ReferralCode>;
+        Relationships: [];
+      };
+      referrals: {
+        Row: Referral;
+        Insert: Partial<Referral> &
+          Pick<Referral, "referrer_profile_id" | "referred_profile_id" | "referral_code">;
+        Update: Partial<Referral>;
         Relationships: [];
       };
       verification_submissions: {
@@ -1244,6 +1282,39 @@ export type Database = {
           error_code: string | null;
         }[];
       };
+      record_referral_signup: {
+        Args: {
+          p_referred_profile_id: string;
+          p_referral_code: string;
+        };
+        Returns: {
+          created: boolean;
+          referral_id: string | null;
+          status: ReferralStatus | null;
+        }[];
+      };
+      qualify_referral_after_email_verified: {
+        Args: {
+          p_profile_id: string;
+        };
+        Returns: {
+          email_verified: boolean;
+          qualified: boolean;
+          referral_id: string | null;
+        }[];
+      };
+      award_referral_if_eligible: {
+        Args: {
+          p_profile_id: string;
+        };
+        Returns: {
+          applied: boolean;
+          referral_id: string | null;
+          referred_ledger_id: string | null;
+          referrer_ledger_id: string | null;
+          status: ReferralStatus | null;
+        }[];
+      };
     };
     Enums: {
       staff_role: StaffRole;
@@ -1267,6 +1338,7 @@ export type Database = {
       token_campaign_status: TokenCampaignStatus;
       token_allocation_status: TokenAllocationStatus;
       ioh_points_reason: IohPointsReason;
+      referral_status: ReferralStatus;
       submission_kind: SubmissionKind;
       submission_status: SubmissionStatus;
     };

@@ -4,12 +4,20 @@ import { redirect } from "next/navigation";
 import {
   getSignInRedirectError,
   getSignUpRedirectError,
-  getSignUpRedirectPath
+  getSignUpRedirectPath,
+  isSafeRedirectPath
 } from "@/features/auth/error-utils";
 import { trackServerAnalyticsEvent } from "@/features/analytics/business-events";
 import { mergeAnonymousCartIntoProfileCart } from "@/features/cart/merge";
 import { sendAccountSecurityEmail, sendPasswordResetEmail } from "@/features/email/events";
 import { awardSignupBonus } from "@/features/points/service";
+import {
+  clearReferralCodeCookie,
+  getReferralCodeFromCookie,
+  isReferralInputValid,
+  normalizeReferralInput
+} from "@/features/referrals/cookie";
+import { awardReferralIfEligible, createReferralFromCode } from "@/features/referrals/service";
 import { captureError } from "@/lib/observability";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/service-role";
@@ -22,20 +30,69 @@ function buildSiteUrl() {
   );
 }
 
+async function getReferralCodeFromSignupForm(formData: FormData) {
+  const formCode = normalizeReferralInput(String(formData.get("referral_code") ?? ""));
+
+  if (isReferralInputValid(formCode)) {
+    return formCode;
+  }
+
+  return getReferralCodeFromCookie();
+}
+
+async function createPendingReferralAfterSignup(input: {
+  formData: FormData;
+  profileId: string;
+  serviceSupabase: ReturnType<typeof createSupabaseServiceRoleClient>;
+}) {
+  const referralCode = await getReferralCodeFromSignupForm(input.formData);
+
+  if (!referralCode) {
+    return;
+  }
+
+  try {
+    await createReferralFromCode(input.profileId, referralCode, input.serviceSupabase);
+    await awardReferralIfEligible(input.profileId, input.serviceSupabase);
+    await clearReferralCodeCookie();
+  } catch (error) {
+    captureError(error, {
+      operation: "referrals.signup",
+      profile_id: input.profileId
+    });
+  }
+}
+
+async function awardReferralAfterVerifiedLogin(profileId: string) {
+  try {
+    await awardReferralIfEligible(profileId, createSupabaseServiceRoleClient());
+  } catch (error) {
+    captureError(error, {
+      operation: "referrals.login_award",
+      profile_id: profileId
+    });
+  }
+}
+
 export async function signInWithPassword(formData: FormData) {
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
   const next = String(formData.get("next") ?? "/account");
 
+  let redirectPath = next;
+  if (!isSafeRedirectPath(redirectPath)) {
+    redirectPath = "/token-sale";
+  }
+
   if (!email || !password) {
-    redirect("/sign-in?error=missing-credentials");
+    redirect(`/sign-in?error=missing-credentials&next=${encodeURIComponent(redirectPath)}`);
   }
 
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
-    redirect(`/sign-in?error=${getSignInRedirectError(error)}`);
+    redirect(`/sign-in?error=${getSignInRedirectError(error)}&next=${encodeURIComponent(redirectPath)}`);
   }
 
   const {
@@ -44,6 +101,7 @@ export async function signInWithPassword(formData: FormData) {
 
   if (user) {
     await mergeAnonymousCartIntoProfileCart(user.id);
+    await awardReferralAfterVerifiedLogin(user.id);
     await trackServerAnalyticsEvent({
       eventName: "login",
       metadata: { method: "password" },
@@ -57,20 +115,26 @@ export async function signInWithPassword(formData: FormData) {
     message: "Hesabiniza yeni bir oturum acildi."
   });
 
-  redirect(next);
+  redirect(redirectPath);
 }
 
 export async function signUpWithPassword(formData: FormData) {
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
   const fullName = String(formData.get("full_name") ?? "").trim();
+  const next = String(formData.get("next") ?? "/account");
+
+  let redirectPath = next;
+  if (!isSafeRedirectPath(redirectPath)) {
+    redirectPath = "/token-sale";
+  }
 
   if (!email || !password) {
-    redirect("/sign-up?error=missing-credentials");
+    redirect(`/sign-up?error=missing-credentials&next=${encodeURIComponent(redirectPath)}`);
   }
 
   if (password.length < 8) {
-    redirect("/sign-up?error=weak-password");
+    redirect(`/sign-up?error=weak-password&next=${encodeURIComponent(redirectPath)}`);
   }
 
   const serviceSupabase = createSupabaseServiceRoleClient();
@@ -84,14 +148,14 @@ export async function signUpWithPassword(formData: FormData) {
   });
 
   if (createError) {
-    redirect(`/sign-up?error=${getSignUpRedirectError(createError)}`);
+    redirect(`/sign-up?error=${getSignUpRedirectError(createError)}&next=${encodeURIComponent(redirectPath)}`);
   }
 
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
-    redirect(`/sign-in?error=${getSignInRedirectError(error)}`);
+    redirect(`/sign-in?error=${getSignInRedirectError(error)}&next=${encodeURIComponent(redirectPath)}`);
   }
 
   if (data.user) {
@@ -123,6 +187,15 @@ export async function signUpWithPassword(formData: FormData) {
         profile_id: data.user.id
       });
     }
+    await createPendingReferralAfterSignup({
+      formData,
+      profileId: data.user.id,
+      serviceSupabase
+    });
+  }
+
+  if (data.session) {
+    redirect(redirectPath);
   }
 
   redirect(

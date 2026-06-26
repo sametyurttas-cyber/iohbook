@@ -1,8 +1,10 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { PublicAtmosphere } from "@/components/layout/public-atmosphere";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { signInWithPassword } from "@/features/auth/actions";
+import { buildNoIndexMetadata } from "@/lib/seo";
 
 type SignInPageProps = {
   searchParams?: Promise<{
@@ -13,6 +15,8 @@ type SignInPageProps = {
     "pending-confirmation"?: string;
   }>;
 };
+
+export const metadata: Metadata = buildNoIndexMetadata("Giris yap", "IOH hesap giris sayfasi.");
 
 export default async function SignInPage({ searchParams }: SignInPageProps) {
   const params = await searchParams;
@@ -59,7 +63,10 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
         <div className="mt-5 grid gap-2 text-sm text-muted-foreground">
           <p>
             Hesabin yok mu?{" "}
-            <Link className="text-gold hover:underline" href="/sign-up">
+            <Link
+              className="text-gold hover:underline"
+              href={next ? `/sign-up?next=${encodeURIComponent(next)}` : "/sign-up"}
+            >
               Kayit ol
             </Link>
           </p>

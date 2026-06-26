@@ -8,13 +8,45 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
-import { createTokenCampaign, createTokenPackage } from "@/features/token-sale/actions";
+import {
+  createTokenCampaign,
+  createTokenPackage,
+  deleteTokenCampaign,
+  deleteTokenPackage
+} from "@/features/token-sale/actions";
 import { listTokenCampaignsForAdmin } from "@/features/token-sale/queries";
 import { formatMoney } from "@/features/products/product-utils";
 import { formatTokenAmount } from "@/features/token-sale/utils";
 import styles from "@/features/admin/admin-scene.module.css";
 
-export default async function AdminTokenCampaignsPage() {
+type AdminTokenCampaignsPageProps = {
+  searchParams?: Promise<{
+    error?: string;
+    saved?: string;
+  }>;
+};
+
+const errorMessages: Record<string, string> = {
+  "campaign-has-sales": "Bu kampanyadan satis/allocation olustugu icin silinemez. Bunun yerine kampanyayi pasife alin.",
+  "duplicate-package-title": "Bu kampanyada ayni isimde bir paket zaten var.",
+  "duplicate-package-values": "Bu kampanyada ayni token miktari, fiyat ve para birimine sahip bir paket zaten var.",
+  "missing-campaign": "Kampanya bulunamadi.",
+  "missing-fields": "Zorunlu kampanya alanlari eksik.",
+  "missing-package": "Paket bilgisi eksik.",
+  "package-has-sales": "Bu paketten satis/allocation olustugu icin silinemez. Bunun yerine paketi pasif tutun."
+};
+
+const savedMessages: Record<string, string> = {
+  campaign: "Kampanya olusturuldu.",
+  "campaign-deleted": "Kampanya silindi.",
+  package: "Paket eklendi.",
+  "package-deleted": "Paket silindi."
+};
+
+export default async function AdminTokenCampaignsPage({
+  searchParams
+}: AdminTokenCampaignsPageProps) {
+  const query = await searchParams;
   const campaigns = await listTokenCampaignsForAdmin();
 
   return (
@@ -37,6 +69,18 @@ export default async function AdminTokenCampaignsPage() {
       </section>
 
       <div className={styles.grid}>
+        {query?.error ? (
+          <div className={styles.noticeError}>
+            {errorMessages[query.error] ?? query.error}
+          </div>
+        ) : null}
+
+        {query?.saved ? (
+          <div className={styles.noticeSuccess}>
+            {savedMessages[query.saved] ?? "Islem kaydedildi."}
+          </div>
+        ) : null}
+
         <form action={createTokenCampaign} className={styles.panel}>
           <div className={styles.panelHead}>
             <h3 className={styles.panelTitle}>Yeni Kampanya</h3>
@@ -148,6 +192,12 @@ export default async function AdminTokenCampaignsPage() {
                 <div style={{ textAlign: "right" }}>
                   <p className={styles.ddGold}>{formatMoney(campaign.price_minor, campaign.currency)}</p>
                   <p className={styles.detailMeta}>Limit: {formatTokenAmount(campaign.total_sale_limit)}</p>
+                  <form action={deleteTokenCampaign} style={{ marginTop: "0.75rem" }}>
+                    <input name="campaign_id" type="hidden" value={campaign.id} />
+                    <Button size="sm" type="submit" variant="destructive">
+                      Kampanyayi Sil
+                    </Button>
+                  </form>
                 </div>
               </div>
 
@@ -174,6 +224,12 @@ export default async function AdminTokenCampaignsPage() {
                 {campaign.token_sale_packages.map((pkg) => (
                   <div className={styles.panel} key={pkg.id} style={{ padding: "0.85rem 1rem", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "1rem" }}>
                     <span className={styles.dd}>{pkg.title}</span>
+                    <form action={deleteTokenPackage}>
+                      <input name="package_id" type="hidden" value={pkg.id} />
+                      <Button size="sm" type="submit" variant="destructive">
+                        Sil
+                      </Button>
+                    </form>
                     <span className={styles.detailMeta}>
                       {formatTokenAmount(pkg.token_amount)} {campaign.token_symbol} · {formatMoney(pkg.price_minor, pkg.currency)}
                     </span>

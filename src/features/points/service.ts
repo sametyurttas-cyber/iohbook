@@ -26,8 +26,10 @@ export function getPointsReasonLabel(reason: string): string {
       return "Admin ödülü";
     case "bulk_campaign_reward":
       return "Kampanya ödülü";
-    case "friend_invite":
+    case "referral_referrer_reward":
       return "Arkadaş daveti ödülü";
+    case "referral_referred_reward":
+      return "Davetle katilim odulu";
     default:
       return "Puan ödülü";
   }

@@ -1,12 +1,18 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { getCurrentUser, requireStaff } from "@/features/auth/queries";
 import { createOrderNumber } from "@/features/checkout/checkout-utils";
 import { commitTokenSalePaymentStart } from "@/features/checkout/persistence";
-import { buildShopierPaymentUrl, getShopierConfig, isShopierConfigured } from "@/features/checkout/shopier";
-import { validateTokenAllocationUpdate } from "@/features/token-sale/admin-rules";
+import {
+  buildShopierProductUrl,
+  isShopierConfigured
+} from "@/features/checkout/shopier";
+import {
+  validateTokenAllocationUpdate,
+  validateTokenPackageDuplicate
+} from "@/features/token-sale/admin-rules";
 import { hasAcceptedTokenSaleTerms, validateTokenSaleLimits } from "@/features/token-sale/rules";
 import {
   addTokenDecimals,
@@ -30,12 +36,12 @@ function optionalText(formData: FormData, name: string) {
   return value || null;
 }
 
-function buildSiteUrl() {
-  return (
-    process.env.NEXT_PUBLIC_SITE_URL ??
-    process.env.VERCEL_URL?.replace(/^/, "https://") ??
-    "http://localhost:3000"
-  );
+
+
+function revalidateTokenSaleAdmin() {
+  revalidateTag("token-sale", "max");
+  revalidatePath("/admin/token-campaigns");
+  revalidatePath("/token-sale");
 }
 
 export async function createTokenCampaign(formData: FormData) {
@@ -71,7 +77,7 @@ export async function createTokenCampaign(formData: FormData) {
   });
 
   if (error) redirect(`/admin/token-campaigns?error=${encodeURIComponent(error.code ?? "create-failed")}`);
-  revalidatePath("/admin/token-campaigns");
+  revalidateTokenSaleAdmin();
   redirect("/admin/token-campaigns?saved=campaign");
 }
 
@@ -85,47 +91,149 @@ export async function createTokenPackage(formData: FormData) {
   }
 
   const supabase = await createSupabaseServerClient();
+  const title = text(formData, "title");
+  const currency = text(formData, "currency") || "USD";
+  const priceMinor = parseMoneyToMinor(formData.get("price"));
+  const tokenAmount = parseDecimalString(formData.get("token_amount"));
+  const { data: existingPackages, error: existingPackagesError } = await supabase
+    .from("token_sale_packages")
+    .select("currency, price_minor, title, token_amount")
+    .eq("campaign_id", campaignId)
+    .limit(500);
+
+  if (existingPackagesError) {
+    redirect(`/admin/token-campaigns?error=${encodeURIComponent(existingPackagesError.code ?? "duplicate-check-failed")}`);
+  }
+
+  const duplicateError = validateTokenPackageDuplicate({
+    currency,
+    existing: existingPackages ?? [],
+    priceMinor,
+    title,
+    tokenAmount
+  });
+
+  if (duplicateError) {
+    redirect(`/admin/token-campaigns?error=${duplicateError}`);
+  }
+
   const { error } = await supabase.from("token_sale_packages").insert({
     active: formData.get("active") === "on",
     campaign_id: campaignId,
-    currency: text(formData, "currency") || "USD",
+    currency,
     max_quantity_per_order: formData.get("max_quantity_per_order")
       ? parseInteger(formData.get("max_quantity_per_order"), 1)
       : null,
-    price_minor: parseMoneyToMinor(formData.get("price")),
+    price_minor: priceMinor,
     sort_order: parseInteger(formData.get("sort_order"), 0),
-    title: text(formData, "title"),
-    token_amount: parseDecimalString(formData.get("token_amount"))
+    title,
+    token_amount: tokenAmount
   });
 
   if (error) redirect(`/admin/token-campaigns?error=${encodeURIComponent(error.code ?? "package-create-failed")}`);
-  revalidatePath("/admin/token-campaigns");
+  revalidateTokenSaleAdmin();
   redirect("/admin/token-campaigns?saved=package");
 }
 
-export async function startTokenSalePayment(formData: FormData) {
-  const user = await getCurrentUser();
-  if (!user) redirect("/sign-in?next=/token-sale");
+export async function deleteTokenPackage(formData: FormData) {
+  const staff = await requireStaff(["owner", "admin_ops"]);
+  if (!staff) redirect("/unauthorized");
 
   const packageId = text(formData, "package_id");
-  const quantity = Math.max(1, parseInteger(formData.get("quantity"), 1));
+  if (!packageId) {
+    redirect("/admin/token-campaigns?error=missing-package");
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const { data: allocation, error: allocationError } = await supabase
+    .from("token_allocations")
+    .select("id")
+    .eq("package_id", packageId)
+    .limit(1)
+    .maybeSingle();
+
+  if (allocationError) {
+    redirect(`/admin/token-campaigns?error=${encodeURIComponent(allocationError.code ?? "package-check-failed")}`);
+  }
+
+  if (allocation) {
+    redirect("/admin/token-campaigns?error=package-has-sales");
+  }
+
+  const { error } = await supabase
+    .from("token_sale_packages")
+    .delete()
+    .eq("id", packageId);
+
+  if (error) {
+    redirect(`/admin/token-campaigns?error=${encodeURIComponent(error.code ?? "package-delete-failed")}`);
+  }
+
+  revalidateTokenSaleAdmin();
+  redirect("/admin/token-campaigns?saved=package-deleted");
+}
+
+export async function deleteTokenCampaign(formData: FormData) {
+  const staff = await requireStaff(["owner", "admin_ops"]);
+  if (!staff) redirect("/unauthorized");
+
+  const campaignId = text(formData, "campaign_id");
+  if (!campaignId) {
+    redirect("/admin/token-campaigns?error=missing-campaign");
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const { data: allocation, error: allocationError } = await supabase
+    .from("token_allocations")
+    .select("id")
+    .eq("campaign_id", campaignId)
+    .limit(1)
+    .maybeSingle();
+
+  if (allocationError) {
+    redirect(`/admin/token-campaigns?error=${encodeURIComponent(allocationError.code ?? "campaign-check-failed")}`);
+  }
+
+  if (allocation) {
+    redirect("/admin/token-campaigns?error=campaign-has-sales");
+  }
+
+  const { error } = await supabase
+    .from("token_sale_campaigns")
+    .delete()
+    .eq("id", campaignId);
+
+  if (error) {
+    redirect(`/admin/token-campaigns?error=${encodeURIComponent(error.code ?? "campaign-delete-failed")}`);
+  }
+
+  revalidateTokenSaleAdmin();
+  redirect("/admin/token-campaigns?saved=campaign-deleted");
+}
+
+export async function startTokenSalePayment(formData: FormData) {
+  const packageId = text(formData, "package_id");
   if (!packageId) redirect("/token-sale?error=missing-package");
   if (!hasAcceptedTokenSaleTerms(formData)) redirect("/token-sale?error=legal-required");
   if (!isShopierConfigured()) redirect("/token-sale?error=shopier-not-configured");
 
+  const shopierProductUrl = process.env.SHOPIER_TOKEN_SALE_PRODUCT_URL;
+  if (!shopierProductUrl) {
+    console.error("SHOPIER_TOKEN_SALE_PRODUCT_URL is not set.");
+    redirect("/token-sale?error=payment-not-configured");
+  }
+
+  const rawQty = formData.get("quantity");
+  const parsedQty = rawQty ? parseInt(String(rawQty), 10) : NaN;
+  const quantityVal = isNaN(parsedQty) || parsedQty < 1 ? 1 : parsedQty;
+
+  const user = await getCurrentUser();
+  if (!user) {
+    const target = `/token-sale?package_id=${encodeURIComponent(packageId)}&quantity=${quantityVal}`;
+    redirect(`/sign-in?next=${encodeURIComponent(target)}`);
+  }
+
   const supabase = createSupabaseServiceRoleClient();
-  const { data: wallet, error: walletError } = await supabase
-    .from("user_wallets")
-    .select("*")
-    .eq("profile_id", user.id)
-    .is("revoked_at", null)
-    .order("is_primary", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  if (walletError) throw walletError;
-  if (!wallet) redirect("/account/wallets?error=wallet-required-for-token");
-
   const { data: pkg, error: packageError } = await supabase
     .from("token_sale_packages")
     .select("*, token_sale_campaigns(*)")
@@ -134,6 +242,13 @@ export async function startTokenSalePayment(formData: FormData) {
     .single();
 
   if (packageError || !pkg) redirect("/token-sale?error=package-not-found");
+
+  // Robust server-side quantity validation
+  const maxLimit = pkg.max_quantity_per_order ?? 30;
+  if (isNaN(parsedQty) || parsedQty < 1 || parsedQty > maxLimit) {
+    redirect(`/token-sale?error=invalid-quantity`);
+  }
+  const quantity = parsedQty;
 
   const campaign = Array.isArray(pkg.token_sale_campaigns)
     ? pkg.token_sale_campaigns[0]
@@ -151,12 +266,12 @@ export async function startTokenSalePayment(formData: FormData) {
     await Promise.all([
       supabase
         .from("token_allocations")
-        .select("total_amount")
+        .select("total_amount, status, created_at")
         .eq("campaign_id", campaign.id)
         .in("status", ["pending", "approved", "sent"]),
       supabase
         .from("token_allocations")
-        .select("total_amount")
+        .select("total_amount, status, created_at")
         .eq("campaign_id", campaign.id)
         .eq("profile_id", user.id)
         .in("status", ["pending", "approved", "sent"])
@@ -165,11 +280,26 @@ export async function startTokenSalePayment(formData: FormData) {
   if (campaignAllocationsError) throw campaignAllocationsError;
   if (userAllocationsError) throw userAllocationsError;
 
+  const nowTime = Date.now();
+  const limitThresholdMs = 24 * 60 * 60 * 1000; // 24 hours
+
   const campaignAllocated = addTokenDecimals(
-    ...(campaignAllocations ?? []).map((allocation) => allocation.total_amount)
+    ...(campaignAllocations ?? [])
+      .filter((allocation) => {
+        if (allocation.status !== "pending") return true;
+        const age = nowTime - new Date(allocation.created_at).getTime();
+        return age <= limitThresholdMs;
+      })
+      .map((allocation) => allocation.total_amount)
   );
   const userAllocated = addTokenDecimals(
-    ...(userAllocations ?? []).map((allocation) => allocation.total_amount)
+    ...(userAllocations ?? [])
+      .filter((allocation) => {
+        if (allocation.status !== "pending") return true;
+        const age = nowTime - new Date(allocation.created_at).getTime();
+        return age <= limitThresholdMs;
+      })
+      .map((allocation) => allocation.total_amount)
   );
   const limitError = validateTokenSaleLimits({
     campaign,
@@ -188,18 +318,14 @@ export async function startTokenSalePayment(formData: FormData) {
   const orderNumber = createOrderNumber();
   const now = new Date().toISOString();
 
-  const config = getShopierConfig();
-  const callbackUrl = `${buildSiteUrl()}/api/payments/shopier/callback`;
-  const payment = buildShopierPaymentUrl({
-    amountMinor: totalMinor,
-    apiKey: config.apiKey,
-    callbackUrl,
-    currency: pkg.currency,
-    email: user.email ?? "",
-    merchantId: config.merchantId,
-    orderNumber: orderNumber,
-    paymentUrl: config.paymentUrl,
-    secret: config.secret
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "").replace(/\/$/, "");
+
+  const paymentUrl = buildShopierProductUrl({
+    callbackUrl: `${siteUrl}/api/payments/shopier/callback`,
+    note: orderNumber,
+    productUrl: shopierProductUrl,
+    quantity: quantity,
+    successUrl: `${siteUrl}/payment/success`
   });
 
   await commitTokenSalePaymentStart(supabase, {
@@ -207,15 +333,16 @@ export async function startTokenSalePayment(formData: FormData) {
       bonus_amount: String(bonusAmount),
       currency: pkg.currency,
       metadata: {
-        source: "token_sale_checkout"
+        source: "token_sale_checkout",
+        wallet_required_at_purchase: false
       },
-      normalized_address: wallet.normalized_address,
+      normalized_address: null,
       token_amount: String(tokenAmount),
       total_amount: String(totalTokenAmount),
       total_price_minor: totalMinor,
       unit_price_minor: pkg.price_minor,
-      wallet_address: wallet.wallet_address,
-      wallet_id: wallet.id
+      wallet_address: null,
+      wallet_id: null
     },
     p_order: {
       currency: pkg.currency,
@@ -228,7 +355,7 @@ export async function startTokenSalePayment(formData: FormData) {
           accepted_at: now,
           campaign_id: campaign.id,
           explicit_checkbox: true,
-          wallet_id: wallet.id
+          wallet_required_at_purchase: false
         }
       },
       order_number: orderNumber,
@@ -263,16 +390,16 @@ export async function startTokenSalePayment(formData: FormData) {
       provider: "shopier",
       provider_reference: orderNumber,
       provider_status: "initialized",
-      raw_response: { provider: "shopier", redirect_url: payment.url },
-      request_payload: payment.requestPayload,
-      response_payload: { redirect_url: payment.url },
+      raw_response: { provider: "shopier", redirect_url: paymentUrl },
+      request_payload: { quantity, note: orderNumber, order_id: orderId },
+      response_payload: { redirect_url: paymentUrl },
       status: "pending"
     },
     p_profile_id: user.id,
     p_quantity: quantity
   });
 
-  redirect(payment.url);
+  redirect(paymentUrl);
 }
 
 export async function updateTokenAllocation(formData: FormData) {

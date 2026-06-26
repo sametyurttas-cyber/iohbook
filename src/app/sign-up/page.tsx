@@ -1,17 +1,35 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { PublicAtmosphere } from "@/components/layout/public-atmosphere";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { signUpWithPassword } from "@/features/auth/actions";
+import {
+  getReferralCodeFromCookie,
+  isReferralInputValid,
+  normalizeReferralInput
+} from "@/features/referrals/cookie";
+import { buildNoIndexMetadata } from "@/lib/seo";
 
 type SignUpPageProps = {
   searchParams?: Promise<{
     error?: string;
+    ref?: string;
+    next?: string;
   }>;
 };
 
+export const metadata: Metadata = buildNoIndexMetadata(
+  "Hesap olustur",
+  "IOH hesap olusturma sayfasi."
+);
+
 export default async function SignUpPage({ searchParams }: SignUpPageProps) {
   const params = await searchParams;
+  const next = params?.next ?? "/account";
+  const referralCodeFromUrl = normalizeReferralInput(params?.ref);
+  const referralCode =
+    isReferralInputValid(referralCodeFromUrl) ? referralCodeFromUrl : await getReferralCodeFromCookie();
   const errorMessage =
     params?.error === "email-rate-limit"
       ? "Su anda cok fazla dogrulama e-postasi istendi. Biraz bekleyip tekrar dene."
@@ -37,7 +55,15 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
             {errorMessage}
           </p>
         ) : null}
+        {referralCode ? (
+          <p className="mt-3 rounded-2xl border border-gold/30 bg-gold/10 p-3 text-sm text-gold">
+            Davet kodu algilandi. Kayittan sonra uygun oldugunda IOH odulu
+            kazanabilirsin.
+          </p>
+        ) : null}
         <form action={signUpWithPassword} className="mt-6 grid gap-4">
+          <input name="next" type="hidden" value={next} />
+          {referralCode ? <input name="referral_code" type="hidden" value={referralCode} /> : null}
           <Input autoComplete="name" name="full_name" placeholder="Ad Soyad" />
           <Input autoComplete="email" name="email" placeholder="E-posta" type="email" />
           <Input

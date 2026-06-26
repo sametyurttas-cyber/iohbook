@@ -5,11 +5,11 @@ import { BooksIndexFooter } from "@/features/catalog/books-index-scene";
 import { getCurrentProfile, getCurrentUser } from "@/features/auth/queries";
 import { getIohPointBalanceForProfile } from "@/features/points/queries";
 import { IohIndexStyles } from "@/features/home/ioh-index-landing";
-import { startTokenSalePayment } from "@/features/token-sale/actions";
 import { listActiveTokenCampaigns, type TokenCampaignWithPackages } from "@/features/token-sale/queries";
-import { formatMoney } from "@/features/products/product-utils";
 import { formatTokenAmount } from "@/features/token-sale/utils";
 import styles from "./token-sale-scene.module.css";
+import { TokenSaleWebglCoin } from "./token-sale-webgl-coin";
+import { PackageCardClient } from "./package-card-client";
 
 type TokenSaleUser = {
   displayName: string;
@@ -43,8 +43,8 @@ const usageCards = [
   }
 ] as const;
 
-function Kicker({ children }: { children: ReactNode }) {
-  return <p className={styles.kicker}>{children}</p>;
+function Kicker({ children, id }: { children: ReactNode; id?: string }) {
+  return <p className={styles.kicker} id={id}>{children}</p>;
 }
 
 function TokenSaleHeader({ user }: { user: TokenSaleUser }) {
@@ -101,7 +101,7 @@ function TokenSaleHero() {
       <div className={styles.heroGrid} aria-hidden="true" />
       <div className={styles.heroGlow} aria-hidden="true" />
       <div className={styles.heroShell}>
-        <div className={styles.heroCoin}>
+        <div className={styles.heroCoin} id="ts-hero-coin">
           <div className={styles.coinGlow} aria-hidden="true" />
           <div className={styles.coinCore}>
             <Image
@@ -114,15 +114,15 @@ function TokenSaleHero() {
           </div>
         </div>
         <div className={styles.heroContent}>
-          <Kicker>IOHCOIN / DIGITAL ACCESS LAYER</Kicker>
-          <h1 className={styles.heroTitle}>IOHCOIN</h1>
-          <p className={styles.heroLead}>
+          <Kicker id="ts-hero-kicker">IOHCOIN / DIGITAL ACCESS LAYER</Kicker>
+          <h1 className={styles.heroTitle} id="ts-hero-title" data-split>IOHCOIN</h1>
+          <p className={styles.heroLead} id="ts-hero-lead">
             IOHcoin, IOH Universe okurlari icin olusturulan dijital puan ve
             erisim katmanidir. Kitap satin alan kullanicilar hesaplarinda IOH
             puani kazanir; bu puanlar ileride ozel icerikler, koleksiyonlar ve
             topluluk ayricaliklari icin kullanilabilecek sekilde tasarlanir.
           </p>
-          <div className={styles.heroActions}>
+          <div className={styles.heroActions} id="ts-hero-actions">
             <a className={styles.primaryButton} href="#campaigns">
               Paketleri Incele
             </a>
@@ -132,6 +132,11 @@ function TokenSaleHero() {
           </div>
         </div>
       </div>
+      <div className={styles.heroCoordinates} id="ts-hero-coordinates" aria-hidden="true">
+        <span>SYSTEM / SYS GOD GRID</span>
+        <span>SECTOR: 02_COIN</span>
+        <span>STATUS: ACTIVE</span>
+      </div>
     </section>
   );
 }
@@ -139,7 +144,7 @@ function TokenSaleHero() {
 function TokenSaleManifesto() {
   return (
     <section className={styles.manifesto}>
-      <div className={styles.manifestoInner}>
+      <div className={styles.manifestoInner} id="ts-manifesto">
         <p>
           IOHcoin, IOH Universe okurlari icin olusturulan <em>dijital puan</em> ve
           evren erisim katmanidir.
@@ -170,11 +175,11 @@ function TokenSaleUsage() {
   return (
     <section className={styles.usage}>
       <div className={styles.shell}>
-        <div className={styles.usageHeader}>
+        <div className={styles.usageHeader} id="ts-usage-header">
           <Kicker>02 / KULLANIM ALANLARI</Kicker>
           <h2>PUANIN EVRENDEN YOLU.</h2>
         </div>
-        <div className={styles.usageGrid}>
+        <div className={styles.usageGrid} id="ts-usage-grid">
           {usageCards.map((card) => (
             <article className={styles.usageCard} key={card.number}>
               <div className={styles.usageCardTop}>
@@ -191,67 +196,26 @@ function TokenSaleUsage() {
   );
 }
 
-function PackageCard({
-  campaign,
-  index,
-  pkg
+function TokenSaleCampaigns({
+  campaigns,
+  searchParams
 }: {
-  campaign: TokenCampaignWithPackages;
-  index: number;
-  pkg: TokenCampaignWithPackages["token_sale_packages"][number];
+  campaigns: TokenCampaignWithPackages[];
+  searchParams?: {
+    package_id?: string;
+    quantity?: string;
+  };
 }) {
-  return (
-    <form action={startTokenSalePayment} className={styles.packageCard}>
-      <input name="package_id" type="hidden" value={pkg.id} />
-      <div className={styles.packageTop}>
-        <span className={styles.packageNumber}>/ {String(index + 1).padStart(2, "0")}</span>
-        <span className={styles.packageAmount}>
-          {formatTokenAmount(pkg.token_amount)} {campaign.token_symbol}
-        </span>
-      </div>
-      <h3 className={styles.packageTitle}>{pkg.title}</h3>
-      <p className={styles.packagePrice}>
-        {formatMoney(pkg.price_minor, pkg.currency)}
-      </p>
-      <input
-        className={styles.quantityInput}
-        defaultValue={1}
-        max={pkg.max_quantity_per_order ?? undefined}
-        min={1}
-        name="quantity"
-        type="number"
-      />
-      <label className={styles.termsLabel}>
-        <input
-          className={styles.termsCheckbox}
-          name="token_sale_terms"
-          required
-          type="checkbox"
-        />
-        <span>
-          Token haklarinin odeme sonrasi allocation olarak acilacagini, otomatik
-          transfer yapilmayacagini ve manuel gonderim icin dogrulanmis wallet
-          gerektigini kabul ediyorum.
-        </span>
-      </label>
-      <button className={styles.submitButton} type="submit">
-        Shopier ile odeme yap
-      </button>
-    </form>
-  );
-}
-
-function TokenSaleCampaigns({ campaigns }: { campaigns: TokenCampaignWithPackages[] }) {
   return (
     <section className={styles.campaigns} id="campaigns">
       <div className={styles.shell}>
-        <div className={styles.campaignsHeader}>
+        <div className={styles.campaignsHeader} id="ts-campaigns-header">
           <Kicker>03 / PAKETLER</Kicker>
           <h2>IOHCOIN PAKETLERI</h2>
           <p className={styles.campaignsLead}>
             IOHcoin paketleri, odeme onayindan sonra hesabinda allocation olarak
-            gorunur. Otomatik blockchain transferi yapilmaz; manuel gonderim icin
-            dogrulanmis wallet gereklidir.
+            gorunur. Satin alma icin wallet baglama zorunlulugu yoktur; ileride
+            manuel gonderim gerekirse wallet bilgisi ayrica istenebilir.
           </p>
         </div>
 
@@ -282,16 +246,59 @@ function TokenSaleCampaigns({ campaigns }: { campaigns: TokenCampaignWithPackage
             </div>
             <div className={styles.packageGrid}>
               {campaign.token_sale_packages.map((pkg, index) => (
-                <PackageCard
+                <PackageCardClient
                   campaign={campaign}
                   index={index}
                   key={pkg.id}
                   pkg={pkg}
+                  defaultQuantity={
+                    searchParams?.package_id === pkg.id && searchParams?.quantity
+                      ? parseInt(searchParams.quantity, 10)
+                      : 1
+                  }
                 />
               ))}
             </div>
           </article>
         ))}
+
+        {campaigns.length > 0 ? (
+          <div className={styles.walletStation} id="ts-wallet-station">
+            <div className={styles.walletStationHeader}>
+              <Kicker>04 / OPSIYONEL CUZDAN KATMANI</Kicker>
+              <h3 className={styles.walletStationTitle}>SISTEM CUZDAN SINYAL ISTASYONU</h3>
+              <p className={styles.campaignsLead}>
+                Satin alma icin cuzdan baglamak zorunda degilsin. Bu alan IOH
+                evrenindeki manuel gonderim ve ilerideki zincir islemleri icin
+                opsiyonel bir hazirlik katmani olarak kalir.
+              </p>
+            </div>
+            <div className={styles.walletStationGrid}>
+              <div className={styles.walletInputWrapper}>
+                <input
+                  autoComplete="off"
+                  className={styles.walletInput}
+                  id="ts-wallet-input"
+                  placeholder="Opsiyonel: 0x ile baslayan cuzdan adresi"
+                  spellCheck="false"
+                  type="text"
+                />
+              </div>
+              <button
+                className={styles.walletConnectBtn}
+                id="ts-wallet-connect-btn"
+                type="button"
+              >
+                Gorsel Baglantiyi Baslat
+              </button>
+            </div>
+            <div className={styles.walletTelemetry}>
+              <span>OPSIYONEL: <strong id="ts-wallet-status-text">SATIN ALMA ICIN GEREKLI DEGIL</strong></span>
+              <span>AG: <b>IOH SECURE CHAIN</b></span>
+            </div>
+          </div>
+        ) : null}
+
       </div>
     </section>
   );
@@ -302,7 +309,7 @@ function TokenSaleTrust() {
     <section className={styles.trust}>
       <div className={styles.trustInner}>
         <div className={styles.trustHeader}>04 / GUVEN BILGILERI</div>
-        <ul className={styles.trustList}>
+        <ul className={styles.trustList} id="ts-trust-list">
           <li className={styles.trustItem}>
             <span className={styles.trustNumber}>01</span>
             <span>
@@ -315,8 +322,8 @@ function TokenSaleTrust() {
             <span className={styles.trustNumber}>02</span>
             <span>
               Otomatik blockchain transferi, zincir uzerinde dagitim veya yatirim
-              getirisi vaadi yoktur. Manuel gonderim, dogrulanmis wallet ve admin
-              onayi ile sinirlidir.
+              getirisi vaadi yoktur. Satin alma hesabinla yapilir; manuel gonderim
+              veya ilerideki zincir islemleri icin wallet bilgisi ayrica istenebilir.
             </span>
           </li>
           <li className={styles.trustItem}>
@@ -333,7 +340,14 @@ function TokenSaleTrust() {
   );
 }
 
-export async function TokenSaleScene() {
+export async function TokenSaleScene({
+  searchParams
+}: {
+  searchParams?: {
+    package_id?: string;
+    quantity?: string;
+  };
+}) {
   const [campaigns, user] = await Promise.all([
     listActiveTokenCampaigns(),
     getCurrentUser()
@@ -353,7 +367,7 @@ export async function TokenSaleScene() {
   return (
     <div className={styles.page}>
       <IohIndexStyles />
-      <style dangerouslySetInnerHTML={{ __html: "body{cursor:auto!important}a,button,[data-hover],[data-magnet]{cursor:pointer!important}" }} />
+      <TokenSaleWebglCoin />
       <div className={styles.vignette} aria-hidden="true" />
       <div className={styles.grain} aria-hidden="true" />
       <TokenSaleHeader user={userView} />
@@ -362,7 +376,7 @@ export async function TokenSaleScene() {
         <TokenSaleManifesto />
         <TokenSaleMarquee />
         <TokenSaleUsage />
-        <TokenSaleCampaigns campaigns={campaigns} />
+        <TokenSaleCampaigns campaigns={campaigns} searchParams={searchParams} />
         <TokenSaleTrust />
         <BooksIndexFooter />
       </main>

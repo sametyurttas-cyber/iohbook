@@ -72,5 +72,13 @@ export function formatIohPointReason(reason: IohPointLedger["reason"]) {
     return "Amazon yorum dogrulamasi";
   }
 
+  if (reason === "referral_referrer_reward") {
+    return "Arkadas daveti odulu";
+  }
+
+  if (reason === "referral_referred_reward") {
+    return "Davetle katilim odulu";
+  }
+
   return "Admin puan dusme";
 }

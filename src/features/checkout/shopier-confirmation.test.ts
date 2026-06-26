@@ -10,7 +10,7 @@ import { awardBookOrderRewardForPaidOrder } from "@/features/points/service";
 import { approveTokenAllocationsForPaidOrder } from "@/features/token-sale/service";
 import { captureError } from "@/lib/observability";
 import { retrieveShopierOrder } from "@/features/checkout/shopier";
-import { confirmShopierOrderCreatedWebhook, confirmShopierPayment } from "./shopier-confirmation";
+import { confirmShopierOrderCreatedWebhook, confirmShopierPayment, confirmShopierPaymentByOrderId } from "./shopier-confirmation";
 
 vi.mock("@/features/analytics/business-events", () => ({
   trackServerAnalyticsEvent: vi.fn()
@@ -53,6 +53,7 @@ vi.mock("@/features/checkout/shopier", async (importOriginal) => {
       secret: "secret",
       webhookToken: "webhook"
     }),
+    isShopierPatConfigured: () => true,
     retrieveShopierOrder: vi.fn()
   };
 });
@@ -75,9 +76,25 @@ function signedShopierPayload() {
 function createOrderUpdateFailureSupabaseMock() {
   return {
     from(table: string) {
-      return {
+      let operation: "select" | "update" = "select";
+      const result = () => {
+        if (table === "order_items") {
+          return {
+            data: [
+              {
+                fulfillment_type: "digital",
+                quantity: 1,
+                variant_snapshot: { sku: "IOH-GODCODE-PDF" }
+              }
+            ],
+            error: null
+          };
+        }
+        return { data: null, error: null };
+      };
+      const builder = {
         eq() {
-          return this;
+          return builder;
         },
         maybeSingle: async () => ({
           data:
@@ -94,7 +111,7 @@ function createOrderUpdateFailureSupabaseMock() {
           error: null
         }),
         select() {
-          return this;
+          return builder;
         },
         single: async () => ({
           data: {
@@ -104,24 +121,21 @@ function createOrderUpdateFailureSupabaseMock() {
           },
           error: null
         }),
-        update() {
-          return {
-            eq() {
-              return this;
-            },
-            select: async () => ({
+        then(resolve: (value: unknown) => void) {
+          if (operation === "update") {
+            return Promise.resolve({
               data: table === "payment_attempts" ? [{ id: "attempt-id" }] : null,
-              error: null
-            }),
-            then(resolve: (value: { data: null; error: Error | null }) => void) {
-              return Promise.resolve({
-                data: null,
-                error: table === "orders" ? new Error("order update failed") : null
-              }).then(resolve);
-            }
-          };
+              error: table === "orders" ? new Error("order update failed") : null
+            }).then(resolve);
+          }
+          return Promise.resolve(result()).then(resolve);
+        },
+        update() {
+          operation = "update";
+          return builder;
         }
       };
+      return builder;
     }
   };
 }
@@ -129,9 +143,25 @@ function createOrderUpdateFailureSupabaseMock() {
 function createSuccessfulShopierSupabaseMock() {
   return {
     from(table: string) {
-      return {
+      let operation: "select" | "update" = "select";
+      const result = () => {
+        if (table === "order_items") {
+          return {
+            data: [
+              {
+                fulfillment_type: "digital",
+                quantity: 1,
+                variant_snapshot: { sku: "IOH-GODCODE-PDF" }
+              }
+            ],
+            error: null
+          };
+        }
+        return { data: null, error: null };
+      };
+      const builder = {
         eq() {
-          return this;
+          return builder;
         },
         maybeSingle: async () => ({
           data:
@@ -148,7 +178,7 @@ function createSuccessfulShopierSupabaseMock() {
           error: null
         }),
         select() {
-          return this;
+          return builder;
         },
         single: async () => ({
           data: {
@@ -158,24 +188,21 @@ function createSuccessfulShopierSupabaseMock() {
           },
           error: null
         }),
-        update() {
-          return {
-            eq() {
-              return this;
-            },
-            select: async () => ({
-              data: table === "payment_attempts" ? [{ id: "attempt-id" }] : [{ id: `${table}-id` }],
+        then(resolve: (value: unknown) => void) {
+          if (operation === "update") {
+            return Promise.resolve({
+              data: [{ id: `${table}-id` }],
               error: null
-            }),
-            then(resolve: (value: { data: { id: string }[]; error: null }) => void) {
-              return Promise.resolve({
-                data: [{ id: `${table}-id` }],
-                error: null
-              }).then(resolve);
-            }
-          };
+            }).then(resolve);
+          }
+          return Promise.resolve(result()).then(resolve);
+        },
+        update() {
+          operation = "update";
+          return builder;
         }
       };
+      return builder;
     },
     rpc: vi.fn(async () => ({
       data: null,
@@ -382,7 +409,8 @@ describe("shopier confirmation persistence", () => {
       idempotent: false,
       orderId: "order-id",
       paid: true,
-      providerTransactionId: "PAY-1"
+      providerTransactionId: "PAY-1",
+      isTokenSale: false
     });
     expect(createEntitlementsForPaidOrder).toHaveBeenCalledWith({
       orderId: "order-id",
@@ -409,6 +437,7 @@ describe("shopier confirmation persistence", () => {
       idempotencyKey: "order-id",
       metadata: {
         currency: "TRY",
+        is_token_sale: false,
         order_id: "order-id",
         provider: "shopier",
         revenue_minor: 1000
@@ -430,7 +459,8 @@ describe("shopier confirmation persistence", () => {
       idempotent: false,
       orderId: "order-id",
       paid: true,
-      providerTransactionId: "PAY-1"
+      providerTransactionId: "PAY-1",
+      isTokenSale: false
     });
     expect(sendPaymentConfirmedEmail).toHaveBeenCalledWith("order-id");
     expect(sendDigitalDeliveryReadyEmail).toHaveBeenCalledWith("order-id");
@@ -460,7 +490,8 @@ describe("shopier confirmation persistence", () => {
       idempotent: false,
       orderId: "order-id",
       paid: true,
-      providerTransactionId: "SHOPIER-ORDER-1"
+      providerTransactionId: "SHOPIER-ORDER-1",
+      isTokenSale: false
     });
     expect(createEntitlementsForPaidOrder).toHaveBeenCalledWith({
       orderId: "order-id",
@@ -488,7 +519,8 @@ describe("shopier confirmation persistence", () => {
       idempotent: true,
       orderId: "order-id",
       paid: true,
-      providerTransactionId: "SHOPIER-ORDER-1"
+      providerTransactionId: "SHOPIER-ORDER-1",
+      isTokenSale: false
     });
     expect(createEntitlementsForPaidOrder).toHaveBeenCalledWith({
       orderId: "order-id",
@@ -573,8 +605,188 @@ describe("shopier confirmation persistence", () => {
       idempotent: false,
       orderId: "order-id",
       paid: false,
-      providerTransactionId: "PAY-1"
+      providerTransactionId: "PAY-1",
+      isTokenSale: false
     });
     expect(sendPaymentFailedEmail).toHaveBeenCalledWith("order-id");
+  });
+
+  it("processes a token sale payment correctly", async () => {
+    const supabaseMock = {
+      from(table: string) {
+        const filters = new Map<string, unknown>();
+        let operation: "select" | "update" = "select";
+        const result = () => {
+          if (operation === "update") {
+            return { data: [{ id: `${table}-id` }], error: null };
+          }
+          if (table === "order_items") {
+            return {
+              data: [
+                {
+                  fulfillment_type: "claimable",
+                  quantity: 1,
+                  variant_snapshot: { package_id: "pkg-1" }
+                }
+              ],
+              error: null
+            };
+          }
+          return { data: null, error: null };
+        };
+        const builder = {
+          eq(key: string, value: unknown) {
+            filters.set(key, value);
+            return builder;
+          },
+          maybeSingle: async () => ({
+            data:
+              table === "payment_attempts"
+                ? {
+                    amount_minor: 1000,
+                    currency: "TRY",
+                    id: "attempt-id",
+                    order_id: "order-id",
+                    provider_reference: "IOH-1",
+                    status: "pending"
+                  }
+                : null,
+            error: null
+          }),
+          select() {
+            return builder;
+          },
+          single: async () => ({
+            data: {
+              cart_id: "cart-id",
+              customer_email: "buyer@example.com",
+              id: "order-id",
+              status: "pending_payment"
+            },
+            error: null
+          }),
+          then(
+            resolve: (value: ReturnType<typeof result>) => void,
+            reject?: (reason: unknown) => void
+          ) {
+            return Promise.resolve(result()).then(resolve, reject);
+          },
+          update() {
+            operation = "update";
+            return builder;
+          }
+        };
+        return builder;
+      },
+      rpc: vi.fn(async () => ({
+        data: null,
+        error: null
+      }))
+    };
+
+    const result = await confirmShopierPayment({
+      payload: signedShopierPayload(),
+      supabase: supabaseMock as never
+    });
+
+    expect(result).toEqual({
+      idempotent: false,
+      orderId: "order-id",
+      paid: true,
+      providerTransactionId: "PAY-1",
+      isTokenSale: true
+    });
+
+    expect(approveTokenAllocationsForPaidOrder).toHaveBeenCalledWith({
+      orderId: "order-id",
+      paymentAttemptId: "attempt-id",
+      supabase: expect.anything()
+    });
+
+    expect(createEntitlementsForPaidOrder).toHaveBeenCalledWith({
+      orderId: "order-id",
+      supabase: expect.anything()
+    });
+
+    expect(awardBookOrderRewardForPaidOrder).toHaveBeenCalledWith({
+      orderId: "order-id",
+      supabase: expect.anything()
+    });
+
+    expect(sendDigitalDeliveryReadyEmail).toHaveBeenCalledWith("order-id");
+    expect(sendPaymentConfirmedEmail).toHaveBeenCalledWith("order-id");
+  });
+
+  describe("confirmShopierPaymentByOrderId", () => {
+    it("confirms a Shopier payment by order ID and applies payment result", async () => {
+      vi.mocked(retrieveShopierOrder).mockResolvedValueOnce({
+        currency: "TRY",
+        id: "SHOPIER-ORDER-1",
+        lineItems: [{ productId: "48021742", quantity: 1 }],
+        note: "IOH-1",
+        paymentStatus: "completed",
+        status: "completed",
+        totals: {
+          total: "10.00"
+        }
+      });
+
+      const result = await confirmShopierPaymentByOrderId({
+        shopierOrderId: "SHOPIER-ORDER-1",
+        supabase: createSuccessfulShopierWebhookSupabaseMock() as never
+      });
+
+      expect(result).toEqual({
+        idempotent: false,
+        orderId: "order-id",
+        paid: true,
+        providerTransactionId: "SHOPIER-ORDER-1",
+        isTokenSale: false
+      });
+
+      expect(createEntitlementsForPaidOrder).toHaveBeenCalledWith({
+        orderId: "order-id",
+        supabase: expect.anything()
+      });
+      expect(sendPaymentConfirmedEmail).toHaveBeenCalledWith("order-id");
+      expect(retrieveShopierOrder).toHaveBeenCalledWith("SHOPIER-ORDER-1");
+    });
+
+    it("returns idempotent paid response if the payment is already marked as paid", async () => {
+      const result = await confirmShopierPaymentByOrderId({
+        shopierOrderId: "SHOPIER-ORDER-1",
+        supabase: createAlreadyPaidShopierWebhookSupabaseMock() as never
+      });
+
+      expect(result).toEqual({
+        idempotent: true,
+        orderId: "order-id",
+        paid: true,
+        providerTransactionId: "SHOPIER-ORDER-1",
+        isTokenSale: false
+      });
+      expect(retrieveShopierOrder).not.toHaveBeenCalled();
+    });
+
+    it("throws an error if note does not match provider reference", async () => {
+      vi.mocked(retrieveShopierOrder).mockResolvedValueOnce({
+        currency: "TRY",
+        id: "SHOPIER-ORDER-1",
+        lineItems: [{ productId: "48021742", quantity: 1 }],
+        note: "DIFFERENT-NOTE",
+        paymentStatus: "completed",
+        status: "completed",
+        totals: {
+          total: "10.00"
+        }
+      });
+
+      await expect(
+        confirmShopierPaymentByOrderId({
+          shopierOrderId: "SHOPIER-ORDER-1",
+          supabase: createSuccessfulShopierWebhookSupabaseMock() as never
+        })
+      ).rejects.toThrow("Shopier REST order note \"DIFFERENT-NOTE\" does not match payment attempt reference \"IOH-1\".");
+    });
   });
 });

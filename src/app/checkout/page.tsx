@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,12 +28,18 @@ import {
   optionalCommunicationConsents
 } from "@/features/legal/legal-content";
 import { formatMoney } from "@/features/products/product-utils";
+import { buildNoIndexMetadata } from "@/lib/seo";
 
 type CheckoutPageProps = {
   searchParams?: Promise<{
     error?: string;
   }>;
 };
+
+export const metadata: Metadata = buildNoIndexMetadata(
+  "Checkout",
+  "IOH siparis odeme ve teslimat akisi."
+);
 
 export default async function CheckoutPage({ searchParams }: CheckoutPageProps) {
   const [cart, user, params] = await Promise.all([

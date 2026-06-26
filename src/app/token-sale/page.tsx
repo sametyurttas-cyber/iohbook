@@ -11,6 +11,14 @@ export const metadata: Metadata = buildPageMetadata({
   title: "IOHcoin"
 });
 
-export default function TokenSalePage() {
-  return <TokenSaleScene />;
+type TokenSalePageProps = {
+  searchParams?: Promise<{
+    package_id?: string;
+    quantity?: string;
+  }>;
+};
+
+export default async function TokenSalePage({ searchParams }: TokenSalePageProps) {
+  const params = await searchParams;
+  return <TokenSaleScene searchParams={params} />;
 }

@@ -6,6 +6,7 @@ import {
   mapShopierStatus,
   parseShopierAmountMinor,
   retrieveShopierOrder,
+  isShopierPatConfigured,
   type ShopierCallbackPayload,
   verifyShopierCallbackSignature,
   verifyShopierWebhookSignature
@@ -51,6 +52,14 @@ type ShopierOrder = {
 };
 
 type ShopierWebhookPayload = Record<string, unknown>;
+
+export type ShopierConfirmationResult = {
+  idempotent: boolean;
+  orderId: string | null;
+  paid: boolean;
+  providerTransactionId: string | null;
+  isTokenSale?: boolean;
+};
 
 const DIRECT_LINK_SKUS = new Set(["IOH-GODCODE-PDF"]);
 
@@ -211,8 +220,25 @@ function getShopierRestProductIds(payload: ShopierWebhookPayload) {
 }
 
 function getConfiguredShopierProductId(productUrl: string) {
-  const segments = new URL(productUrl).pathname.split("/").filter(Boolean);
-  return segments.at(-1) ?? null;
+  try {
+    const segments = new URL(productUrl).pathname.split("/").filter(Boolean);
+    return segments.at(-1) ?? null;
+  } catch {
+    return null;
+  }
+}
+
+async function isTokenSaleOrder(orderId: string, supabase: ServiceClient): Promise<boolean> {
+  const { data, error } = await supabase
+    .from("order_items")
+    .select("fulfillment_type")
+    .eq("order_id", orderId);
+
+  if (error || !data) {
+    return false;
+  }
+
+  return data.some((item) => item.fulfillment_type === "claimable");
 }
 
 async function reconcilePaidBookAccess(input: {
@@ -289,12 +315,15 @@ async function applyShopierPaymentResult(input: {
     throw lockError;
   }
 
+  const isTokenSale = await isTokenSaleOrder(input.attempt.order_id, input.supabase);
+
   if (!lockedRows || lockedRows.length === 0) {
     return {
       idempotent: true,
       orderId: input.attempt.order_id,
       paid,
-      providerTransactionId: input.providerTransactionId
+      providerTransactionId: input.providerTransactionId,
+      isTokenSale
     };
   }
 
@@ -307,6 +336,36 @@ async function applyShopierPaymentResult(input: {
       })
       .eq("id", input.attempt.order_id)
   );
+
+  // Write audit log
+  try {
+    await input.supabase.from("audit_logs").insert({
+      action: `shopier.payment_${input.paymentStatus}`,
+      actor_profile_id: input.order.profile_id,
+      entity_id: input.attempt.order_id,
+      entity_type: "order",
+      before_data: {
+        order_status: input.order.status,
+        payment_status: input.attempt.status
+      },
+      after_data: {
+        order_status: orderStatus,
+        payment_status: input.paymentStatus
+      },
+      metadata: {
+        payment_attempt_id: input.attempt.id,
+        provider_transaction_id: input.providerTransactionId,
+        source: input.source,
+        is_token_sale: isTokenSale
+      }
+    });
+  } catch (auditError) {
+    captureError(auditError, {
+      operation: "shopier.confirmation.audit_log",
+      order_id: input.attempt.order_id,
+      provider: "shopier"
+    });
+  }
 
   const stockRpcName = paid ? "commit_order_stock" : "release_order_reservation";
   const { error: stockError } = await input.supabase.rpc(stockRpcName, {
@@ -338,20 +397,24 @@ async function applyShopierPaymentResult(input: {
         currency: input.attempt.currency,
         order_id: input.attempt.order_id,
         provider: "shopier",
-        revenue_minor: input.attempt.amount_minor
+        revenue_minor: input.attempt.amount_minor,
+        is_token_sale: isTokenSale
       },
-      path: "/checkout/success",
+      path: isTokenSale ? "/token-sale/success" : "/checkout/success",
       profileId: input.order.profile_id
     });
+
     await reconcilePaidBookAccess({
       orderId: input.attempt.order_id,
       supabase: input.supabase
     });
+
     await approveTokenAllocationsForPaidOrder({
       orderId: input.attempt.order_id,
       paymentAttemptId: input.attempt.id,
       supabase: input.supabase
     });
+
     try {
       await sendPaymentConfirmedEmail(input.attempt.order_id);
     } catch (error) {
@@ -377,11 +440,12 @@ async function applyShopierPaymentResult(input: {
     idempotent: false,
     orderId: input.attempt.order_id,
     paid,
-    providerTransactionId: input.providerTransactionId
+    providerTransactionId: input.providerTransactionId,
+    isTokenSale
   };
 }
 
-async function validateDirectLinkOrderItems(input: {
+async function validateShopierOrderItems(input: {
   orderId: string;
   productId: string | null;
   quantity: number;
@@ -397,30 +461,53 @@ async function validateDirectLinkOrderItems(input: {
     throw error;
   }
 
-  const directItems = (items ?? []).filter((item) => {
-    const snapshot = item.variant_snapshot as Record<string, unknown>;
-    return item.fulfillment_type === "digital" && DIRECT_LINK_SKUS.has(String(snapshot.sku ?? ""));
-  });
-
-  if (directItems.length !== 1 || directItems.length !== (items ?? []).length) {
-    throw new Error("Shopier order does not contain the expected digital product.");
+  if (!items || items.length === 0) {
+    throw new Error("Shopier order has no items.");
   }
 
-  const expectedQuantity = directItems.reduce((total, item) => total + item.quantity, 0);
-  if (input.quantity !== expectedQuantity) {
-    throw new Error("Shopier order quantity does not match payment attempt.");
-  }
+  const isTokenSale = items.some((item) => item.fulfillment_type === "claimable");
 
-  const productIds = getShopierRestProductIds(input.restOrder);
-  if (input.productId && productIds.length > 0 && !productIds.includes(input.productId)) {
-    throw new Error("Shopier order product does not match configured product.");
+  if (isTokenSale) {
+    const nonClaimable = items.filter((item) => item.fulfillment_type !== "claimable");
+    if (nonClaimable.length > 0) {
+      throw new Error("Token sale order contains non-claimable items.");
+    }
+
+    const expectedQuantity = items.reduce((total, item) => total + item.quantity, 0);
+    if (input.quantity !== expectedQuantity) {
+      throw new Error(`Shopier order quantity "${input.quantity}" does not match order quantity "${expectedQuantity}".`);
+    }
+
+    const productIds = getShopierRestProductIds(input.restOrder);
+    if (input.productId && productIds.length > 0 && !productIds.includes(input.productId)) {
+      throw new Error("Shopier order product does not match configured token sale product.");
+    }
+  } else {
+    const directItems = items.filter((item) => {
+      const snapshot = item.variant_snapshot as Record<string, unknown>;
+      return item.fulfillment_type === "digital" && DIRECT_LINK_SKUS.has(String(snapshot.sku ?? ""));
+    });
+
+    if (directItems.length !== 1 || directItems.length !== items.length) {
+      throw new Error("Shopier order does not contain the expected digital product.");
+    }
+
+    const expectedQuantity = directItems.reduce((total, item) => total + item.quantity, 0);
+    if (input.quantity !== expectedQuantity) {
+      throw new Error("Shopier order quantity does not match payment attempt.");
+    }
+
+    const productIds = getShopierRestProductIds(input.restOrder);
+    if (input.productId && productIds.length > 0 && !productIds.includes(input.productId)) {
+      throw new Error("Shopier order product does not match configured product.");
+    }
   }
 }
 
 export async function confirmShopierPayment(input: {
   payload: ShopierCallbackPayload;
   supabase: ServiceClient;
-}) {
+}): Promise<ShopierConfirmationResult> {
   const config = getShopierConfig();
   const orderReference = getShopierOrderReference(input.payload);
   const transactionId = getShopierTransactionId(input.payload);
@@ -454,11 +541,20 @@ export async function confirmShopierPayment(input: {
         orderId: alreadyPaid.order_id,
         supabase: input.supabase
       });
+      const isTokenSale = await isTokenSaleOrder(alreadyPaid.order_id, input.supabase);
+      if (isTokenSale) {
+        await approveTokenAllocationsForPaidOrder({
+          orderId: alreadyPaid.order_id,
+          paymentAttemptId: alreadyPaid.id,
+          supabase: input.supabase
+        });
+      }
       return {
         idempotent: true,
         orderId: alreadyPaid.order_id,
         paid: true,
-        providerTransactionId: transactionId
+        providerTransactionId: transactionId,
+        isTokenSale
       };
     }
   }
@@ -478,6 +574,8 @@ export async function confirmShopierPayment(input: {
     throw new Error("Shopier payment attempt not found.");
   }
 
+  const isTokenSale = await isTokenSaleOrder(attempt.order_id, input.supabase);
+
   if (attempt.status === "paid") {
     await convertPaidOrderCart({
       orderId: attempt.order_id,
@@ -487,11 +585,19 @@ export async function confirmShopierPayment(input: {
       orderId: attempt.order_id,
       supabase: input.supabase
     });
+    if (isTokenSale) {
+      await approveTokenAllocationsForPaidOrder({
+        orderId: attempt.order_id,
+        paymentAttemptId: attempt.id,
+        supabase: input.supabase
+      });
+    }
     return {
       idempotent: true,
       orderId: attempt.order_id,
       paid: true,
-      providerTransactionId: transactionId
+      providerTransactionId: transactionId,
+      isTokenSale
     };
   }
 
@@ -518,6 +624,54 @@ export async function confirmShopierPayment(input: {
     throw new Error("Shopier callback currency does not match payment attempt.");
   }
 
+  // PAT API Verification in Callback
+  if (paid && transactionId) {
+    if (isTokenSale && !isShopierPatConfigured()) {
+      throw new Error("Shopier Personal Access Token (PAT) is not configured for token sale verification.");
+    }
+
+    if (isShopierPatConfigured()) {
+      const restOrder = await retrieveShopierOrder<ShopierWebhookPayload>(transactionId);
+
+      // note doğrulaması
+      const restNote = getShopierRestNote(restOrder);
+      if (!restNote || restNote !== attempt.provider_reference) {
+        throw new Error(`Shopier PAT verification failed: note "${restNote}" does not match payment attempt reference "${attempt.provider_reference}".`);
+      }
+
+      // quantity doğrulaması
+      const restQuantity = getShopierRestQuantity(restOrder);
+      if (restQuantity === null || restQuantity < 1) {
+        throw new Error("Shopier PAT verification failed: quantity is missing or invalid.");
+      }
+
+      // amount_minor doğrulaması
+      const restAmountMinor = getShopierRestAmountMinor(restOrder);
+      if (restAmountMinor === null || restAmountMinor !== attempt.amount_minor) {
+        throw new Error(`Shopier PAT verification failed: amount_minor "${restAmountMinor}" does not match payment attempt amount "${attempt.amount_minor}".`);
+      }
+
+      // currency doğrulaması
+      const restCurrency = getShopierRestCurrency(restOrder);
+      if (!restCurrency || restCurrency !== attempt.currency) {
+        throw new Error(`Shopier PAT verification failed: currency "${restCurrency}" does not match payment attempt currency "${attempt.currency}".`);
+      }
+
+      // Product id / items doğrulaması
+      const configuredProductId = isTokenSale
+        ? getConfiguredShopierProductId(process.env.SHOPIER_TOKEN_SALE_PRODUCT_URL ?? "")
+        : getConfiguredShopierProductId(config.productUrl);
+
+      await validateShopierOrderItems({
+        orderId: attempt.order_id,
+        productId: configuredProductId,
+        quantity: restQuantity,
+        restOrder,
+        supabase: input.supabase
+      });
+    }
+  }
+
   return applyShopierPaymentResult({
     attempt,
     order,
@@ -538,7 +692,7 @@ export async function confirmShopierOrderCreatedWebhook(input: {
   rawBody: string;
   signature: string | null;
   supabase: ServiceClient;
-}) {
+}): Promise<ShopierConfirmationResult> {
   const config = getShopierConfig();
 
   if (input.event && input.event !== "order.created") {
@@ -584,11 +738,20 @@ export async function confirmShopierOrderCreatedWebhook(input: {
       orderId: alreadyPaid.order_id,
       supabase: input.supabase
     });
+    const isTokenSale = await isTokenSaleOrder(alreadyPaid.order_id, input.supabase);
+    if (isTokenSale) {
+      await approveTokenAllocationsForPaidOrder({
+        orderId: alreadyPaid.order_id,
+        paymentAttemptId: alreadyPaid.id,
+        supabase: input.supabase
+      });
+    }
     return {
       idempotent: true,
       orderId: alreadyPaid.order_id,
       paid: true,
-      providerTransactionId: shopierOrderId
+      providerTransactionId: shopierOrderId,
+      isTokenSale
     };
   }
 
@@ -634,6 +797,8 @@ export async function confirmShopierOrderCreatedWebhook(input: {
     throw new Error("Shopier payment attempt not found for order note.");
   }
 
+  const isTokenSale = await isTokenSaleOrder(attempt.order_id, input.supabase);
+
   if (attempt.status === "paid") {
     await convertPaidOrderCart({
       orderId: attempt.order_id,
@@ -643,11 +808,19 @@ export async function confirmShopierOrderCreatedWebhook(input: {
       orderId: attempt.order_id,
       supabase: input.supabase
     });
+    if (isTokenSale) {
+      await approveTokenAllocationsForPaidOrder({
+        orderId: attempt.order_id,
+        paymentAttemptId: attempt.id,
+        supabase: input.supabase
+      });
+    }
     return {
       idempotent: true,
       orderId: attempt.order_id,
       paid: true,
-      providerTransactionId: shopierOrderId
+      providerTransactionId: shopierOrderId,
+      isTokenSale
     };
   }
 
@@ -655,10 +828,17 @@ export async function confirmShopierOrderCreatedWebhook(input: {
     throw new Error(`Shopier payment attempt is not pending: ${attempt.status}`);
   }
 
+  // note doğrulaması
+  if (orderReference !== attempt.provider_reference) {
+    throw new Error(`Shopier REST order note "${orderReference}" does not match payment attempt reference "${attempt.provider_reference}".`);
+  }
+
+  // quantity doğrulaması
   if (attempt.amount_minor !== amountMinor) {
     throw new Error("Shopier REST order amount does not match payment attempt.");
   }
 
+  // currency doğrulaması
   if (attempt.currency !== currency) {
     throw new Error("Shopier REST order currency does not match payment attempt.");
   }
@@ -673,9 +853,17 @@ export async function confirmShopierOrderCreatedWebhook(input: {
     throw orderError;
   }
 
-  await validateDirectLinkOrderItems({
+  if (isTokenSale && !isShopierPatConfigured()) {
+    throw new Error("Shopier Personal Access Token (PAT) is not configured for token sale verification.");
+  }
+
+  const configuredProductId = isTokenSale
+    ? getConfiguredShopierProductId(process.env.SHOPIER_TOKEN_SALE_PRODUCT_URL ?? "")
+    : getConfiguredShopierProductId(config.productUrl);
+
+  await validateShopierOrderItems({
     orderId: attempt.order_id,
-    productId: getConfiguredShopierProductId(config.productUrl),
+    productId: configuredProductId,
     quantity,
     restOrder,
     supabase: input.supabase
@@ -695,3 +883,176 @@ export async function confirmShopierOrderCreatedWebhook(input: {
     supabase: input.supabase
   });
 }
+
+export async function confirmShopierPaymentByOrderId(input: {
+  shopierOrderId: string;
+  supabase: ServiceClient;
+}): Promise<ShopierConfirmationResult> {
+  const config = getShopierConfig();
+
+  const { data: alreadyPaid, error: alreadyPaidError } = await input.supabase
+    .from("payment_attempts")
+    .select("id, order_id, status, provider_transaction_id")
+    .eq("provider", "shopier")
+    .eq("provider_transaction_id", input.shopierOrderId)
+    .maybeSingle();
+
+  if (alreadyPaidError) {
+    throw alreadyPaidError;
+  }
+
+  if (alreadyPaid?.status === "paid") {
+    await convertPaidOrderCart({
+      orderId: alreadyPaid.order_id,
+      supabase: input.supabase
+    });
+    await reconcilePaidBookAccess({
+      orderId: alreadyPaid.order_id,
+      supabase: input.supabase
+    });
+    const isTokenSale = await isTokenSaleOrder(alreadyPaid.order_id, input.supabase);
+    if (isTokenSale) {
+      await approveTokenAllocationsForPaidOrder({
+        orderId: alreadyPaid.order_id,
+        paymentAttemptId: alreadyPaid.id,
+        supabase: input.supabase
+      });
+    }
+    return {
+      idempotent: true,
+      orderId: alreadyPaid.order_id,
+      paid: true,
+      providerTransactionId: input.shopierOrderId,
+      isTokenSale
+    };
+  }
+
+  const restOrder = await retrieveShopierOrder<ShopierWebhookPayload>(input.shopierOrderId);
+  const orderReference = getShopierRestNote(restOrder);
+  const amountMinor = getShopierRestAmountMinor(restOrder);
+  const currency = getShopierRestCurrency(restOrder);
+  const quantity = getShopierRestQuantity(restOrder);
+  const providerStatus = getShopierRestStatus(restOrder);
+
+  if (!orderReference) {
+    throw new Error("Shopier REST order missing note reference.");
+  }
+
+  if (amountMinor === null) {
+    throw new Error("Shopier REST order missing amount.");
+  }
+
+  if (!currency) {
+    throw new Error("Shopier REST order missing currency.");
+  }
+
+  if (quantity === null || quantity < 1) {
+    throw new Error("Shopier REST order missing quantity.");
+  }
+
+  if (providerStatus && ["cancelled", "canceled", "failed", "refunded"].includes(providerStatus)) {
+    throw new Error(`Shopier REST order is not payable: ${providerStatus}`);
+  }
+
+  const { data: attempt, error: attemptError } = await input.supabase
+    .from("payment_attempts")
+    .select("id, order_id, status, provider_reference, amount_minor, currency, created_at")
+    .eq("provider", "shopier")
+    .eq("provider_reference", orderReference)
+    .maybeSingle();
+
+  if (attemptError) {
+    throw attemptError;
+  }
+
+  if (!attempt) {
+    throw new Error("Shopier payment attempt not found for order note.");
+  }
+
+  const isTokenSale = await isTokenSaleOrder(attempt.order_id, input.supabase);
+
+  if (attempt.status === "paid") {
+    await convertPaidOrderCart({
+      orderId: attempt.order_id,
+      supabase: input.supabase
+    });
+    await reconcilePaidBookAccess({
+      orderId: attempt.order_id,
+      supabase: input.supabase
+    });
+    if (isTokenSale) {
+      await approveTokenAllocationsForPaidOrder({
+        orderId: attempt.order_id,
+        paymentAttemptId: attempt.id,
+        supabase: input.supabase
+      });
+    }
+    return {
+      idempotent: true,
+      orderId: attempt.order_id,
+      paid: true,
+      providerTransactionId: input.shopierOrderId,
+      isTokenSale
+    };
+  }
+
+  if (attempt.status !== "pending") {
+    throw new Error(`Shopier payment attempt is not pending: ${attempt.status}`);
+  }
+
+  // note doğrulaması
+  if (orderReference !== attempt.provider_reference) {
+    throw new Error(`Shopier REST order note "${orderReference}" does not match payment attempt reference "${attempt.provider_reference}".`);
+  }
+
+  // amount_minor doğrulaması
+  if (attempt.amount_minor !== amountMinor) {
+    throw new Error("Shopier REST order amount does not match payment attempt.");
+  }
+
+  // currency doğrulaması
+  if (attempt.currency !== currency) {
+    throw new Error("Shopier REST order currency does not match payment attempt.");
+  }
+
+  const { data: order, error: orderError } = await input.supabase
+    .from("orders")
+    .select("id, cart_id, customer_email, profile_id, status")
+    .eq("id", attempt.order_id)
+    .single();
+
+  if (orderError) {
+    throw orderError;
+  }
+
+  if (isTokenSale && !isShopierPatConfigured()) {
+    throw new Error("Shopier Personal Access Token (PAT) is not configured for token sale verification.");
+  }
+
+  const configuredProductId = isTokenSale
+    ? getConfiguredShopierProductId(process.env.SHOPIER_TOKEN_SALE_PRODUCT_URL ?? "")
+    : getConfiguredShopierProductId(config.productUrl);
+
+  await validateShopierOrderItems({
+    orderId: attempt.order_id,
+    productId: configuredProductId,
+    quantity,
+    restOrder,
+    supabase: input.supabase
+  });
+
+  return applyShopierPaymentResult({
+    attempt,
+    order,
+    paymentStatus: "paid",
+    providerStatus: providerStatus ? `query:${providerStatus}` : "query:verified",
+    providerTransactionId: input.shopierOrderId,
+    rawResponse: {
+      retrieved_order: restOrder
+    },
+    source: "shopier_query_on_return",
+    supabase: input.supabase
+  });
+}
+
+

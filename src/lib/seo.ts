@@ -65,6 +65,21 @@ export function buildPageMetadata({
   };
 }
 
+export function buildNoIndexMetadata(title: string, description?: string): Metadata {
+  return {
+    description,
+    robots: {
+      follow: false,
+      googleBot: {
+        follow: false,
+        index: false
+      },
+      index: false
+    },
+    title
+  };
+}
+
 export function jsonLdScript(data: Record<string, unknown> | Array<Record<string, unknown>>) {
   return {
     __html: JSON.stringify(data).replace(/</g, "\\u003c")

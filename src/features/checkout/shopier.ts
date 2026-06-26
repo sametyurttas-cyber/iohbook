@@ -27,13 +27,21 @@ export function getShopierConfig() {
 }
 
 export function buildShopierProductUrl(input: {
+  callbackUrl?: string;
   note: string;
   productUrl: string;
   quantity: number;
+  successUrl?: string;
 }) {
   const url = new URL(input.productUrl);
   url.searchParams.set("quantity", String(input.quantity));
   url.searchParams.set("note", input.note);
+  if (input.callbackUrl) {
+    url.searchParams.set("callback_url", input.callbackUrl);
+  }
+  if (input.successUrl) {
+    url.searchParams.set("success_url", input.successUrl);
+  }
   return url.toString();
 }
 

@@ -1,10 +1,11 @@
 import Link from "next/link";
 import styles from "@/features/account/account-scene.module.css";
 
-const accountItems = [
+export const accountItems = [
   { href: "/account/orders", label: "Siparislerim" },
   { href: "/account/downloads", label: "Indirmelerim" },
   { href: "/account/rewards", label: "Odullerim" },
+  { href: "/account/referrals", label: "Davetlerim" },
   { href: "/account/nft-collection", label: "NFT Koleksiyonum" },
   { href: "/account/token-allocations", label: "Token Haklarim" },
   { href: "/account/wallets", label: "Cuzdanlarim" },

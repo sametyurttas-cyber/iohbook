@@ -1,13 +1,8 @@
 import type { Metadata } from "next";
 import { CartScene } from "@/features/cart/cart-scene";
-import { buildPageMetadata } from "@/lib/seo";
+import { buildNoIndexMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = buildPageMetadata({
-  description:
-    "IOH Universe sepetiniz — secilen dijital kitaplar odeme sonrasi hesabiniza eklenir ve PDF/EPUB olarak erisilebilir hale gelir.",
-  path: "/cart",
-  title: "Sepet"
-});
+export const metadata: Metadata = buildNoIndexMetadata("Sepet", "IOH Universe sepetiniz.");
 
 type CartPageProps = {
   searchParams?: Promise<{

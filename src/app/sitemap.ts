@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { listPublishedBooks } from "@/features/catalog/queries";
+import { listNftCollections } from "@/features/nft/queries";
 import { absoluteUrl } from "@/lib/seo";
 
 const staticRoutes = [
@@ -9,6 +10,7 @@ const staticRoutes = [
   { path: "/author", priority: 0.75 },
   { path: "/collections", priority: 0.65 },
   { path: "/nft", priority: 0.45 },
+  { path: "/token-sale", priority: 0.4 },
   { path: "/journal", priority: 0.55 },
   { path: "/contact", priority: 0.55 },
   { path: "/faq", priority: 0.5 },
@@ -20,7 +22,10 @@ const staticRoutes = [
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
-  const books = await listPublishedBooks();
+  const [books, nftCollections] = await Promise.all([
+    listPublishedBooks(),
+    listNftCollections()
+  ]);
 
   return [
     ...staticRoutes.map((route) => ({
@@ -34,6 +39,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: book.updated_at ? new Date(book.updated_at) : now,
       priority: 0.85,
       url: absoluteUrl(`/books/${book.slug}`)
+    })),
+    ...nftCollections.map((collection) => ({
+      changeFrequency: "monthly" as const,
+      lastModified: collection.updated_at ? new Date(collection.updated_at) : now,
+      priority: 0.35,
+      url: absoluteUrl(`/nft/${collection.slug}`)
     }))
   ];
 }

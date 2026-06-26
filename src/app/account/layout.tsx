@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { headers } from "next/headers";
 import { BooksIndexFooter } from "@/features/catalog/books-index-scene";
@@ -15,6 +16,14 @@ import {
 import { listAccountUserWallets } from "@/features/wallets/queries";
 import { shortenWalletAddress } from "@/features/account/account-utils";
 import styles from "@/features/account/account-scene.module.css";
+
+export const metadata: Metadata = {
+  robots: {
+    follow: false,
+    index: false
+  },
+  title: "Hesabim"
+};
 
 export default async function AccountLayout({ children }: { children: ReactNode }) {
   const user = await requireAccountUser();

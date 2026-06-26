@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Container } from "@/components/layout/container";
@@ -6,6 +7,7 @@ import { Section } from "@/components/layout/section";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { requestPasswordReset } from "@/features/auth/actions";
+import { buildNoIndexMetadata } from "@/lib/seo";
 
 type ForgotPasswordPageProps = {
   searchParams?: Promise<{
@@ -13,6 +15,11 @@ type ForgotPasswordPageProps = {
     sent?: string;
   }>;
 };
+
+export const metadata: Metadata = buildNoIndexMetadata(
+  "Sifre sifirlama",
+  "IOH hesap sifre sifirlama sayfasi."
+);
 
 export default async function ForgotPasswordPage({ searchParams }: ForgotPasswordPageProps) {
   const params = await searchParams;
