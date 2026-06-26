@@ -251,16 +251,6 @@ async function reconcilePaidBookAccess(input: {
   });
 
   try {
-    await sendDigitalDeliveryReadyEmail(input.orderId);
-  } catch (error) {
-    captureError(error, {
-      operation: "email.digital_delivery_ready",
-      order_id: input.orderId,
-      provider: "shopier"
-    });
-  }
-
-  try {
     await awardBookOrderRewardForPaidOrder({
       orderId: input.orderId,
       supabase: input.supabase
@@ -414,6 +404,16 @@ async function applyShopierPaymentResult(input: {
       paymentAttemptId: input.attempt.id,
       supabase: input.supabase
     });
+
+    try {
+      await sendDigitalDeliveryReadyEmail(input.attempt.order_id);
+    } catch (error) {
+      captureError(error, {
+        operation: "email.digital_delivery_ready",
+        order_id: input.attempt.order_id,
+        provider: "shopier"
+      });
+    }
 
     try {
       await sendPaymentConfirmedEmail(input.attempt.order_id);

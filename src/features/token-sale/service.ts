@@ -40,8 +40,12 @@ export async function approveTokenAllocationsForPaidOrder(input: {
 
   // Award IOH points for the purchased amount
   for (const allocation of pending) {
-    if (allocation.profile_id && typeof allocation.total_amount === "string") {
-      const amount = Math.floor(parseFloat(allocation.total_amount));
+    if (allocation.profile_id && allocation.total_amount !== null && allocation.total_amount !== undefined) {
+      const amount = Math.floor(
+        typeof allocation.total_amount === "number"
+          ? allocation.total_amount
+          : parseFloat(String(allocation.total_amount))
+      );
       if (amount > 0) {
         try {
           await awardIohPoints({
