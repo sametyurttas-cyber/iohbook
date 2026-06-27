@@ -152,14 +152,16 @@ function TokenSaleManifesto() {
     <section className={styles.manifesto}>
       <div className={styles.manifestoInner} id="ts-manifesto">
         <p>
-          IOHcoin, IOH Universe'un temeli olan <em>dijital erisim</em> ve
-          topluluk varlik katmanidir.
+          IOHcoin is the <em>digital civilization</em> layer that forms the foundation of the IOH Universe.
         </p>
         <p className={styles.manifestoNote}>
-          Kitap satin alan kullanicilar hesaplarinda IOH Puan kazanabilir. Genesis phase 
-          surecinde sunulan IOHcoin paketleri, erken katilim (early access) katmanidir. 
-          Bu sayfa yatirim tavsiyesi, finansal getiri vaadi veya kripto para vaadi 
-          sunmaz; IOHcoin uygulama ici dijital erisim hakkidir.
+          The books were only the beginning.
+          <br />
+          <br />
+          IOHcoin is the common language of the future economy, the communities yet to be formed, digital collectibles, and the metaverse layers still waiting to be opened.
+          <br />
+          <br />
+          Genesis Phase exists for those who choose to help build the world, rather than simply arrive after it is finished.
         </p>
       </div>
     </section>
