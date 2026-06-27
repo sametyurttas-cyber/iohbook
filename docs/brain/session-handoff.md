@@ -14,7 +14,8 @@ Last updated: 2026-06-27
   - `/token-sale` sayfasındaki Hero başlığı altındaki açıklama metni, IOH medeniyeti ve Genesis felsefesini anlatan şiirsel metinle değiştirildi.
   - Hero alt metninin dar sütuna sıkışmaması için `max-width` CSS'te `850px` seviyesine çıkarıldı ve inline stil kısıtlamaları kaldırılarak mobil/tablet cihazlarda tam uyumlu responsive akış sağlandı.
   - Hero alt metni ile sayaç altındaki açıklama metinleri, dikeyde fazla yer kaplamaması ve coin görsellerinin doğru konumlanması için satır satır birleştirilerek kompakt hale getirildi.
-  - Değişiklikler başarıyla commitleyip GitHub'a pushlandı (`e3cc9ea`).
+  - "05 / GUVEN BILGILERI" (Trust) bölümündeki 3 adet bilgi maddesi tamamen yeni İngilizce açıklamalar ile değiştirildi.
+  - Değişiklikler başarıyla commitleyip GitHub'a pushlandı (`3341daf`).
 - **Otomatik Canlı Dağıtım:** Vercel otomatik deployment süreci GitHub tetiklenmesiyle başladı.
 - **Testler:** Proje yapısı yerel ve uzak testlerle uyumlu şekilde korunmaktadır.
 
@@ -23,11 +24,12 @@ Last updated: 2026-06-27
 - Canlıya geçiş tamamlandıktan sonra `/token-sale` sayfasında satın alım akışı başlatılarak Shopier'in yeni sekmede açıldığı ve mevcut sekmenin `/payment/pending` sayfasına yönlendiği doğrulanmalıdır.
 - `/checkout` sayfasının yeni kozmik tasarımı ve form akışı test edilmelidir.
 - Hesap profili ve Token Haklarım sayfasındaki "Puan Hareketleri" listesinin yeni formatta doğru sipariş numaralarıyla listelendiği doğrulanmalıdır.
-- `/token-sale` sayfasındaki yeni **Genesis Countdown** geri sayım saatinin, yenilenen metinlerin, kompakt açıklamaların ve responsive genişliğin doğruluğu kontrol edilmelidir.
+- `/token-sale` sayfasındaki yeni **Genesis Countdown** geri sayım saatinin, yenilenen metinlerin, kompakt açıklamaların, güncellenen Güven Bilgileri (Trust) alanının ve responsive genişliğin doğruluğu kontrol edilmelidir.
 
 ## Open Risks
 
 - Yok. Shopier callback/webhook ve yönlendirme akışı stabil durumdadır.
+
 
 
 
