@@ -117,7 +117,7 @@ function TokenSaleHero() {
         <div className={styles.heroContent}>
           <Kicker id="ts-hero-kicker">IOHCOIN / GENESIS LAUNCH</Kicker>
           <h1 className={styles.heroTitle} id="ts-hero-title" data-split>IOHCOIN</h1>
-          <p className={styles.heroLead} id="ts-hero-lead" style={{ maxWidth: "600px" }}>
+          <p className={styles.heroLead} id="ts-hero-lead">
             Every great world begins with a small signal.
             <br />
             <br />
