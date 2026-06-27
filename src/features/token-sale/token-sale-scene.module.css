@@ -565,7 +565,6 @@
   padding: 9rem 0;
   border-block: 1px solid rgba(242, 239, 232, 0.08);
   background: linear-gradient(180deg, transparent, rgba(0, 210, 255, 0.025), transparent);
-  scroll-margin-top: 120px;
 }
 
 .campaignsHeader {

@@ -848,6 +848,22 @@ export function TokenSaleAnimations() {
           });
         }
 
+        // ================= SMOOTH SCROLL BINDING =================
+        const exploreBtn = document.querySelector('#ts-hero-actions a[href="#campaigns"]');
+        if (exploreBtn) {
+          exploreBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = document.getElementById('campaigns');
+            if (target) {
+              const topOffset = target.getBoundingClientRect().top + window.pageYOffset - 90;
+              window.scrollTo({
+                top: topOffset,
+                behavior: 'smooth'
+              });
+            }
+          });
+        }
+
         // ================= WALLET CONNECT PANEL BINDING =================
         function setupWalletConnect() {
           const connectBtn = document.getElementById("ts-wallet-connect-btn");
