@@ -1,7 +1,10 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { type ReactNode, useState, useEffect, useRef } from "react";
 import styles from "./author-manifesto.module.css";
+import { AuthorWebglMatrix } from "./author-webgl-matrix";
 
 const timeline = [
   {
@@ -170,6 +173,205 @@ function AuthorManifestoSection() {
   );
 }
 
+const CONSOLE_COMMANDS: Record<string, string[]> = {
+  "/help": [
+    "AVAILABLE SIGNALS:",
+    "/creator",
+    "/why_ioh",
+    "/what_is_ioh",
+    "/system",
+    "/next_phase",
+    "/quote"
+  ],
+  "/creator": [
+    "I am not building stories.",
+    "I am building systems that happen to be told as stories."
+  ],
+  "/why_ioh": [
+    "Every civilization begins with a language.",
+    "IOH is mine."
+  ],
+  "/what_is_ioh": [
+    "A book universe.",
+    "A digital economy.",
+    "A future civilization.",
+    "",
+    "Still unfinished."
+  ],
+  "/system": [
+    "CREATOR: ONLINE",
+    "UNIVERSE: EXPANDING",
+    "CIVILIZATION: INITIALIZING",
+    "SIGNAL: ACTIVE"
+  ],
+  "/next_phase": [
+    "Unknown.",
+    "",
+    "Even the creator cannot see beyond every horizon."
+  ],
+  "/quote": [
+    "Every system has a creator.",
+    "Every creator leaves a code."
+  ]
+};
+
+function CreatorConsole() {
+  const [history, setHistory] = useState<Array<{ id: number; type: "input" | "output"; lines: string[] }>>([
+    {
+      id: 0,
+      type: "output",
+      lines: [
+        "CREATOR CONSOLE INITIALIZED",
+        "TYPE /help TO ACCESS AVAILABLE SIGNALS"
+      ]
+    }
+  ]);
+  const [inputVal, setInputVal] = useState("");
+  const historyEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    historyEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [history]);
+
+  const executeCommand = (cmd: string) => {
+    const trimmed = cmd.trim();
+    if (!trimmed) return;
+
+    const newHistory = [...history, { id: Date.now(), type: "input" as const, lines: [trimmed] }];
+    setHistory(newHistory);
+    setInputVal("");
+
+    setTimeout(() => {
+      let responseLines = ["UNKNOWN COMMAND.", "TYPE /help TO ACCESS AVAILABLE SIGNALS."];
+      if (CONSOLE_COMMANDS[trimmed]) {
+        responseLines = CONSOLE_COMMANDS[trimmed];
+      }
+
+      setHistory((prev) => [
+        ...prev,
+        { id: Date.now() + 1, type: "output" as const, lines: responseLines }
+      ]);
+    }, 150);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    executeCommand(inputVal);
+  };
+
+  const quickCommands = ["/creator", "/why_ioh", "/system", "/quote"];
+
+  return (
+    <section className={styles.consoleSection} id="console">
+      <div className={styles.shell}>
+        <div className={styles.consoleHeaderBlock}>
+          <Kicker>01.5 / CREATOR INTERFACE</Kicker>
+          <h2>THE CREATOR CONSOLE</h2>
+        </div>
+        
+        <div className={styles.consoleContainer}>
+          <div className={styles.consoleTitleBar}>
+            <div className={styles.consoleDots}>
+              <span className={styles.consoleDotRed} />
+              <span className={styles.consoleDotYellow} />
+              <span className={styles.consoleDotGreen} />
+            </div>
+            <div className={styles.consoleTitle}>THE CREATOR CONSOLE</div>
+            <div className={styles.consoleStatus}>SYSTEM STATUS: SECURE</div>
+          </div>
+          
+          <div className={styles.consoleBody}>
+            <div className={styles.consoleOutput}>
+              {history.map((item) => (
+                <div key={item.id} className={item.type === "input" ? styles.consoleInputLine : styles.consoleOutputBlock}>
+                  {item.type === "input" ? (
+                    <div className={styles.consolePromptRow}>
+                      <span className={styles.consolePromptText}>creator@ioh:~$</span>
+                      <span className={styles.consoleUserCommand}>{item.lines[0]}</span>
+                    </div>
+                  ) : (
+                    item.lines.map((line, idx) => (
+                      <ConsoleLine key={idx} text={line} delay={idx * 60} />
+                    ))
+                  )}
+                </div>
+              ))}
+              <div ref={historyEndRef} />
+            </div>
+            
+            <form onSubmit={handleSubmit} className={styles.consoleInputRow}>
+              <span className={styles.consolePromptText}>creator@ioh:~$</span>
+              <input
+                type="text"
+                value={inputVal}
+                onChange={(e) => setInputVal(e.target.value)}
+                className={styles.consoleInput}
+                placeholder="Type /help..."
+                autoComplete="off"
+                spellCheck="false"
+              />
+            </form>
+          </div>
+          
+          <div className={styles.consoleFooter}>
+            <span className={styles.quickLabel}>QUICK SIGNALS:</span>
+            <div className={styles.quickButtons}>
+              {quickCommands.map((cmd) => (
+                <button
+                  key={cmd}
+                  type="button"
+                  onClick={() => executeCommand(cmd)}
+                  className={styles.quickButton}
+                >
+                  {cmd}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ConsoleLine({ text, delay = 0 }: { text: string; delay?: number }) {
+  const [displayText, setDisplayText] = useState("");
+  
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    const chars = "01#$_@%&?<>*[]{}";
+    let step = 0;
+    
+    const run = () => {
+      if (step >= text.length) {
+        setDisplayText(text);
+        return;
+      }
+      
+      const scrambled = text
+        .split("")
+        .map((char, idx) => {
+          if (idx <= step) return text[idx];
+          if (char === " ") return " ";
+          return chars[Math.floor(Math.random() * chars.length)];
+        })
+        .join("");
+        
+      setDisplayText(scrambled);
+      step += 1;
+      timer = setTimeout(run, 15);
+    };
+    
+    const startTimer = setTimeout(run, delay);
+    return () => {
+      clearTimeout(startTimer);
+      clearTimeout(timer);
+    };
+  }, [text, delay]);
+
+  return <div className={styles.consoleOutputLine}>{displayText}</div>;
+}
+
 function UniverseTimeline() {
   return (
     <section className={styles.timelineSection}>
@@ -239,16 +441,69 @@ function CreatorStatistics() {
 }
 
 function AuthorQuote() {
+  const originalPart1 = "Every system has a creator.";
+  const originalPart2 = "Every creator leaves a code.";
+  const [part1, setPart1] = useState(originalPart1);
+  const [part2, setPart2] = useState(originalPart2);
+  const intervalRef1 = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef2 = useRef<NodeJS.Timeout | null>(null);
+
+  const startGlitch = (
+    setFn: (t: string) => void,
+    originalText: string,
+    intervalRef: React.MutableRefObject<NodeJS.Timeout | null>
+  ) => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    const chars = "01#$_@%&?<>*[]{}";
+    let iterations = 0;
+
+    intervalRef.current = setInterval(() => {
+      setFn(
+        originalText
+          .split("")
+          .map((char, index) => {
+            if (index < iterations) {
+              return originalText[index];
+            }
+            if (char === " ") return " ";
+            return chars[Math.floor(Math.random() * chars.length)];
+          })
+          .join("")
+      );
+
+      if (iterations >= originalText.length) {
+        clearInterval(intervalRef.current!);
+      }
+      iterations += 1;
+    }, 20);
+  };
+
+  const handleMouseEnter = () => {
+    startGlitch(setPart1, originalPart1, intervalRef1);
+    startGlitch(setPart2, originalPart2, intervalRef2);
+  };
+
+  const handleMouseLeave = () => {
+    if (intervalRef1.current) clearInterval(intervalRef1.current);
+    if (intervalRef2.current) clearInterval(intervalRef2.current);
+    setPart1(originalPart1);
+    setPart2(originalPart2);
+  };
+
   return (
-    <section className={styles.quoteSection}>
+    <section
+      className={styles.quoteSection}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       <div className={styles.quoteSignal} aria-hidden="true">
         IOH
       </div>
       <div className={styles.shell}>
         <Kicker>05 / CREATOR CODE</Kicker>
         <blockquote>
-          <span>&ldquo;Every system has a creator.</span>
-          <em>Every creator leaves a code.&rdquo;</em>
+          <span>&ldquo;{part1}</span>
+          <em>{part2}&rdquo;</em>
         </blockquote>
       </div>
     </section>
@@ -283,8 +538,12 @@ function AuthorConnect() {
 export function AuthorManifesto() {
   return (
     <div className={styles.page}>
+      <AuthorWebglMatrix />
+      <div className={styles.vignette} aria-hidden="true" />
+      <div className={styles.grain} aria-hidden="true" />
       <AuthorHero />
       <AuthorManifestoSection />
+      <CreatorConsole />
       <UniverseTimeline />
       <CoreThemes />
       <CreatorStatistics />

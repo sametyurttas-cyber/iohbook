@@ -824,3 +824,256 @@
     transition: none;
   }
 }
+
+/* ---------- WEBGL BACKDROP ---------- */
+.webglCanvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+.vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(ellipse 95% 75% at 50% 50%, transparent 45%, rgba(3, 4, 8, 0.88) 100%);
+}
+
+.grain {
+  position: fixed;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Timeline Hover Glows */
+.timelineItem {
+  transition: background 0.4s ease, border-color 0.4s ease;
+}
+.timelineItem:hover {
+  background: rgba(242, 239, 232, 0.015);
+  border-color: var(--timeline-accent);
+}
+.timelineItem::before {
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+.timelineItem:hover::before {
+  transform: scale(1.4);
+  background: var(--timeline-accent);
+}
+
+/* ---------- CREATOR CONSOLE ---------- */
+.consoleSection {
+  position: relative;
+  padding: 8rem 0;
+  border-bottom: 1px solid var(--author-line);
+}
+
+.consoleHeaderBlock {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.consoleHeaderBlock h2 {
+  margin: 1.6rem 0 0;
+  font-size: 5rem;
+  font-weight: 500;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+}
+
+.consoleContainer {
+  position: relative;
+  max-width: 840px;
+  margin-inline: auto;
+  border: 1px solid var(--author-line);
+  border-radius: 12px;
+  background: rgba(5, 6, 10, 0.85);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  z-index: 10;
+}
+
+.consoleTitleBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.25rem;
+  background: rgba(242, 239, 232, 0.04);
+  border-bottom: 1px solid var(--author-line);
+}
+
+.consoleDots {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.consoleDotRed,
+.consoleDotYellow,
+.consoleDotGreen {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.consoleDotRed { background: #ff5b5b; opacity: 0.7; }
+.consoleDotYellow { background: #e7c574; opacity: 0.7; }
+.consoleDotGreen { background: #6f9bff; opacity: 0.7; }
+
+.consoleTitle {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.15em;
+  color: var(--author-gold);
+  font-weight: bold;
+}
+
+.consoleStatus {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.1em;
+  color: var(--author-muted);
+}
+
+.consoleBody {
+  padding: 1.5rem 1.8rem;
+  min-height: 280px;
+  max-height: 400px;
+  overflow-y: auto;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--author-paper);
+}
+
+.consoleOutput {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.consolePromptRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+
+.consolePromptText {
+  color: var(--author-gold);
+  font-weight: bold;
+  user-select: none;
+}
+
+.consoleUserCommand {
+  color: #00d2ff;
+}
+
+.consoleOutputBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-left: 0.5rem;
+  border-left: 2px solid rgba(242, 239, 232, 0.08);
+}
+
+.consoleOutputLine {
+  white-space: pre-wrap;
+}
+
+.consoleInputRow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 1rem;
+  border-top: 1px solid rgba(242, 239, 232, 0.06);
+  padding-top: 1rem;
+}
+
+.consoleInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--author-paper);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+
+.consoleInput::placeholder {
+  color: rgba(146, 151, 166, 0.45);
+}
+
+.consoleFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.8rem;
+  background: rgba(5, 6, 10, 0.45);
+  border-top: 1px solid var(--author-line);
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.quickLabel {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  color: var(--author-muted);
+}
+
+.quickButtons {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.quickButton {
+  background: rgba(242, 239, 232, 0.04);
+  border: 1px solid var(--author-line);
+  border-radius: 4px;
+  color: var(--author-paper);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  padding: 0.35rem 0.75rem;
+  transition: all 0.25s ease;
+}
+
+.quickButton:hover {
+  background: rgba(231, 197, 116, 0.08);
+  border-color: var(--author-gold);
+  color: var(--author-gold);
+  box-shadow: 0 4px 12px rgba(231, 197, 116, 0.08);
+}
+
+/* Media Query Adaptations for Console */
+@media (max-width: 768px) {
+  .consoleHeaderBlock h2 {
+    font-size: 3.2rem;
+  }
+  .consoleContainer {
+    width: 100%;
+  }
+  .consoleBody {
+    padding: 1.2rem 1.4rem;
+    font-size: 0.8rem;
+  }
+  .consoleFooter {
+    padding: 1rem 1.4rem;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
