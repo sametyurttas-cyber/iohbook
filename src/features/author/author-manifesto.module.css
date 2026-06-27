@@ -1127,14 +1127,20 @@
 }
 
 .consoleBody {
+  display: flex;
+  flex-direction: column;
   padding: 1.5rem 1.8rem;
-  min-height: 280px;
-  max-height: 400px;
-  overflow-y: auto;
+  height: 380px;
   font-family: var(--font-mono);
   font-size: 0.85rem;
   line-height: 1.6;
   color: var(--author-paper);
+}
+
+.consoleOutputWrapper {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 0.5rem;
 }
 
 .consoleOutput {

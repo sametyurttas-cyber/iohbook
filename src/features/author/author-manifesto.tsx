@@ -321,22 +321,24 @@ function CreatorConsole() {
             <div className={styles.consoleStatus}>SYSTEM STATUS: SECURE</div>
           </div>
           
-          <div ref={consoleBodyRef} className={styles.consoleBody}>
-            <div className={styles.consoleOutput}>
-              {history.map((item) => (
-                <div key={item.id} className={item.type === "input" ? styles.consoleInputLine : styles.consoleOutputBlock}>
-                  {item.type === "input" ? (
-                    <div className={styles.consolePromptRow}>
-                      <span className={styles.consolePromptText}>creator@ioh:~$</span>
-                      <span className={styles.consoleUserCommand}>{item.lines[0]}</span>
-                    </div>
-                  ) : (
-                    item.lines.map((line, idx) => (
-                      <ConsoleLine key={idx} text={line} delay={idx * 60} />
-                    ))
-                  )}
-                </div>
-              ))}
+          <div className={styles.consoleBody}>
+            <div ref={consoleBodyRef} className={styles.consoleOutputWrapper}>
+              <div className={styles.consoleOutput}>
+                {history.map((item) => (
+                  <div key={item.id} className={item.type === "input" ? styles.consoleInputLine : styles.consoleOutputBlock}>
+                    {item.type === "input" ? (
+                      <div className={styles.consolePromptRow}>
+                        <span className={styles.consolePromptText}>creator@ioh:~$</span>
+                        <span className={styles.consoleUserCommand}>{item.lines[0]}</span>
+                      </div>
+                    ) : (
+                      item.lines.map((line, idx) => (
+                        <ConsoleLine key={idx} text={line} delay={idx * 60} />
+                      ))
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
             
             <form onSubmit={handleSubmit} className={styles.consoleInputRow}>
