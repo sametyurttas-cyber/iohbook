@@ -139,9 +139,6 @@ function AuthorHero() {
               <span className={`${styles.crosshair} ${styles.crosshairBL}`} />
               <span className={`${styles.crosshair} ${styles.crosshairBR}`} />
               
-              {/* Laser Scanning Effect */}
-              <div className={styles.scanline} />
-              
               <Image
                 alt="Samet Yurttas, author and creator of IOH Universe"
                 className={styles.heroImage}

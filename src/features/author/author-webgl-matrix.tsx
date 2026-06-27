@@ -28,7 +28,19 @@ function formSphere(count: number) {
     const v = Math.random();
     const theta = u * 2.0 * Math.PI;
     const phi = Math.acos(2.0 * v - 1.0);
-    const r = radius * Math.cbrt(Math.random()); // distribute within volume
+
+    let r: number;
+    if (i < count * 0.85) {
+      // 85% Neural Constellation (outer boundary shell and dense inner network)
+      if (Math.random() < 0.65) {
+        r = radius * (0.92 + Math.random() * 0.08);
+      } else {
+        r = radius * Math.cbrt(Math.random()) * 0.72;
+      }
+    } else {
+      // 15% Cosmic Dust (loose floating particles scattered in outer space)
+      r = radius * (1.1 + Math.random() * 2.2);
+    }
 
     positions[offset] = r * Math.sin(phi) * Math.cos(theta);
     positions[offset + 1] = r * Math.sin(phi) * Math.sin(theta);
