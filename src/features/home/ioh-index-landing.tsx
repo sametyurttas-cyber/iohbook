@@ -28,6 +28,12 @@ function loadScript(src: string) {
 
 type IohIndexLandingProps = {
   accountActionsHtml?: string;
+  user?: {
+    displayName: string;
+    points: number;
+    email?: string;
+    orderCount?: number;
+  } | null;
 };
 
 const DEFAULT_ACCOUNT_ACTIONS_HTML =
@@ -131,7 +137,7 @@ function reorderIndexModule(source: string) {
     );
 }
 
-export function IohIndexLanding({ accountActionsHtml }: IohIndexLandingProps) {
+export function IohIndexLanding({ accountActionsHtml, user }: IohIndexLandingProps) {
   useEffect(() => {
     if (window.__iohIndexLandingLoaded) {
       return;
@@ -150,6 +156,183 @@ export function IohIndexLanding({ accountActionsHtml }: IohIndexLandingProps) {
       document.body.appendChild(script);
     })();
   }, []);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const timer = setTimeout(() => {
+      const userBtn = document.querySelector('.head-actions a[href="/account"]');
+      if (!userBtn) return;
+
+      const style = document.createElement('style');
+      style.textContent = `
+        .index-profile-dropdown {
+          position: fixed;
+          top: 80px;
+          right: clamp(1.2rem, 4vw, 3.4rem);
+          width: 320px;
+          background: rgba(5, 6, 10, 0.95);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          border: 1px solid rgba(231, 197, 116, 0.25);
+          border-radius: 12px;
+          padding: 1.5rem;
+          z-index: 1000;
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+          opacity: 0;
+          visibility: hidden;
+          transform: translateY(-10px);
+          transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+          font-family: "Space Grotesk", sans-serif;
+        }
+        .index-profile-dropdown.is-open {
+          opacity: 1;
+          visibility: visible;
+          transform: translateY(0);
+        }
+        .index-dropdown-header {
+          font-family: "JetBrains Mono", monospace;
+          font-size: 0.65rem;
+          color: #e7c574;
+          letter-spacing: 0.2em;
+          margin-bottom: 0.75rem;
+        }
+        .index-dropdown-user {
+          margin-bottom: 1.25rem;
+        }
+        .index-dropdown-name {
+          font-size: 1.1rem;
+          font-weight: 500;
+          color: #f2efe8;
+          line-height: 1.2;
+        }
+        .index-dropdown-email {
+          font-size: 0.8rem;
+          color: #8a8fa0;
+          margin-top: 0.25rem;
+        }
+        .index-points-box {
+          background: rgba(231, 197, 116, 0.07);
+          border: 1px solid rgba(231, 197, 116, 0.15);
+          border-radius: 8px;
+          padding: 0.75rem 1rem;
+          margin-bottom: 1.25rem;
+        }
+        .index-points-label {
+          font-family: "JetBrains Mono", monospace;
+          font-size: 0.6rem;
+          color: #8a8fa0;
+          letter-spacing: 0.15em;
+        }
+        .index-points-val {
+          font-size: 1.4rem;
+          font-weight: 700;
+          color: #e7c574;
+          margin-top: 0.25rem;
+        }
+        .index-order-count {
+          font-size: 0.8rem;
+          color: #8a8fa0;
+          margin-bottom: 1.25rem;
+        }
+        .index-order-count span {
+          color: #f2efe8;
+          font-weight: 500;
+        }
+        .index-dropdown-divider {
+          height: 1px;
+          background: rgba(242, 239, 232, 0.12);
+          margin: 0.75rem 0;
+        }
+        .index-dropdown-link {
+          display: block;
+          font-size: 0.9rem;
+          color: #f2efe8;
+          text-decoration: none;
+          padding: 0.5rem 0;
+          transition: color 0.2s ease;
+        }
+        .index-dropdown-link:hover {
+          color: #e7c574;
+        }
+        .index-logout-form {
+          margin-top: 0.75rem;
+        }
+        .index-logout-btn {
+          width: 100%;
+          background: linear-gradient(135deg, rgba(255, 91, 91, 0.1), rgba(255, 91, 91, 0.03));
+          border: 1px solid rgba(255, 91, 91, 0.25);
+          border-radius: 8px;
+          color: #ff5b5b;
+          font-family: "JetBrains Mono", monospace;
+          font-size: 0.75rem;
+          font-weight: 500;
+          letter-spacing: 0.15em;
+          text-transform: uppercase;
+          padding: 0.75rem;
+          cursor: pointer !important;
+          transition: all 0.3s ease;
+        }
+        .index-logout-btn:hover {
+          background: rgba(255, 91, 91, 0.18);
+          border-color: #ff5b5b;
+        }
+      `;
+      document.head.appendChild(style);
+
+      const dropdown = document.createElement('div');
+      dropdown.className = 'index-profile-dropdown';
+      dropdown.innerHTML = `
+        <div class="index-dropdown-header">MINI PROFILE</div>
+        <div class="index-dropdown-user">
+          <div class="index-dropdown-name">${user.displayName}</div>
+          <div class="index-dropdown-email">${user.email || ''}</div>
+        </div>
+        <div class="index-points-box">
+          <div class="index-points-label">IOH PUAN</div>
+          <div class="index-points-val">${user.points}</div>
+        </div>
+        ${user.orderCount !== undefined ? `
+        <div class="index-order-count">
+          Son sipariş sayısı: <span>${user.orderCount}</span>
+        </div>
+        ` : ''}
+        <div class="index-dropdown-divider"></div>
+        <a class="index-dropdown-link" href="/account">Hesabıma git</a>
+        <a class="index-dropdown-link" href="/account">Siparişlerim</a>
+        <div class="index-dropdown-divider"></div>
+        <form class="index-logout-form" action="/api/auth/sign-out" method="POST">
+          <button class="index-logout-btn" type="submit">Çıkış yap</button>
+        </form>
+      `;
+      document.body.appendChild(dropdown);
+
+      const toggleDropdown = (e: Event) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropdown.classList.toggle('is-open');
+      };
+
+      userBtn.addEventListener('click', toggleDropdown);
+
+      const closeDropdown = (e: Event) => {
+        if (!dropdown.contains(e.target as Node) && e.target !== userBtn) {
+          dropdown.classList.remove('is-open');
+        }
+      };
+
+      document.addEventListener('click', closeDropdown);
+
+      return () => {
+        userBtn.removeEventListener('click', toggleDropdown);
+        document.removeEventListener('click', closeDropdown);
+        dropdown.remove();
+        style.remove();
+      };
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [user]);
 
   const bodyWithAccount = accountActionsHtml
     ? IOH_INDEX_BODY.replace(DEFAULT_ACCOUNT_ACTIONS_HTML, accountActionsHtml)

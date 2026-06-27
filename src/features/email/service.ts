@@ -210,6 +210,8 @@ export const FALLBACK_TEMPLATES: Record<
   }
 };
 
+Object.assign(FALLBACK_TEMPLATES, ENGLISH_FALLBACK_TEMPLATES);
+
 export function renderEmailTemplate(
   templateKey: string,
   variables: Record<string, unknown>,

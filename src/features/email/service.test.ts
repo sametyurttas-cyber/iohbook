@@ -45,11 +45,11 @@ describe("email service", () => {
 
       const rendered = renderEmailTemplate("welcome", vars);
 
-      expect(rendered.subject).toContain("IOH Evrenine Hoş Geldiniz!");
-      expect(rendered.html).toContain("Merhaba Samet");
+      expect(rendered.subject).toContain("Welcome to the IOH Universe");
+      expect(rendered.html).toContain("Hello Samet");
       expect(rendered.html).toContain("samet@example.com");
       expect(rendered.html).toContain("https://iohbook.local/account");
-      expect(rendered.text).toContain("Merhaba Samet");
+      expect(rendered.text).toContain("Hello Samet");
       expect(rendered.text).toContain("samet@example.com");
     });
 
@@ -78,8 +78,8 @@ describe("email service", () => {
 
       const rendered = renderEmailTemplate("welcome", vars);
 
-      expect(rendered.html).toContain("Merhaba ");
-      expect(rendered.text).toContain("Merhaba ");
+      expect(rendered.html).toContain("Hello ");
+      expect(rendered.text).toContain("Hello ");
     });
 
     it("renders database-defined template if provided", () => {
