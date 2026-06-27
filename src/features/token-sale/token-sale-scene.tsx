@@ -117,11 +117,26 @@ function TokenSaleHero() {
         <div className={styles.heroContent}>
           <Kicker id="ts-hero-kicker">IOHCOIN / GENESIS LAUNCH</Kicker>
           <h1 className={styles.heroTitle} id="ts-hero-title" data-split>IOHCOIN</h1>
-          <p className={styles.heroLead} id="ts-hero-lead">
-            IOHcoin, IOH Universe'un dijital altyapi katmanidir. Early access
-            surecinde edinilen IOH Puanlari, planlanan lansman sonrasi IOHcoin'e
-            donusturulecektir. Erken destek verenler, ekosistemin ilk katilimcilari
-            (ecosystem participation) olarak ayricalikli konumda yer alir.
+          <p className={styles.heroLead} id="ts-hero-lead" style={{ maxWidth: "600px" }}>
+            Every great world begins with a small signal.
+            <br />
+            <br />
+            IOHcoin is more than a digital asset.
+            <br />
+            <br />
+            It is the first fragment of the future IOH civilization,
+            <br />
+            the foundation of the metaverse layers yet to be opened,
+            <br />
+            the beginning of a new digital economy,
+            <br />
+            and the first piece of a world that does not yet exist.
+            <br />
+            <br />
+            Most people enter a world only after it has already been built.
+            <br />
+            <br />
+            Genesis Phase exists for those who were there while the world was still being created.
           </p>
           <div className={styles.heroActions} id="ts-hero-actions">
             <a className={styles.primaryButton} href="#campaigns">

@@ -41,7 +41,8 @@ Last reviewed: 2026-06-18
 
 - Supabase: database, auth, private/public storage.
 - Shopier: direct product URL, PAT-backed REST verification, webhook.
-- Resend: provider-agnostic transactional email implementation.
+- Resend: provider-agnostic transactional email implementation with a shared
+  IOH index-inspired dark/gold email-safe shell for transactional templates.
 - Sentry and Vercel Analytics/Speed Insights: observability foundations.
 - Vercel: GitHub-connected production deployment from `main`.
 

@@ -1,4 +1,5 @@
 import { formatMoney } from "@/features/products/product-utils";
+import { IOH_EMAIL_BUTTON_STYLE, renderIohEmailShell } from "@/features/email/email-shell";
 
 export type OrderEmailLine = {
   fulfillmentType: "physical" | "digital" | "claimable" | "hybrid" | string;
@@ -40,36 +41,7 @@ function getFulfillmentMode(lines: OrderEmailLine[]) {
 }
 
 function shell(input: { body: string; preview: string; title: string }) {
-  return `<!doctype html>
-<html>
-  <body style="margin:0;background:#0d0d0f;color:#f6f0e8;font-family:Arial,sans-serif;">
-    <div style="display:none;max-height:0;overflow:hidden;">${input.preview}</div>
-    <table width="100%" cellpadding="0" cellspacing="0" style="background:#0d0d0f;padding:32px 16px;">
-      <tr>
-        <td align="center">
-          <table width="100%" cellpadding="0" cellspacing="0" style="max-width:640px;border:1px solid #2a2826;background:#151417;border-radius:8px;overflow:hidden;">
-            <tr>
-              <td style="padding:28px 28px 18px;border-bottom:1px solid #2a2826;">
-                <div style="font-size:12px;letter-spacing:0.22em;text-transform:uppercase;color:#c9a75d;">IOH Book</div>
-                <h1 style="margin:12px 0 0;font-size:28px;line-height:1.2;color:#f6f0e8;">${input.title}</h1>
-              </td>
-            </tr>
-            <tr>
-              <td style="padding:28px;color:#d8d0c8;font-size:15px;line-height:1.65;">
-                ${input.body}
-              </td>
-            </tr>
-            <tr>
-              <td style="padding:20px 28px;border-top:1px solid #2a2826;color:#8f8780;font-size:12px;line-height:1.6;">
-                Bu e-posta IOH Book islemiyle ilgili otomatik bir bildirimdir. Kart bilgileriniz sitede saklanmaz.
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    </table>
-  </body>
-</html>`;
+  return renderIohEmailShell(input);
 }
 
 function orderLines(lines: OrderEmailLine[], currency: string) {
@@ -100,7 +72,7 @@ function orderSummary(data: OrderEmailData) {
         <td align="right" style="padding:14px 0;color:#c9a75d;"><strong>${formatMoney(data.totalMinor, data.currency)}</strong></td>
       </tr>
     </table>
-    <p><a href="${data.orderUrl}" style="display:inline-block;background:#c9a75d;color:#0d0d0f;text-decoration:none;padding:12px 16px;border-radius:6px;font-weight:bold;">Siparisi goruntule</a></p>`;
+    <p><a href="${data.orderUrl}" style="${IOH_EMAIL_BUTTON_STYLE}">Siparisi goruntule</a></p>`;
 }
 
 export function renderOrderReceivedEmail(data: OrderEmailData) {
@@ -126,7 +98,7 @@ export function renderOrderReceivedEmail(data: OrderEmailData) {
 export function renderPaymentConfirmedEmail(data: OrderEmailData) {
   const fulfillmentMode = getFulfillmentMode(data.lines);
   const downloadsLink = data.downloadsUrl
-    ? `<p><a href="${data.downloadsUrl}" style="display:inline-block;background:#c9a75d;color:#0d0d0f;text-decoration:none;padding:12px 16px;border-radius:6px;font-weight:bold;">Indirmelerimi ac</a></p>`
+    ? `<p><a href="${data.downloadsUrl}" style="${IOH_EMAIL_BUTTON_STYLE}">Indirmelerimi ac</a></p>`
     : "";
   const digitalBody =
     fulfillmentMode === "digital"
@@ -170,7 +142,7 @@ export function renderOrderShippedEmail(data: OrderEmailData) {
 export function renderPasswordResetEmail(input: { email: string; resetUrl: string }) {
   return {
     html: shell({
-      body: `<p>${input.email} hesabi icin sifre sifirlama talebi aldik.</p><p><a href="${input.resetUrl}" style="display:inline-block;background:#c9a75d;color:#0d0d0f;text-decoration:none;padding:12px 16px;border-radius:6px;font-weight:bold;">Sifremi sifirla</a></p><p>Bu talebi siz yapmadiysaniz bu e-postayi yok sayabilirsiniz.</p>`,
+      body: `<p>${input.email} hesabi icin sifre sifirlama talebi aldik.</p><p><a href="${input.resetUrl}" style="${IOH_EMAIL_BUTTON_STYLE}">Sifremi sifirla</a></p><p>Bu talebi siz yapmadiysaniz bu e-postayi yok sayabilirsiniz.</p>`,
       preview: "IOH Book sifre sifirlama baglantiniz.",
       title: "Sifre sifirlama"
     }),

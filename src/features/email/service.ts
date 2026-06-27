@@ -1,6 +1,7 @@
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/service-role";
 import { getEmailProvider } from "@/features/email/providers";
 import type { EmailSendResult } from "@/features/email/providers/types";
+import { renderIohEmailShell } from "@/features/email/email-shell";
 
 // HTML escaping helper to prevent HTML injection/XSS
 export function escapeHtml(str: string): string {
@@ -199,37 +200,11 @@ export function renderEmailTemplate(
     previewText = replacePlaceholder(previewText, key, val);
   }
 
-  // Wrap HTML body with the premium cosmic shell
-  const html = `<!doctype html>
-<html>
-  <body style="margin:0;background:#0d0d0f;color:#f6f0e8;font-family:Arial,sans-serif;">
-    <div style="display:none;max-height:0;overflow:hidden;">${previewText || subject}</div>
-    <table width="100%" cellpadding="0" cellspacing="0" style="background:#0d0d0f;padding:32px 16px;">
-      <tr>
-        <td align="center">
-          <table width="100%" cellpadding="0" cellspacing="0" style="max-width:640px;border:1px solid #2a2826;background:#151417;border-radius:8px;overflow:hidden;">
-            <tr>
-              <td style="padding:28px 28px 18px;border-bottom:1px solid #2a2826;">
-                <div style="font-size:12px;letter-spacing:0.22em;text-transform:uppercase;color:#c9a75d;">IOH Book</div>
-                <h1 style="margin:12px 0 0;font-size:28px;line-height:1.2;color:#f6f0e8;">${subject}</h1>
-              </td>
-            </tr>
-            <tr>
-              <td style="padding:28px;color:#d8d0c8;font-size:15px;line-height:1.65;">
-                ${htmlBody}
-              </td>
-            </tr>
-            <tr>
-              <td style="padding:20px 28px;border-top:1px solid #2a2826;color:#8f8780;font-size:12px;line-height:1.6;">
-                Bu e-posta IOH Book islemiyle ilgili otomatik bir bildirimdir. Kart bilgileriniz sitede saklanmaz.
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    </table>
-  </body>
-</html>`;
+  const html = renderIohEmailShell({
+    body: htmlBody,
+    preview: previewText || subject,
+    title: subject
+  });
 
   return {
     subject,
