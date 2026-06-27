@@ -37,11 +37,14 @@ export async function getIohPointBalanceForProfile(profileId: string) {
   } satisfies IohPointBalanceSummary;
 }
 
-export async function listIohPointLedgerForProfile(profileId: string, limit = 5) {
+export async function listIohPointLedgerForProfile(
+  profileId: string,
+  limit = 5
+): Promise<IohPointLedgerItem[]> {
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("ioh_point_ledger")
-    .select("id, amount, reason, order_id, created_at, metadata, orders(order_number)")
+    .select("id, amount, reason, order_id, created_at, metadata")
     .eq("profile_id", profileId)
     .order("created_at", { ascending: false })
     .limit(limit);
@@ -50,7 +53,10 @@ export async function listIohPointLedgerForProfile(profileId: string, limit = 5)
     return [];
   }
 
-  return (data ?? []) as IohPointLedgerItem[];
+  return (data ?? []).map((entry) => ({
+    ...entry,
+    orders: null
+  })) satisfies IohPointLedgerItem[];
 }
 
 export function formatIohPointReason(reason: IohPointLedger["reason"]) {
@@ -87,10 +93,10 @@ export function formatIohPointReason(reason: IohPointLedger["reason"]) {
 
 export function getIohPointLedgerDetail(entry: {
   reason: string;
-  metadata?: Record<string, any> | null;
+  metadata?: Record<string, unknown> | null;
   amount: number;
 }) {
-  const metadata = (entry.metadata ?? {}) as Record<string, any>;
+  const metadata = entry.metadata ?? {};
 
   if (entry.reason === "signup_bonus") {
     return "Hesap oluşturma hoş geldin puanı.";
@@ -155,9 +161,9 @@ export function getIohPointLedgerDetail(entry: {
 
 export function getIohPointLedgerTitle(entry: {
   reason: string;
-  metadata?: Record<string, any> | null;
+  metadata?: Record<string, unknown> | null;
 }) {
-  const metadata = (entry.metadata ?? {}) as Record<string, any>;
+  const metadata = entry.metadata ?? {};
 
   if (metadata.source === "token_purchase") {
     return "Token Satın Alma Ödülü";

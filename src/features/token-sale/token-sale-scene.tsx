@@ -10,6 +10,7 @@ import { formatTokenAmount } from "@/features/token-sale/utils";
 import styles from "./token-sale-scene.module.css";
 import { TokenSaleWebglCoin } from "./token-sale-webgl-coin";
 import { PackageCardClient } from "./package-card-client";
+import { GenesisCountdown } from "./genesis-countdown";
 
 type TokenSaleUser = {
   displayName: string;
@@ -18,28 +19,28 @@ type TokenSaleUser = {
 
 const usageCards = [
   {
-    description: "Kitap satin aldiginda hesabina IOH puani tanimlanir. Destekleyen her alim evrene katki olarak doner.",
+    description: "IOHcoin, IOH Universe ekosisteminin dijital erisim ve topluluk varlik katmanidir. Kitap, koleksiyon, ozel icerikler ve topluluk deneyimlerinin anahtari.",
     number: "01",
-    status: "Aktif",
-    title: "Kitap Alim Puan"
+    status: "Temel",
+    title: "IOHCOIN NEDIR?"
   },
   {
-    description: "Dijital koleksiyon ve ozel yayin erisimleri icin ileride kullanilabilecek katman.",
+    description: "Genesis phase ile sunulan IOHcoin paketleri, erken katilim (early access) donemidir. Ekosistemin ilk katilimcilari arasinda yer alma firsati sunar.",
     number: "02",
-    status: "Hazirlanıyor",
-    title: "Koleksiyon Erisimi"
+    status: "Genesis",
+    title: "NEDEN SIMDI?"
   },
   {
-    description: "IOH Universe icinde yayinlanacak ozel icerik, arka plan ve yazar notu erisimleri.",
+    description: "Bugün elde ettiginiz IOH Puanlarinin, lansman sonrasinda IOHcoin'e donusumu planlanmaktadir. Ecosystem participation bu donusumun temelidir.",
     number: "03",
-    status: "Planlanan",
-    title: "Ozel IOH Icerik"
+    status: "Yakin-Tarih",
+    title: "PUAN -> IOHCOIN"
   },
   {
-    description: "Gelecekte duzenlenecek topluluk etkinlikleri, erkenden erisim ve ayricalik katmani.",
+    description: "Gelecekte sunulacak dijital koleksiyonlar, kapali topluluk etkinlikleri ve ozel yazar erisim katmanlari. IOHcoin sahipleri bu future utility katmanina ilk erisenler olacaktir.",
     number: "04",
     status: "Planlanan",
-    title: "Topluluk Ayricalik"
+    title: "GELECEK KATMANLAR"
   }
 ] as const;
 
@@ -114,13 +115,13 @@ function TokenSaleHero() {
           </div>
         </div>
         <div className={styles.heroContent}>
-          <Kicker id="ts-hero-kicker">IOHCOIN / DIGITAL ACCESS LAYER</Kicker>
+          <Kicker id="ts-hero-kicker">IOHCOIN / GENESIS LAUNCH</Kicker>
           <h1 className={styles.heroTitle} id="ts-hero-title" data-split>IOHCOIN</h1>
           <p className={styles.heroLead} id="ts-hero-lead">
-            IOHcoin, IOH Universe okurlari icin olusturulan dijital puan ve
-            erisim katmanidir. Kitap satin alan kullanicilar hesaplarinda IOH
-            puani kazanir; bu puanlar ileride ozel icerikler, koleksiyonlar ve
-            topluluk ayricaliklari icin kullanilabilecek sekilde tasarlanir.
+            IOHcoin, IOH Universe'un dijital altyapi katmanidir. Early access
+            surecinde edinilen IOH Puanlari, planlanan lansman sonrasi IOHcoin'e
+            donusturulecektir. Erken destek verenler, ekosistemin ilk katilimcilari
+            (ecosystem participation) olarak ayricalikli konumda yer alir.
           </p>
           <div className={styles.heroActions} id="ts-hero-actions">
             <a className={styles.primaryButton} href="#campaigns">
@@ -135,7 +136,7 @@ function TokenSaleHero() {
       <div className={styles.heroCoordinates} id="ts-hero-coordinates" aria-hidden="true">
         <span>SYSTEM / SYS GOD GRID</span>
         <span>SECTOR: 02_COIN</span>
-        <span>STATUS: ACTIVE</span>
+        <span>STATUS: GENESIS PHASE</span>
       </div>
     </section>
   );
@@ -146,14 +147,14 @@ function TokenSaleManifesto() {
     <section className={styles.manifesto}>
       <div className={styles.manifestoInner} id="ts-manifesto">
         <p>
-          IOHcoin, IOH Universe okurlari icin olusturulan <em>dijital puan</em> ve
-          evren erisim katmanidir.
+          IOHcoin, IOH Universe'un temeli olan <em>dijital erisim</em> ve
+          topluluk varlik katmanidir.
         </p>
         <p className={styles.manifestoNote}>
-          Kitap satin alan kullanicilar hesaplarinda IOH puani kazanabilir. Bu puan
-          ileride ozel icerikler, koleksiyonlar, etkinlikler ve dijital deneyimler
-          icin kullanilabilecek sekilde tasarlanir. Bu sayfa yatirim tavsiyesi,
-          kripto para vaadi veya finansal getiri sunmaz.
+          Kitap satin alan kullanicilar hesaplarinda IOH Puan kazanabilir. Genesis phase 
+          surecinde sunulan IOHcoin paketleri, erken katilim (early access) katmanidir. 
+          Bu sayfa yatirim tavsiyesi, finansal getiri vaadi veya kripto para vaadi 
+          sunmaz; IOHcoin uygulama ici dijital erisim hakkidir.
         </p>
       </div>
     </section>
@@ -164,8 +165,8 @@ function TokenSaleMarquee() {
   return (
     <div className={styles.marquee} aria-hidden="true">
       <div>
-        <span>IOHCOIN / DIGITAL ACCESS / IOH UNIVERSE / TOPLULUK PUANI /</span>
-        <span>IOHCOIN / DIGITAL ACCESS / IOH UNIVERSE / TOPLULUK PUANI /</span>
+        <span>IOHCOIN / GENESIS LAUNCH / IOH UNIVERSE / EARLY ACCESS / COMMUNITY ALLOCATION /</span>
+        <span>IOHCOIN / GENESIS LAUNCH / IOH UNIVERSE / EARLY ACCESS / COMMUNITY ALLOCATION /</span>
       </div>
     </div>
   );
@@ -213,9 +214,9 @@ function TokenSaleCampaigns({
           <Kicker>03 / PAKETLER</Kicker>
           <h2>IOHCOIN PAKETLERI</h2>
           <p className={styles.campaignsLead}>
-            IOHcoin paketleri, odeme onayindan sonra hesabinda allocation olarak
-            gorunur. Satin alma icin wallet baglama zorunlulugu yoktur; ileride
-            manuel gonderim gerekirse wallet bilgisi ayrica istenebilir.
+            Genesis phase donemi IOHcoin paketleri. Odeme onayindan sonra hesabinizda 
+            community allocation olarak gorunur. Satin alma icin wallet baglama zorunlulugu 
+            yoktur; ileride manuel gonderim gerekirse cuzdan adresi talep edilebilir.
           </p>
         </div>
 
@@ -308,30 +309,31 @@ function TokenSaleTrust() {
   return (
     <section className={styles.trust}>
       <div className={styles.trustInner}>
-        <div className={styles.trustHeader}>04 / GUVEN BILGILERI</div>
+        <div className={styles.trustHeader}>05 / GUVEN BILGILERI</div>
         <ul className={styles.trustList} id="ts-trust-list">
           <li className={styles.trustItem}>
             <span className={styles.trustNumber}>01</span>
             <span>
-              IOHcoin bu asamada IOHBOOK hesabi icinde gorunen dijital puan ve
-              erisim hakki olarak sunulur. Gercek bir kripto para, borsa araci veya
-              finansal enstruman degildir.
+              IOHcoin, IOH Universe ekosisteminde dijital erisim ve topluluk hakki 
+              olarak sunulur. Uygulama ici puan ve varlik katmanidir; gercek bir kripto 
+              para, borsa araci, menkul kiymet veya finansal enstruman degildir.
             </span>
           </li>
           <li className={styles.trustItem}>
             <span className={styles.trustNumber}>02</span>
             <span>
-              Otomatik blockchain transferi, zincir uzerinde dagitim veya yatirim
-              getirisi vaadi yoktur. Satin alma hesabinla yapilir; manuel gonderim
-              veya ilerideki zincir islemleri icin wallet bilgisi ayrica istenebilir.
+              Lansman sonrasi IOH Puanlarinin IOHcoin'e donusumu planlanmaktadir. 
+              Finansal kazanc veya yatirim getirisi vaadi yoktur. Satin alim hesabiniza 
+              community allocation olarak islenir; manuel gonderimler icin cuzdan 
+              bilgisi ayrica talep edilebilir.
             </span>
           </li>
           <li className={styles.trustItem}>
             <span className={styles.trustNumber}>03</span>
             <span>
-              Kullanim kosullari, uygunluklar ve erisim katmanlari ileride
-              IOHBOOK tarafindan guncellenebilir. Mevcut puanlar hesabinda guvenle
-              saklanir.
+              Kullanim kosullari, future utility entegrasyonu ve erisim katmanlari 
+              ileride IOHBOOK tarafindan guncellenebilir. Mevcut puanlariniz ve 
+              allocation haklariniz hesabinizda guvenle saklanir.
             </span>
           </li>
         </ul>
@@ -373,6 +375,7 @@ export async function TokenSaleScene({
       <TokenSaleHeader user={userView} />
       <main className={styles.main} id="main-content">
         <TokenSaleHero />
+        <GenesisCountdown />
         <TokenSaleManifesto />
         <TokenSaleMarquee />
         <TokenSaleUsage />
