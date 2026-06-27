@@ -159,7 +159,7 @@ export default async function AccountProfilePage({ searchParams }: AccountProfil
                   <span className={styles.ledgerReason}>{getIohPointLedgerTitle(entry)}</span>
                   <span className={styles.ledgerDate}>
                     {formatDateTime(entry.created_at)}
-                    {entry.order_id ? ` / Siparis: ${entry.order_id.slice(0, 8)}` : ""}
+                    {entry.orders?.order_number ? ` / Siparis: ${entry.orders.order_number}` : entry.order_id ? ` / Siparis: ${entry.order_id.slice(0, 8)}` : ""}
                   </span>
                   {getIohPointLedgerDetail(entry) ? (
                     <span className={styles.ledgerDetail}>{getIohPointLedgerDetail(entry)}</span>

@@ -10,7 +10,9 @@ export type IohPointBalanceSummary = {
 export type IohPointLedgerItem = Pick<
   IohPointLedger,
   "amount" | "created_at" | "id" | "order_id" | "reason" | "metadata"
->;
+> & {
+  orders?: { order_number: string } | null;
+};
 
 export async function getIohPointBalanceForProfile(profileId: string) {
   const supabase = await createSupabaseServerClient();
@@ -39,7 +41,7 @@ export async function listIohPointLedgerForProfile(profileId: string, limit = 5)
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("ioh_point_ledger")
-    .select("id, amount, reason, order_id, created_at, metadata")
+    .select("id, amount, reason, order_id, created_at, metadata, orders(order_number)")
     .eq("profile_id", profileId)
     .order("created_at", { ascending: false })
     .limit(limit);
