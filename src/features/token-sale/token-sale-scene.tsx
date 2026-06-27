@@ -390,19 +390,45 @@ function TokenSaleCommunity() {
           </p>
           <div className={styles.communityLinks} id="ts-community-links">
             <a href="https://t.me/iohbook" target="_blank" rel="noopener noreferrer" className={styles.communityLinkCard} data-hover data-magnet>
-              <span className={styles.communityPlatformSymbol}>TG</span>
-              <span className={styles.communityPlatformLabel}>Telegram</span>
-              <span className={styles.communityPlatformStatus}>Join Chat</span>
+              <div className={styles.communityCardHeader}>
+                <span className={styles.communityPlatformSymbol}>TG</span>
+                <span className={styles.communityNodeTag}>TELEGRAM NODE</span>
+              </div>
+              <h3 className={styles.communityPlatformTitle}>SIGNAL NETWORK</h3>
+              <p className={styles.communityPlatformSub}>Real-time communication node.</p>
+              <p className={styles.communityPlatformDesc}>Join the first generation of the IOH civilization.</p>
+              <div className={styles.communityPlatformAction}>
+                <span>ENTER NETWORK</span>
+                <span className={styles.actionArrow}>→</span>
+              </div>
             </a>
+
             <a href="https://instagram.com/iohbook" target="_blank" rel="noopener noreferrer" className={styles.communityLinkCard} data-hover data-magnet>
-              <span className={styles.communityPlatformSymbol}>IG</span>
-              <span className={styles.communityPlatformLabel}>Instagram</span>
-              <span className={styles.communityPlatformStatus}>Follow Us</span>
+              <div className={styles.communityCardHeader}>
+                <span className={styles.communityPlatformSymbol}>IG</span>
+                <span className={styles.communityNodeTag}>INSTAGRAM ARCHIVE</span>
+              </div>
+              <h3 className={styles.communityPlatformTitle}>VISUAL ARCHIVE</h3>
+              <p className={styles.communityPlatformSub}>The visual history of the IOH Universe.</p>
+              <p className={styles.communityPlatformDesc}>Concept art, books and world building.</p>
+              <div className={styles.communityPlatformAction}>
+                <span>OPEN ARCHIVE</span>
+                <span className={styles.actionArrow}>→</span>
+              </div>
             </a>
+
             <a href="https://x.com/iohbook" target="_blank" rel="noopener noreferrer" className={styles.communityLinkCard} data-hover data-magnet>
-              <span className={styles.communityPlatformSymbol}>𝕏</span>
-              <span className={styles.communityPlatformLabel}>X / Twitter</span>
-              <span className={styles.communityPlatformStatus}>Get Updates</span>
+              <div className={styles.communityCardHeader}>
+                <span className={styles.communityPlatformSymbol}>𝕏</span>
+                <span className={styles.communityNodeTag}>BROADCAST FEED</span>
+              </div>
+              <h3 className={styles.communityPlatformTitle}>BROADCAST NODE</h3>
+              <p className={styles.communityPlatformSub}>Signals from the frontier.</p>
+              <p className={styles.communityPlatformDesc}>Announcements, development and ecosystem updates.</p>
+              <div className={styles.communityPlatformAction}>
+                <span>RECEIVE SIGNAL</span>
+                <span className={styles.actionArrow}>→</span>
+              </div>
             </a>
           </div>
         </div>

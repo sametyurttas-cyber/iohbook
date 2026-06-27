@@ -1851,48 +1851,98 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 2.2rem 1.5rem;
+  align-items: flex-start;
+  text-align: left;
+  padding: 2.2rem 2rem;
   border: 1px solid var(--ts-line);
   border-radius: 12px;
-  background: rgba(5, 6, 10, 0.5);
+  background: rgba(5, 6, 10, 0.7);
   color: var(--ts-ink);
   text-decoration: none;
-  transition: all 0.35s ease;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.communityCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  border-bottom: 1px solid rgba(242, 239, 232, 0.08);
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
 }
 
 .communityPlatformSymbol {
   font-family: var(--font-mono);
-  font-size: 1.8rem;
+  font-size: 1.3rem;
+  font-weight: bold;
   color: var(--ts-gold);
-  margin-bottom: 0.8rem;
-  transition: transform 0.3s ease;
 }
 
-.communityPlatformLabel {
-  font-size: 1.1rem;
-  font-weight: 500;
-  margin-bottom: 0.4rem;
-}
-
-.communityPlatformStatus {
+.communityNodeTag {
   font-family: var(--font-mono);
-  font-size: 0.6rem;
+  font-size: 0.55rem;
   letter-spacing: 0.15em;
-  text-transform: uppercase;
   color: var(--ts-muted);
+  border: 1px solid rgba(242, 239, 232, 0.1);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.communityPlatformTitle {
+  font-size: 1.6rem;
+  font-weight: 500;
+  margin: 0;
+  color: var(--ts-ink);
+}
+
+.communityPlatformSub {
+  font-size: 0.95rem;
+  color: var(--ts-ink);
+  opacity: 0.85;
+  margin: 0.5rem 0 0.2rem;
+  font-weight: 400;
+}
+
+.communityPlatformDesc {
+  color: var(--ts-muted);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin: 0.4rem 0 2rem;
+  font-weight: 300;
+}
+
+.communityPlatformAction {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  color: var(--ts-gold);
+  font-weight: 500;
+  transition: gap 0.3s ease;
+}
+
+.actionArrow {
+  font-size: 0.95rem;
+  transition: transform 0.3s ease;
 }
 
 .communityLinkCard:hover {
   border-color: var(--ts-gold);
-  background: rgba(231, 197, 116, 0.05);
-  box-shadow: 0 15px 35px rgba(231, 197, 116, 0.1);
+  background: rgba(231, 197, 116, 0.04);
+  box-shadow: 0 20px 40px rgba(231, 197, 116, 0.05);
   transform: translateY(-5px);
 }
 
-.communityLinkCard:hover .communityPlatformSymbol {
-  transform: scale(1.15);
+.communityLinkCard:hover .communityPlatformAction {
+  gap: 0.9rem;
+}
+
+.communityLinkCard:hover .actionArrow {
+  transform: translateX(3px);
 }
 
 /* Media Queries for Roadmap & Community */
