@@ -485,6 +485,7 @@
   display: grid;
   grid-template-rows: auto 1fr auto;
   min-height: 220px;
+  height: 100%;
   padding: 1.8rem;
   overflow: hidden;
   border: 1px solid var(--ts-line);

@@ -96,7 +96,7 @@ export function PackageCardClient({ campaign, index, pkg, defaultQuantity }: Pac
       <div className={styles.packageTop}>
         <span className={styles.packageNumber}>/ {String(index + 1).padStart(2, "0")}</span>
         <span className={styles.packageAmount}>
-          Birim: {formatTokenAmount(pkg.token_amount)} {campaign.token_symbol}
+          Unit: {formatTokenAmount(pkg.token_amount)} {campaign.token_symbol}
         </span>
       </div>
       <h3 className={styles.packageTitle}>{pkg.title}</h3>
@@ -134,7 +134,7 @@ export function PackageCardClient({ campaign, index, pkg, defaultQuantity }: Pac
           />
         </div>
         <div className={styles.orbitTelemetry}>
-          <span>Seçilen Miktar: <strong className="ts-qty-val">{quantity}</strong> Adet</span>
+          <span>Selected Quantity: <strong className="ts-qty-val">{quantity}</strong> Units</span>
           {campaign.bonus_bps > 0 ? (
             <span>Bonus: +%{campaign.bonus_bps / 100}</span>
           ) : null}
@@ -149,13 +149,11 @@ export function PackageCardClient({ campaign, index, pkg, defaultQuantity }: Pac
           type="checkbox"
         />
         <span>
-          Token haklarinin odeme sonrasi allocation olarak acilacagini, otomatik
-          transfer yapilmayacagini ve satin alma icin wallet baglama zorunlulugu
-          olmadigini kabul ediyorum.
+          I accept that token allocations will be unlocked after payment, no automatic transfers will be made, and wallet connectivity is not required for purchase.
         </span>
       </label>
       <button className={styles.submitButton} disabled={isPending} type="submit">
-        {isPending ? "İşleniyor..." : "Shopier ile odeme yap"}
+        {isPending ? "Processing..." : "Pay with Shopier"}
       </button>
     </form>
   );

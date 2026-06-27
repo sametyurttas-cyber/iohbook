@@ -55,15 +55,15 @@ function TokenSaleHeader({ user }: { user: TokenSaleUser }) {
         <b>IOH</b>
         <span>UNIVERSE</span>
       </Link>
-      <nav className="site-nav" aria-label="Ana menu">
-        <Link href="/">Evren</Link>
-        <Link href="/books">Kitaplar</Link>
+      <nav className="site-nav" aria-label="Main menu">
+        <Link href="/">Universe</Link>
+        <Link href="/books">Books</Link>
         <Link href="/token-sale">Iohcoin</Link>
-        <Link href="/author">Yazar Hakkinda</Link>
-        <Link href="/nft">NFT Galeri</Link>
-        <Link href="/journal">Gunluk/Blog</Link>
-        <Link href="/cart">Sepet</Link>
-        <Link href="/contact">Iletisim</Link>
+        <Link href="/author">About Author</Link>
+        <Link href="/nft">NFT Gallery</Link>
+        <Link href="/journal">Journal</Link>
+        <Link href="/cart">Cart</Link>
+        <Link href="/contact">Contact</Link>
       </nav>
       <div className="head-actions">
         {user ? (
@@ -72,21 +72,21 @@ function TokenSaleHeader({ user }: { user: TokenSaleUser }) {
               {user.displayName}
             </Link>
             <Link className="head-cta" href="/account/profile" data-hover="" data-magnet="">
-              IOH Puan: {user.points}
+              IOH Points: {user.points}
             </Link>
           </>
         ) : (
           <>
             <Link className="head-cta" href="/sign-in" data-hover="" data-magnet="">
-              Giris
+              Sign In
             </Link>
             <Link className="head-cta" href="/sign-up" data-hover="" data-magnet="">
-              Uye Ol
+              Sign Up
             </Link>
           </>
         )}
         <Link className="head-cta" href="/collections" data-hover="" data-magnet="">
-          Koleksiyona Gir
+          Enter Collection
         </Link>
       </div>
     </header>
@@ -106,7 +106,7 @@ function TokenSaleHero() {
           <div className={styles.coinGlow} aria-hidden="true" />
           <div className={styles.coinCore}>
             <Image
-              alt="IOHcoin dijital erisim katmani gorseli"
+              alt="IOHcoin digital access layer icon"
               fill
               priority
               sizes="(min-width: 1024px) 240px, (min-width: 760px) 220px, 55vw"
@@ -130,10 +130,10 @@ function TokenSaleHero() {
           </p>
           <div className={styles.heroActions} id="ts-hero-actions">
             <a className={styles.primaryButton} href="#campaigns">
-              Paketleri Incele
+              Explore Packages
             </a>
             <Link className={styles.secondaryButton} href="/books">
-              Kitaplari Incele
+              Explore Books
             </Link>
           </div>
         </div>
@@ -231,11 +231,9 @@ function TokenSaleCampaigns({
         {campaigns.length === 0 ? (
           <div className={styles.emptyState}>
             <div className={styles.emptyStateIcon}>IOH</div>
-            <h3>Aktif kampanya bulunmuyor</h3>
+            <h3>No active campaigns found</h3>
             <p>
-              Admin panelinden aktif ve satisi acik bir IOHcoin kampanyasi
-              olusturuldugunda paketler burada gorunur. Su anda satin alma akisi
-              kapali durumda.
+              Packages will appear here once an active campaign is created. The purchase flow is currently closed.
             </p>
           </div>
         ) : null}
@@ -274,12 +272,10 @@ function TokenSaleCampaigns({
         {campaigns.length > 0 ? (
           <div className={styles.walletStation} id="ts-wallet-station">
             <div className={styles.walletStationHeader}>
-              <Kicker>04 / OPSIYONEL CUZDAN KATMANI</Kicker>
-              <h3 className={styles.walletStationTitle}>SISTEM CUZDAN SINYAL ISTASYONU</h3>
+              <Kicker>04 / OPTIONAL WALLET LAYER</Kicker>
+              <h3 className={styles.walletStationTitle}>SYSTEM WALLET SIGNAL STATION</h3>
               <p className={styles.campaignsLead}>
-                Satin alma icin cuzdan baglamak zorunda degilsin. Bu alan IOH
-                evrenindeki manuel gonderim ve ilerideki zincir islemleri icin
-                opsiyonel bir hazirlik katmani olarak kalir.
+                Wallet connectivity is not required for purchases. This section remains as an optional layer for future ecosystem interactions.
               </p>
             </div>
             <div className={styles.walletStationGrid}>
@@ -288,7 +284,7 @@ function TokenSaleCampaigns({
                   autoComplete="off"
                   className={styles.walletInput}
                   id="ts-wallet-input"
-                  placeholder="Opsiyonel: 0x ile baslayan cuzdan adresi"
+                  placeholder="Optional: Wallet address starting with 0x"
                   spellCheck="false"
                   type="text"
                 />
@@ -298,12 +294,12 @@ function TokenSaleCampaigns({
                 id="ts-wallet-connect-btn"
                 type="button"
               >
-                Gorsel Baglantiyi Baslat
+                Initialize Connection
               </button>
             </div>
             <div className={styles.walletTelemetry}>
-              <span>OPSIYONEL: <strong id="ts-wallet-status-text">SATIN ALMA ICIN GEREKLI DEGIL</strong></span>
-              <span>AG: <b>IOH SECURE CHAIN</b></span>
+              <span>OPTIONAL: <strong id="ts-wallet-status-text">NOT REQUIRED FOR PURCHASE</strong></span>
+              <span>NETWORK: <b>IOH SECURE CHAIN</b></span>
             </div>
           </div>
         ) : null}
