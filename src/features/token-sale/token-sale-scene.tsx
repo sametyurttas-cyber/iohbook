@@ -333,10 +333,7 @@ function TokenSaleTrust() {
           <li className={styles.trustItem}>
             <span className={styles.trustNumber}>03</span>
             <span>
-              Genesis is the era before the world fully opens.
-              <br />
-              <br />
-              Every allocation secured during this stage becomes part of the foundation upon which the future IOH ecosystem will be built.
+              Genesis is the era before the world fully opens. Every allocation secured during this stage becomes part of the foundation upon which the future IOH ecosystem will be built.
             </span>
           </li>
         </ul>
