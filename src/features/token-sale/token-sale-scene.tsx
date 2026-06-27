@@ -319,26 +319,22 @@ function TokenSaleTrust() {
           <li className={styles.trustItem}>
             <span className={styles.trustNumber}>01</span>
             <span>
-              IOHcoin, IOH Universe ekosisteminde dijital erisim ve topluluk hakki 
-              olarak sunulur. Uygulama ici puan ve varlik katmanidir; gercek bir kripto 
-              para, borsa araci, menkul kiymet veya finansal enstruman degildir.
+              IOHcoin is being built as the future digital currency of the IOH Universe. During the Genesis Phase, all acquired allocations remain protected inside your account as IOH Points until the ecosystem enters its next stage.
             </span>
           </li>
           <li className={styles.trustItem}>
             <span className={styles.trustNumber}>02</span>
             <span>
-              Lansman sonrasi IOH Puanlarinin IOHcoin'e donusumu planlanmaktadir. 
-              Finansal kazanc veya yatirim getirisi vaadi yoktur. Satin alim hesabiniza 
-              community allocation olarak islenir; manuel gonderimler icin cuzdan 
-              bilgisi ayrica talep edilebilir.
+              When the countdown reaches zero, IOH Points are planned to transition into IOHcoin, unlocking wallet connectivity, transfers and broader ecosystem interactions over time. Public market participation belongs to later phases of the roadmap.
             </span>
           </li>
           <li className={styles.trustItem}>
             <span className={styles.trustNumber}>03</span>
             <span>
-              Kullanim kosullari, future utility entegrasyonu ve erisim katmanlari 
-              ileride IOHBOOK tarafindan guncellenebilir. Mevcut puanlariniz ve 
-              allocation haklariniz hesabinizda guvenle saklanir.
+              Genesis is the era before the world fully opens.
+              <br />
+              <br />
+              Every allocation secured during this stage becomes part of the foundation upon which the future IOH ecosystem will be built.
             </span>
           </li>
         </ul>
