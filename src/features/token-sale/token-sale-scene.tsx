@@ -19,28 +19,28 @@ type TokenSaleUser = {
 
 const usageCards = [
   {
-    description: "IOHcoin, IOH Universe ekosisteminin dijital erisim ve topluluk varlik katmanidir. Kitap, koleksiyon, ozel icerikler ve topluluk deneyimlerinin anahtari.",
+    description: "IOHcoin is the digital backbone of the IOH Universe. From books and communities to collectibles and future metaverse layers, the entire ecosystem is designed to grow on the same foundation. What appears as a point today, may become the common language of tomorrow's universe.",
     number: "01",
-    status: "Temel",
-    title: "IOHCOIN NEDIR?"
+    status: "FOUNDATION",
+    title: "WHAT IS IOHCOIN?"
   },
   {
-    description: "Genesis phase ile sunulan IOHcoin paketleri, erken katilim (early access) donemidir. Ekosistemin ilk katilimcilari arasinda yer alma firsati sunar.",
+    description: "Because Genesis only happens once. IOHcoin allocations are designed for the first generation entering the ecosystem before it becomes public. Some people enter a world after it has already been built. Others become part of those who built it.",
     number: "02",
-    status: "Genesis",
-    title: "NEDEN SIMDI?"
+    status: "GENESIS",
+    title: "WHY NOW?"
   },
   {
-    description: "Bugün elde ettiginiz IOH Puanlarinin, lansman sonrasinda IOHcoin'e donusumu planlanmaktadir. Ecosystem participation bu donusumun temelidir.",
+    description: "Today's IOH Points form the foundation of tomorrow's IOHcoin layer. Once the countdown reaches zero, conversion, transfers and additional ecosystem features are planned to become available in phases. Every allocation secured today becomes part of your future starting point.",
     number: "03",
-    status: "Yakin-Tarih",
-    title: "PUAN -> IOHCOIN"
+    status: "TRANSITION",
+    title: "POINTS → IOHCOIN"
   },
   {
-    description: "Gelecekte sunulacak dijital koleksiyonlar, kapali topluluk etkinlikleri ve ozel yazar erisim katmanlari. IOHcoin sahipleri bu future utility katmanina ilk erisenler olacaktir.",
+    description: "IOHcoin is designed not only for today, but for the layers yet to come. Digital collectibles, community systems, exclusive content, metaverse experiences and future access layers will gradually become part of the ecosystem. This is only the beginning.",
     number: "04",
-    status: "Planlanan",
-    title: "GELECEK KATMANLAR"
+    status: "PLANNED",
+    title: "FUTURE LAYERS"
   }
 ] as const;
 
@@ -184,8 +184,8 @@ function TokenSaleUsage() {
     <section className={styles.usage}>
       <div className={styles.shell}>
         <div className={styles.usageHeader} id="ts-usage-header">
-          <Kicker>02 / KULLANIM ALANLARI</Kicker>
-          <h2>PUANIN EVRENDEN YOLU.</h2>
+          <Kicker>02 / ECOSYSTEM UTILITY</Kicker>
+          <h2>THE ROAD TO THE UNIVERSE.</h2>
         </div>
         <div className={styles.usageGrid} id="ts-usage-grid">
           {usageCards.map((card) => (
