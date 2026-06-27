@@ -163,6 +163,9 @@ export function AuthorWebglMatrix() {
           vec3 pos;
           if (uMix < 1.0) {
             pos = mix(aPosSphere, aPosGrid, uMix);
+            // Smoothly shift the neural sphere to the right behind the portrait
+            pos.x += (1.0 - uMix) * 2.5;
+            pos.y -= (1.0 - uMix) * 0.5;
           } else {
             pos = mix(aPosGrid, aPosVortex, uMix - 1.0);
           }

@@ -87,34 +87,76 @@ function Kicker({ children }: { children: ReactNode }) {
 function AuthorHero() {
   return (
     <section className={styles.hero}>
+      <div className={styles.heroGridLines} aria-hidden="true" />
       <div className={styles.heroGhost} aria-hidden="true">
         AUTHOR
       </div>
       <div className={styles.shell}>
         <div className={styles.heroGrid}>
           <div className={styles.heroContent}>
-            <Kicker>AUTHOR / CREATOR / IOH UNIVERSE</Kicker>
-            <h1>
-              <span>SAMET</span>
-              <em>YURTTAS</em>
+            <div className={styles.heroKickerWrapper}>
+              <span className={styles.heroStatusDot} />
+              <Kicker>AUTHOR / SYSTEM CREATOR</Kicker>
+            </div>
+            <h1 className={styles.heroNameHeading}>
+              <span className={styles.heroNameFirst}>SAMET</span>
+              <span className={styles.heroNameLast}>YURTTAS</span>
             </h1>
-            <p>
-              Creating worlds, systems and stories beyond traditional fiction.
+            <div className={styles.heroSubtitle}>
+              CORE SYSTEM ARCHITECT // CIVILIZATION DESIGNER
+            </div>
+            <p className={styles.heroLeadText}>
+              Creating worlds, systems and stories beyond traditional fiction. 
+              The books are only the entry point to a wider digital infrastructure.
             </p>
-            <a className={styles.textLink} href="#manifesto">
-              Enter the manifesto <span aria-hidden="true">-&gt;</span>
-            </a>
+            <div className={styles.heroButtonWrapper}>
+              <a className={styles.telemetryButton} href="#manifesto" data-hover data-magnet>
+                <span className={styles.btnCmd}>CMD: /execute_manifesto</span>
+                <span className={styles.btnDivider} />
+                <span className={styles.btnLabel}>ENTER THE MANIFESTO</span>
+                <span className={styles.btnArrow}>→</span>
+              </a>
+            </div>
           </div>
-          <div className={styles.heroPortrait}>
-            <Image
-              alt="Samet Yurttas, author and creator of IOH Universe"
-              className={styles.heroImage}
-              fill
-              priority
-              sizes="(min-width: 1024px) 384px, (min-width: 760px) 320px, 100vw"
-              src="/media/author/samet-yurttas-portrait.jpeg"
-            />
-            <div className={styles.heroPortraitShade} aria-hidden="true" />
+
+          <div className={styles.axisSeparator} aria-hidden="true">
+            <span className={styles.axisLabel}>Y-AXIS // GRID_00</span>
+            <div className={styles.axisDot} style={{ top: "20%" }} />
+            <div className={styles.axisDot} style={{ top: "50%" }} />
+            <div className={styles.axisDot} style={{ top: "80%" }} />
+          </div>
+
+          <div className={styles.portraitWrapper}>
+            <div className={styles.telemetryDataTop}>
+              <span>SYS_REF: CREATOR_ID_00</span>
+              <span>LOC: 41.0082° N // 28.9784° E</span>
+            </div>
+            
+            <div className={styles.heroPortrait}>
+              {/* Sci-Fi Notches/Crosshairs */}
+              <span className={`${styles.crosshair} ${styles.crosshairTL}`} />
+              <span className={`${styles.crosshair} ${styles.crosshairTR}`} />
+              <span className={`${styles.crosshair} ${styles.crosshairBL}`} />
+              <span className={`${styles.crosshair} ${styles.crosshairBR}`} />
+              
+              {/* Laser Scanning Effect */}
+              <div className={styles.scanline} />
+              
+              <Image
+                alt="Samet Yurttas, author and creator of IOH Universe"
+                className={styles.heroImage}
+                fill
+                priority
+                sizes="(min-width: 1024px) 384px, (min-width: 760px) 320px, 100vw"
+                src="/media/author/samet-yurttas-portrait.jpeg"
+              />
+              <div className={styles.heroPortraitShade} aria-hidden="true" />
+            </div>
+
+            <div className={styles.telemetryDataBottom}>
+              <span>DECRYPT: SECURE [98.2%]</span>
+              <span>SIGNAL: ACTIVE</span>
+            </div>
           </div>
         </div>
       </div>

@@ -67,50 +67,273 @@
   border-bottom: 1px solid var(--author-line);
 }
 
+.heroGridLines {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(242, 239, 232, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(242, 239, 232, 0.015) 1px, transparent 1px);
+  background-size: 60px 60px;
+  background-position: center;
+  z-index: 0;
+  pointer-events: none;
+}
+
 .heroGrid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 4rem;
+  gap: 3rem;
   align-items: center;
 }
 
 @media (min-width: 1024px) {
   .heroGrid {
-    grid-template-columns: 1.2fr 0.8fr;
-    gap: 5rem;
+    grid-template-columns: 1.2fr 0.1fr 0.8fr;
+    gap: 2rem;
   }
+}
+
+.heroKickerWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.heroStatusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--author-gold);
+  box-shadow: 0 0 10px var(--author-gold);
+  animation: pulse 1.8s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+.heroNameHeading {
+  display: flex;
+  flex-direction: column;
+  margin: 1.5rem 0 0;
+  line-height: 0.85;
+}
+
+.heroNameFirst {
+  font-size: 7.5rem;
+  font-weight: 700;
+  color: var(--author-paper);
+  letter-spacing: -0.03em;
+}
+
+.heroNameLast {
+  font-size: 7.5rem;
+  font-weight: 300;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--author-gold);
+  letter-spacing: 0.02em;
+  margin-top: 0.2rem;
+}
+
+.heroSubtitle {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  color: var(--author-gold);
+  margin-top: 1.2rem;
+  font-weight: 500;
+}
+
+.heroLeadText {
+  max-width: 520px;
+  margin: 2rem 0 0;
+  color: rgba(242, 239, 232, 0.75);
+  font-size: 1.15rem;
+  line-height: 1.7;
+  font-weight: 300;
+}
+
+.heroButtonWrapper {
+  margin-top: 3rem;
+}
+
+.telemetryButton {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(5, 6, 10, 0.6);
+  border: 1px solid var(--author-line);
+  border-radius: 6px;
+  padding: 0.75rem 1.25rem;
+  color: var(--author-paper);
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  transition: all 0.3s ease;
+}
+
+.btnCmd {
+  color: var(--author-muted);
+  font-size: 0.68rem;
+}
+
+.btnDivider {
+  width: 1px;
+  height: 14px;
+  background: var(--author-line);
+  margin: 0 1rem;
+}
+
+.btnLabel {
+  color: var(--author-gold);
+  font-weight: 600;
+}
+
+.btnArrow {
+  margin-left: 0.5rem;
+  transition: transform 0.3s ease;
+}
+
+.telemetryButton:hover {
+  border-color: var(--author-gold);
+  box-shadow: 0 10px 30px rgba(231, 197, 116, 0.08);
+  background: rgba(231, 197, 116, 0.03);
+}
+
+.telemetryButton:hover .btnArrow {
+  transform: translateX(4px);
+}
+
+/* Y-Axis Separator */
+.axisSeparator {
+  position: relative;
+  height: 380px;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, var(--author-line) 20%, var(--author-line) 80%, transparent);
+  display: none;
+  justify-content: center;
+}
+
+@media (min-width: 1024px) {
+  .axisSeparator {
+    display: flex;
+  }
+}
+
+.axisLabel {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%) rotate(90deg);
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  color: var(--author-muted);
+  letter-spacing: 0.2em;
+  transform-origin: center;
+}
+
+.axisDot {
+  position: absolute;
+  left: -2px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--author-line);
+}
+
+/* Portrait & Telemetry wrapper */
+.portraitWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 24rem;
+  margin-inline: auto;
+  z-index: 5;
+}
+
+@media (min-width: 1024px) {
+  .portraitWrapper {
+    margin-inline: 0;
+    justify-self: end;
+  }
+}
+
+.telemetryDataTop,
+.telemetryDataBottom {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.15em;
+  color: var(--author-muted);
+  text-transform: uppercase;
 }
 
 .heroPortrait {
   position: relative;
   aspect-ratio: 4 / 5;
   width: 100%;
-  max-width: 22rem;
-  margin-inline: auto;
   overflow: hidden;
-  border-radius: 14px;
-  border: 1px solid rgba(231, 197, 116, 0.25);
-  box-shadow: 0 0 48px rgba(231, 197, 116, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(242, 239, 232, 0.12);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  background: #030407;
 }
 
-@media (min-width: 1024px) {
-  .heroPortrait {
-    max-width: 24rem;
-    margin-inline: 0;
-    justify-self: end;
-  }
+/* Notches */
+.crosshair {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--author-gold);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.crosshairTL { top: 12px; left: 12px; border-right: none; border-bottom: none; }
+.crosshairTR { top: 12px; right: 12px; border-left: none; border-bottom: none; }
+.crosshairBL { bottom: 12px; left: 12px; border-right: none; border-top: none; }
+.crosshairBR { bottom: 12px; right: 12px; border-left: none; border-top: none; }
+
+/* Laser Scanner Bar */
+.scanline {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--author-gold), transparent);
+  box-shadow: 0 0 10px var(--author-gold);
+  z-index: 8;
+  pointer-events: none;
+  animation: scan 4s linear infinite;
+}
+
+@keyframes scan {
+  0% { top: 0%; opacity: 0; }
+  5% { opacity: 0.8; }
+  95% { opacity: 0.8; }
+  100% { top: 100%; opacity: 0; }
 }
 
 .heroImage {
   object-fit: cover;
   object-position: center 28%;
-  filter: grayscale(1) contrast(1.08);
+  filter: grayscale(1) contrast(1.15) brightness(0.9);
+  mix-blend-mode: luminosity;
+  transition: filter 0.4s ease;
+}
+
+.heroPortrait:hover .heroImage {
+  filter: grayscale(0.5) contrast(1.1) brightness(0.95);
 }
 
 .heroPortraitShade {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(5, 6, 10, 0.45), transparent 55%);
+  background: linear-gradient(to top, rgba(5, 6, 10, 0.6), transparent 55%);
   pointer-events: none;
 }
 
@@ -131,32 +354,6 @@
 .heroContent {
   width: 100%;
   padding: 0;
-}
-
-.hero h1 {
-  display: grid;
-  margin: 2.1rem 0 0;
-  font-size: 8rem;
-  font-weight: 600;
-  line-height: 0.82;
-}
-
-.hero h1 span {
-  color: var(--author-paper);
-}
-
-.hero h1 em {
-  color: var(--author-gold);
-  font-family: Georgia, "Times New Roman", serif;
-  font-weight: 400;
-}
-
-.heroContent > p {
-  max-width: 540px;
-  margin: 2.5rem 0 0;
-  color: rgba(242, 239, 232, 0.78);
-  font-size: 1.2rem;
-  line-height: 1.7;
 }
 
 .textLink {
