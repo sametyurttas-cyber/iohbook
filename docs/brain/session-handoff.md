@@ -11,7 +11,8 @@ Last updated: 2026-06-27
   - Puan hareketleri geçmişinde UUID olarak görünen sipariş kimlikleri yerine ilişkisel sorgulama ile kullanıcı dostu sipariş numaraları (`order_number`) listelenmesi sağlandı.
   - `/token-sale` sayfasında 365 günlük (`27 Haziran 2027` bitişli) sabit bir **Genesis Countdown** geri sayım saati eklendi ve Hero ile Manifesto arasına yerleştirildi.
   - `/token-sale` pazarlama yazıları finansal vaat barındırmayacak ekosistem odaklı bir dille (`genesis phase`, `early access`, `ecosystem participation`, `future utility`, `community allocation`) güncellendi.
-  - Değişiklikler başarıyla commitleyip GitHub'a pushlandı (`4b8ac04`).
+  - `/token-sale` sayfasındaki Hero başlığı altındaki açıklama metni, IOH medeniyeti ve Genesis felsefesini anlatan şiirsel metinle değiştirildi.
+  - Değişiklikler başarıyla commitleyip GitHub'a pushlandı (`19cd035`).
 - **Otomatik Canlı Dağıtım:** Vercel otomatik deployment süreci GitHub tetiklenmesiyle başladı.
 - **Testler:** Proje yapısı yerel ve uzak testlerle uyumlu şekilde korunmaktadır.
 
@@ -25,3 +26,4 @@ Last updated: 2026-06-27
 ## Open Risks
 
 - Yok. Shopier callback/webhook ve yönlendirme akışı stabil durumdadır.
+
