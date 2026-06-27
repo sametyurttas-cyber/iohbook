@@ -99,3 +99,34 @@ export async function requireStaff(allowedRoles?: StaffRole[]) {
 
   return { roles, user };
 }
+
+export async function getHeaderUserView() {
+  const user = await getCurrentUser();
+  if (!user) return null;
+  try {
+    const supabase = await createSupabaseServerClient();
+    const [profileRes, pointsRes, ordersRes] = await Promise.all([
+      supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
+      supabase.from("ioh_point_balances").select("balance").eq("profile_id", user.id).maybeSingle(),
+      supabase.from("orders").select("id", { count: "exact", head: true }).eq("profile_id", user.id)
+    ]);
+    const profile = profileRes.data;
+    const pointsBalance = pointsRes.data?.balance ?? 0;
+    const orderCount = ordersRes.count ?? 0;
+
+    const displayName = profile?.full_name || profile?.email || user.email || "Hesabim";
+    return {
+      displayName,
+      points: pointsBalance,
+      email: profile?.email || user.email || "",
+      orderCount
+    };
+  } catch {
+    return {
+      displayName: user.email || "Hesabim",
+      points: 0,
+      email: user.email || "",
+      orderCount: 0
+    };
+  }
+}

@@ -41,7 +41,9 @@ export default async function AccountLayout({ children }: { children: ReactNode 
   const firstWallet = wallets[0];
   const userView = {
     displayName,
-    points: points.balance
+    points: points.balance,
+    email: profile?.email || user.email || "",
+    orderCount
   };
 
   return (

@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { BooksIndexFooter } from "@/features/catalog/books-index-scene";
-import { getCurrentProfile, getCurrentUser } from "@/features/auth/queries";
+import { getCurrentProfile, getCurrentUser, getHeaderUserView } from "@/features/auth/queries";
 import { getIohPointBalanceForProfile } from "@/features/points/queries";
 import { IohIndexStyles } from "@/features/home/ioh-index-landing";
 import { listActiveTokenCampaigns, type TokenCampaignWithPackages } from "@/features/token-sale/queries";
@@ -11,11 +11,7 @@ import styles from "./token-sale-scene.module.css";
 import { TokenSaleWebglCoin } from "./token-sale-webgl-coin";
 import { PackageCardClient } from "./package-card-client";
 import { GenesisCountdown } from "./genesis-countdown";
-
-type TokenSaleUser = {
-  displayName: string;
-  points: number;
-} | null;
+import { IohSceneHeader } from "@/components/layout/ioh-scene-header";
 
 const usageCards = [
   {
@@ -48,50 +44,7 @@ function Kicker({ children, id }: { children: ReactNode; id?: string }) {
   return <p className={styles.kicker} id={id}>{children}</p>;
 }
 
-function TokenSaleHeader({ user }: { user: TokenSaleUser }) {
-  return (
-    <header className="site-head is-solid">
-      <Link className="logo" href="/" data-hover="">
-        <b>IOH</b>
-        <span>UNIVERSE</span>
-      </Link>
-      <nav className="site-nav" aria-label="Main menu">
-        <Link href="/">Universe</Link>
-        <Link href="/books">Books</Link>
-        <Link href="/token-sale">Iohcoin</Link>
-        <Link href="/author">About Author</Link>
-        <Link href="/nft">NFT Gallery</Link>
-        <Link href="/journal">Journal</Link>
-        <Link href="/cart">Cart</Link>
-        <Link href="/contact">Contact</Link>
-      </nav>
-      <div className="head-actions">
-        {user ? (
-          <>
-            <Link className="head-cta" href="/account" data-hover="" data-magnet="">
-              {user.displayName}
-            </Link>
-            <Link className="head-cta" href="/account/profile" data-hover="" data-magnet="">
-              IOH Points: {user.points}
-            </Link>
-          </>
-        ) : (
-          <>
-            <Link className="head-cta" href="/sign-in" data-hover="" data-magnet="">
-              Sign In
-            </Link>
-            <Link className="head-cta" href="/sign-up" data-hover="" data-magnet="">
-              Sign Up
-            </Link>
-          </>
-        )}
-        <Link className="head-cta" href="/collections" data-hover="" data-magnet="">
-          Enter Collection
-        </Link>
-      </div>
-    </header>
-  );
-}
+
 
 function TokenSaleHero() {
   return (
@@ -347,21 +300,10 @@ export async function TokenSaleScene({
     quantity?: string;
   };
 }) {
-  const [campaigns, user] = await Promise.all([
+  const [campaigns, userView] = await Promise.all([
     listActiveTokenCampaigns(),
-    getCurrentUser()
+    getHeaderUserView()
   ]);
-
-  let userView: TokenSaleUser = null;
-
-  if (user) {
-    const [profile, points] = await Promise.all([
-      getCurrentProfile(),
-      getIohPointBalanceForProfile(user.id)
-    ]);
-    const displayName = profile?.full_name || profile?.email || user.email || "Hesabim";
-    userView = { displayName, points: points?.balance ?? 0 };
-  }
 
   return (
     <div className={styles.page}>
@@ -369,7 +311,7 @@ export async function TokenSaleScene({
       <TokenSaleWebglCoin />
       <div className={styles.vignette} aria-hidden="true" />
       <div className={styles.grain} aria-hidden="true" />
-      <TokenSaleHeader user={userView} />
+      <IohSceneHeader user={userView} />
       <main className={styles.main} id="main-content">
         <TokenSaleHero />
         <GenesisCountdown />

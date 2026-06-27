@@ -1,8 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { BooksIndexFooter } from "@/features/catalog/books-index-scene";
-import { getCurrentProfile, getCurrentUser } from "@/features/auth/queries";
-import { getIohPointBalanceForProfile } from "@/features/points/queries";
+import { getHeaderUserView } from "@/features/auth/queries";
 import { IohIndexStyles } from "@/features/home/ioh-index-landing";
 import { getActiveCartSnapshot } from "@/features/cart/queries";
 import { startCheckoutPayment } from "@/features/checkout/actions";
@@ -23,60 +22,13 @@ import {
 } from "@/features/legal/legal-content";
 import { formatMoney } from "@/features/products/product-utils";
 import styles from "@/features/cart/cart-scene.module.css";
-
-type CheckoutUser = {
-  displayName: string;
-  points: number;
-} | null;
+import { IohSceneHeader } from "@/components/layout/ioh-scene-header";
 
 function Kicker({ children }: { children: ReactNode }) {
   return <p className={styles.kicker}>{children}</p>;
 }
 
-function CheckoutHeader({ user }: { user: CheckoutUser }) {
-  return (
-    <header className="site-head is-solid">
-      <Link className="logo" href="/" data-hover="">
-        <b>IOH</b>
-        <span>UNIVERSE</span>
-      </Link>
-      <nav className="site-nav" aria-label="Ana menu">
-        <Link href="/">Evren</Link>
-        <Link href="/books">Kitaplar</Link>
-        <Link href="/token-sale">Iohcoin</Link>
-        <Link href="/author">Yazar Hakkinda</Link>
-        <Link href="/nft">NFT Galeri</Link>
-        <Link href="/journal">Gunluk/Blog</Link>
-        <Link href="/cart">Sepet</Link>
-        <Link href="/contact">Iletisim</Link>
-      </nav>
-      <div className="head-actions">
-        {user ? (
-          <>
-            <Link className="head-cta" href="/account" data-hover="" data-magnet="">
-              {user.displayName}
-            </Link>
-            <Link className="head-cta" href="/account/profile" data-hover="" data-magnet="">
-              IOH Puan: {user.points}
-            </Link>
-          </>
-        ) : (
-          <>
-            <Link className="head-cta" href="/sign-in" data-hover="" data-magnet="">
-              Giris
-            </Link>
-            <Link className="head-cta" href="/sign-up" data-hover="" data-magnet="">
-              Uye Ol
-            </Link>
-          </>
-        )}
-        <Link className="head-cta" href="/collections" data-hover="" data-magnet="">
-          Koleksiyona Gir
-        </Link>
-      </div>
-    </header>
-  );
-}
+
 
 function CheckoutHero() {
   return (
@@ -102,10 +54,11 @@ export async function CheckoutScene({
     error?: string;
   }>;
 }) {
-  const [cart, user, params] = await Promise.all([
+  const [cart, userView, params, user] = await Promise.all([
     getActiveCartSnapshot(),
-    getCurrentUser(),
-    searchParams
+    getHeaderUserView(),
+    searchParams,
+    getCurrentUser()
   ]);
   const paymentProviderOptions = Object.values(PAYMENT_PROVIDERS).map((provider) => ({
     availability: provider.availability(),
@@ -116,24 +69,13 @@ export async function CheckoutScene({
     paymentProviderOptions.find(({ availability }) => availability.enabled)?.provider.id ??
     DEFAULT_PAYMENT_PROVIDER_ID;
 
-  let userView: CheckoutUser = null;
-
-  if (user) {
-    const [profile, points] = await Promise.all([
-      getCurrentProfile(),
-      getIohPointBalanceForProfile(user.id)
-    ]);
-    const displayName = profile?.full_name || profile?.email || user.email || "Hesabim";
-    userView = { displayName, points: points?.balance ?? 0 };
-  }
-
   return (
     <div className={styles.page}>
       <IohIndexStyles />
       <style dangerouslySetInnerHTML={{ __html: "body{cursor:auto!important}a,button,[data-hover],[data-magnet]{cursor:pointer!important}" }} />
       <div className={styles.vignette} aria-hidden="true" />
       <div className={styles.grain} aria-hidden="true" />
-      <CheckoutHeader user={userView} />
+      <IohSceneHeader user={userView} />
       <main className={styles.main} id="main-content">
         <CheckoutHero />
 

@@ -23,6 +23,96 @@ export type RenderedEmail = {
   text: string;
 };
 
+const ENGLISH_FALLBACK_TEMPLATES: Record<
+  string,
+  { subject: string; bodyHtml: string; bodyText: string; previewText?: string }
+> = {
+  welcome: {
+    subject: "Welcome to the IOH Universe",
+    bodyHtml: "<p>Hello {{userName}},</p><p>Thank you for joining the IOH universe. Your account has been created successfully.</p><p>Sign-in email: {{email}}</p><p><a href=\"{{accountUrl}}\" style=\"display:inline-block;background:#c9a75d;color:#0d0d0f;text-decoration:none;padding:12px 16px;border-radius:6px;font-weight:bold;\">View My Account</a></p>",
+    bodyText: "Hello {{userName}},\n\nThank you for joining the IOH universe. Your account has been created successfully.\n\nEmail: {{email}}\n\nYour account: {{accountUrl}}",
+    previewText: "Your first step into the IOH book universe is complete."
+  },
+  order_received: {
+    subject: "Order Received: {{orderCode}}",
+    bodyHtml: "<p>Hello {{userName}},</p><p>Your order request <strong>{{orderCode}}</strong> has been received and is waiting for payment confirmation.</p><p>You can follow your order details from the link below:</p><p><a href=\"{{accountUrl}}\" style=\"display:inline-block;background:#c9a75d;color:#0d0d0f;text-decoration:none;padding:12px 16px;border-radius:6px;font-weight:bold;\">Track Order</a></p>",
+    bodyText: "Hello {{userName}},\n\nYour order request {{orderCode}} has been received and is waiting for payment confirmation.\n\nOrder details: {{accountUrl}}",
+    previewText: "Your order has been created and is waiting for payment confirmation."
+  },
+  order_paid: {
+    subject: "Your Order Is Confirmed: {{orderCode}}",
+    bodyHtml: "<p>Hello {{userName}},</p><p>The payment for your order <strong>{{orderCode}}</strong> has been successfully verified.</p><p>You can view your order details and status from the link below:</p><p><a href=\"{{accountUrl}}\" style=\"display:inline-block;background:#c9a75d;color:#0d0d0f;text-decoration:none;padding:12px 16px;border-radius:6px;font-weight:bold;\">View Order</a></p>",
+    bodyText: "Hello {{userName}},\n\nThe payment for your order {{orderCode}} has been successfully verified.\n\nView order: {{accountUrl}}",
+    previewText: "Your payment has been verified successfully."
+  },
+  payment_failed: {
+    subject: "Payment Attempt Failed: {{orderCode}}",
+    bodyHtml: "<p>Hello {{userName}},</p><p>The payment attempt for your order <strong>{{orderCode}}</strong> was not completed.</p><p>Please check your payment details and try again.</p><p><a href=\"{{checkoutUrl}}\" style=\"display:inline-block;background:#c9a75d;color:#0d0d0f;text-decoration:none;padding:12px 16px;border-radius:6px;font-weight:bold;\">Try Payment Again</a></p>",
+    bodyText: "Hello {{userName}},\n\nThe payment attempt for your order {{orderCode}} was not completed. Please try again.\n\nCheckout: {{checkoutUrl}}",
+    previewText: "Your payment could not be completed."
+  },
+  order_cancelled: {
+    subject: "Your Order Has Been Cancelled: {{orderCode}}",
+    bodyHtml: "<p>Hello {{userName}},</p><p>Your order <strong>{{orderCode}}</strong> has been cancelled.</p><p>If payment was collected, the refund process will be handled through the payment provider.</p><p><a href=\"{{accountUrl}}\" style=\"display:inline-block;background:#c9a75d;color:#0d0d0f;text-decoration:none;padding:12px 16px;border-radius:6px;font-weight:bold;\">Order Details</a></p>",
+    bodyText: "Hello {{userName}},\n\nYour order {{orderCode}} has been cancelled. You can review the details in your account:\n\nYour account: {{accountUrl}}",
+    previewText: "Your order cancellation has been completed."
+  },
+  order_refunded: {
+    subject: "Your Refund Is Complete: {{orderCode}}",
+    bodyHtml: "<p>Hello {{userName}},</p><p>The refund for your order <strong>{{orderCode}}</strong> has been completed and sent to the payment provider.</p><p>The refunded amount may take a few business days to appear, depending on your bank or card provider.</p><p><a href=\"{{accountUrl}}\" style=\"display:inline-block;background:#c9a75d;color:#0d0d0f;text-decoration:none;padding:12px 16px;border-radius:6px;font-weight:bold;\">Order Details</a></p>",
+    bodyText: "Hello {{userName}},\n\nThe refund for your order {{orderCode}} has been completed and sent to the payment provider.\n\nYour account: {{accountUrl}}",
+    previewText: "Your refund has been completed."
+  },
+  order_shipped: {
+    subject: "Your Order Has Shipped: {{orderCode}}",
+    bodyHtml: "<p>Hello {{userName}},</p><p>Your order <strong>{{orderCode}}</strong> has been shipped.</p><p>Tracking number: <strong>{{trackingNumber}}</strong></p><p><a href=\"{{trackingUrl}}\" style=\"display:inline-block;background:#c9a75d;color:#0d0d0f;text-decoration:none;padding:12px 16px;border-radius:6px;font-weight:bold;\">Track Shipment</a></p>",
+    bodyText: "Hello {{userName}},\n\nYour order {{orderCode}} has been shipped.\n\nTracking number: {{trackingNumber}}\nTracking link: {{trackingUrl}}",
+    previewText: "Your order has been shipped."
+  },
+  digital_delivery_ready: {
+    subject: "Your Digital Book Is Ready: {{bookTitle}}",
+    bodyHtml: "<p>Hello {{userName}},</p><p>Your purchased book <strong>{{bookTitle}}</strong> is ready to download.</p><p>Your PDF/EPUB files are not sent as email attachments and are never exposed through permanent public links. Please sign in to your account to download securely:</p><p><a href=\"{{downloadUrl}}\" style=\"display:inline-block;background:#c9a75d;color:#0d0d0f;text-decoration:none;padding:12px 16px;border-radius:6px;font-weight:bold;\">Open Downloads</a></p>",
+    bodyText: "Hello {{userName}},\n\nYour purchased book {{bookTitle}} is ready to download.\n\nSign in and download securely: {{downloadUrl}}",
+    previewText: "Your digital book formats are available in your account."
+  },
+  amazon_verification_received: {
+    subject: "Your Amazon Verification Was Received",
+    bodyHtml: "<p>Hello {{userName}},</p><p>Your Amazon verification submission for <strong>{{verificationTitle}}</strong> has been received successfully.</p><p>Our operations team will review it as soon as possible.</p>",
+    bodyText: "Hello {{userName}},\n\nYour Amazon verification submission for {{verificationTitle}} has been received successfully. Our operations team will review it as soon as possible.",
+    previewText: "Your Amazon purchase or review verification is now in review."
+  },
+  amazon_verification_approved: {
+    subject: "Your Amazon Submission Was Approved (+{{pointsAmount}} IOH Points)",
+    bodyHtml: "<p>Hello {{userName}},</p><p>Your verification submission for <strong>{{verificationTitle}}</strong> has been approved.</p><p><strong>{{pointsAmount}} IOH Points</strong> have been added to your account.</p><p>You can view your current balance and rewards here:</p><p><a href=\"{{accountUrl}}\" style=\"display:inline-block;background:#c9a75d;color:#0d0d0f;text-decoration:none;padding:12px 16px;border-radius:6px;font-weight:bold;\">View Rewards</a></p>",
+    bodyText: "Hello {{userName}},\n\nYour verification submission for {{verificationTitle}} has been approved. {{pointsAmount}} IOH Points have been added to your account.\n\nView rewards: {{accountUrl}}",
+    previewText: "Your Amazon verification was approved and your IOH Points were added."
+  },
+  amazon_verification_rejected: {
+    subject: "Your Amazon Submission Was Rejected",
+    bodyHtml: "<p>Hello {{userName}},</p><p>Your verification submission for <strong>{{verificationTitle}}</strong> could not be approved.</p><p>Reason: <strong>{{adminReply}}</strong></p><p>You can review the details and submit again from your account:</p><p><a href=\"{{accountUrl}}\" style=\"display:inline-block;background:#c9a75d;color:#0d0d0f;text-decoration:none;padding:12px 16px;border-radius:6px;font-weight:bold;\">View Submission</a></p>",
+    bodyText: "Hello {{userName}},\n\nYour verification submission for {{verificationTitle}} could not be approved.\n\nReason: {{adminReply}}\n\nView submission: {{accountUrl}}",
+    previewText: "Your Amazon verification could not be approved."
+  },
+  amazon_admin_reply: {
+    subject: "New Message About Your Amazon Submission: {{verificationTitle}}",
+    bodyHtml: "<p>Hello {{userName}},</p><p>An administrator left a message about your <strong>{{verificationTitle}}</strong> submission:</p><blockquote style=\"border-left:4px solid #c9a75d;padding-left:12px;margin:18px 0;color:#d8d0c8;\">{{adminReply}}</blockquote><p>You can reply or review the status here:</p><p><a href=\"{{accountUrl}}\" style=\"display:inline-block;background:#c9a75d;color:#0d0d0f;text-decoration:none;padding:12px 16px;border-radius:6px;font-weight:bold;\">Review Submission</a></p>",
+    bodyText: "Hello {{userName}},\n\nAn administrator left a message about your {{verificationTitle}} submission:\n\n\"{{adminReply}}\"\n\nReview submission: {{accountUrl}}",
+    previewText: "An administrator left a message on your submission."
+  },
+  points_awarded: {
+    subject: "IOH Points Added to Your Account (+{{pointsAmount}} Points)",
+    bodyHtml: "<p>Hello {{userName}},</p><p><strong>{{pointsAmount}} IOH Points</strong> have been added to your account.</p><p><strong>Reason:</strong> {{pointsReason}}</p><p><strong>Current Balance:</strong> {{currentBalance}} IOH Points</p><p><a href=\"{{accountUrl}}\" style=\"display:inline-block;background:#c9a75d;color:#0d0d0f;text-decoration:none;padding:12px 16px;border-radius:6px;font-weight:bold;\">View My Account</a></p>",
+    bodyText: "Hello {{userName}},\n\n{{pointsAmount}} IOH Points have been added to your account.\n\nReason: {{pointsReason}}\nCurrent Balance: {{currentBalance}} IOH Points\n\nView my account: {{accountUrl}}",
+    previewText: "New IOH Points have been added to your account."
+  },
+  campaign_email: {
+    subject: "{{subject}}",
+    bodyHtml: "<div style=\"font-family:sans-serif;font-size:16px;line-height:1.6;color:#d8d0c8;\">{{body}}<hr style=\"border:none;border-top:1px solid #333;margin:20px 0;\" /><p style=\"font-size:12px;color:#888;text-align:center;\">You are receiving this email because you opted in to IOHBOOK communications.<br />To change your preferences or unsubscribe, please <a href=\"{{unsubscribeUrl}}\" style=\"color:#e7c574;text-decoration:underline;\">visit your profile</a>.</p></div>",
+    bodyText: "{{body}}\n\n---\nYou are receiving this email because you opted in to IOHBOOK communications.\nUnsubscribe or update preferences: {{unsubscribeUrl}}",
+    previewText: "{{subject}}"
+  }
+};
+
 // Hardcoded fallback templates for absolute resilience
 export const FALLBACK_TEMPLATES: Record<
   string,
@@ -132,10 +222,18 @@ export function renderEmailTemplate(
     previewText: ""
   };
 
-  const subjectTemplate = dbTemplate?.subject ?? fallback.subject;
-  const htmlTemplate = dbTemplate?.body_html ?? fallback.bodyHtml;
-  const textTemplate = dbTemplate?.body_text ?? fallback.bodyText;
-  const previewTemplate = dbTemplate?.preview_text ?? fallback.previewText ?? "";
+  void fallback;
+  const activeFallback = FALLBACK_TEMPLATES[templateKey] ?? {
+    subject: "IOH Notification",
+    bodyHtml: "<p>You have received a new IOH notification.</p>",
+    bodyText: "You have received a new IOH notification.",
+    previewText: ""
+  };
+
+  const subjectTemplate = dbTemplate?.subject ?? activeFallback.subject;
+  const htmlTemplate = dbTemplate?.body_html ?? activeFallback.bodyHtml;
+  const textTemplate = dbTemplate?.body_text ?? activeFallback.bodyText;
+  const previewTemplate = dbTemplate?.preview_text ?? activeFallback.previewText ?? "";
 
   // Dynamic variable replacement helper
   const replacePlaceholder = (tmpl: string, key: string, val: string) => {
@@ -290,7 +388,7 @@ export async function sendTransactionalEmail(input: {
   metadata?: Record<string, unknown>;
 }): Promise<EmailSendResult> {
   let eventId: string | null = null;
-  let subject = "IOH Bildirimi";
+  let subject = "IOH Notification";
   let html = "";
   let text = "";
 
@@ -314,7 +412,7 @@ export async function sendTransactionalEmail(input: {
           const skipId = await logEmailEvent({
             templateKey: input.templateKey,
             to: input.to,
-            subject: `[SKIPPED] ${FALLBACK_TEMPLATES[input.templateKey]?.subject ?? "IOH Bildirimi"}`,
+            subject: `[SKIPPED] ${FALLBACK_TEMPLATES[input.templateKey]?.subject ?? "IOH Notification"}`,
             profileId: input.profileId,
             orderId: input.orderId,
             metadata: { ...input.metadata, skipped_reason: "idempotency_duplicate" }

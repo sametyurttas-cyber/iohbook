@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/json-ld";
-import { getCurrentProfile, getCurrentUser } from "@/features/auth/queries";
+import { getHeaderUserView } from "@/features/auth/queries";
 import {
   getCoverMedia,
   getLowestPriceLabel,
@@ -12,7 +12,6 @@ import {
   type BooksIndexItem
 } from "@/features/catalog/books-index-scene";
 import { listPublishedBooks } from "@/features/catalog/queries";
-import { getIohPointBalanceForProfile } from "@/features/points/queries";
 import { absoluteUrl, buildPageMetadata } from "@/lib/seo";
 
 export const revalidate = 300;
@@ -94,13 +93,10 @@ function getBookSortOrder(title: string) {
 }
 
 export default async function BooksPage() {
-  const user = await getCurrentUser();
-  const [books, profile, points] = await Promise.all([
+  const [books, userView] = await Promise.all([
     listPublishedBooks(),
-    user ? getCurrentProfile() : Promise.resolve(null),
-    user ? getIohPointBalanceForProfile(user.id) : Promise.resolve(null)
+    getHeaderUserView()
   ]);
-  const displayName = profile?.full_name || profile?.email || user?.email || "Hesabim";
   const visibleBooks: BooksIndexItem[] =
     books.length > 0
       ? [...books]
@@ -142,14 +138,7 @@ export default async function BooksPage() {
       />
       <BooksIndexScene
         books={visibleBooks}
-        user={
-          user
-            ? {
-                displayName,
-                points: points?.balance ?? 0
-              }
-            : null
-        }
+        user={userView}
       />
     </>
   );

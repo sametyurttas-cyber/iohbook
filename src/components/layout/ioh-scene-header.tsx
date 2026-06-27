@@ -1,9 +1,15 @@
+"use client";
+
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import styles from "./ioh-scene-header.module.css";
+import { signOut } from "@/features/auth/actions";
 
 export type IohSceneHeaderUser = {
   displayName: string;
   points: number;
+  email?: string;
+  orderCount?: number;
 } | null;
 
 const navItems = [
@@ -19,6 +25,21 @@ const navItems = [
 ] as const;
 
 export function IohSceneHeader({ user }: { user: IohSceneHeaderUser }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <header className={`site-head is-solid ${styles.header}`}>
       <Link className="logo" href="/" data-hover="">
@@ -34,14 +55,54 @@ export function IohSceneHeader({ user }: { user: IohSceneHeaderUser }) {
       </nav>
       <div className={`head-actions ${styles.actions}`}>
         {user ? (
-          <>
-            <Link className={`head-cta ${styles.cta} ${styles.userName}`} href="/account" data-hover="" data-magnet="">
+          <div className={styles.profileWrapper} ref={dropdownRef}>
+            <button
+              className={`head-cta ${styles.cta} ${styles.userName}`}
+              type="button"
+              onClick={() => setIsOpen(!isOpen)}
+            >
               {user.displayName}
-            </Link>
-            <Link className={`head-cta ${styles.cta}`} href="/account/profile" data-hover="" data-magnet="">
+            </button>
+            <Link className={`head-cta ${styles.cta}`} href="/account" data-hover="" data-magnet="">
               IOH Puan: {user.points}
             </Link>
-          </>
+
+            {isOpen && (
+              <div className={styles.dropdown}>
+                <div className={styles.dropdownHeader}>MINI PROFILE</div>
+                <div className={styles.dropdownUser}>
+                  <div className={styles.dropdownName}>{user.displayName}</div>
+                  <div className={styles.dropdownEmail}>{user.email || ""}</div>
+                </div>
+
+                <div className={styles.pointsBox}>
+                  <div className={styles.pointsLabel}>IOH PUAN</div>
+                  <div className={styles.pointsVal}>{user.points}</div>
+                </div>
+
+                <div className={styles.orderCount}>
+                  Son siparis sayisi: <span>{user.orderCount ?? 0}</span>
+                </div>
+
+                <div className={styles.dropdownDivider} />
+
+                <Link className={styles.dropdownLink} href="/account" onClick={() => setIsOpen(false)}>
+                  Hesabima git
+                </Link>
+                <Link className={styles.dropdownLink} href="/account" onClick={() => setIsOpen(false)}>
+                  Siparislerim
+                </Link>
+
+                <div className={styles.dropdownDivider} />
+
+                <form action={signOut} onSubmit={() => setIsOpen(false)}>
+                  <button className={styles.logoutButton} type="submit">
+                    Cikis yap
+                  </button>
+                </form>
+              </div>
+            )}
+          </div>
         ) : (
           <>
             <Link className={`head-cta ${styles.cta}`} href="/sign-in" data-hover="" data-magnet="">
