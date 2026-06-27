@@ -120,21 +120,11 @@ function TokenSaleHero() {
           <p className={styles.heroLead} id="ts-hero-lead">
             Every great world begins with a small signal.
             <br />
-            <br />
-            IOHcoin is more than a digital asset.
-            <br />
-            <br />
-            It is the first fragment of the future IOH civilization,
-            <br />
+            IOHcoin is more than a digital asset. It is the first fragment of the future IOH civilization,
             the foundation of the metaverse layers yet to be opened,
-            <br />
-            the beginning of a new digital economy,
-            <br />
-            and the first piece of a world that does not yet exist.
-            <br />
+            the beginning of a new digital economy, and the first piece of a world that does not yet exist.
             <br />
             Most people enter a world only after it has already been built.
-            <br />
             <br />
             Genesis Phase exists for those who were there while the world was still being created.
           </p>

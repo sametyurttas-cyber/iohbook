@@ -82,8 +82,11 @@ export function GenesisCountdown() {
         )}
 
         <p className={styles.countdownDescription}>
-          Ecosystem Launch sonrasında IOH Puanlarının IOHCOIN'e dönüşümü planlanmaktadır. 
-          Early access sürecinde elde edilen her katılım hakkı, gelecek kullanım alanları için temel oluşturur.
+          The Genesis Phase will not last forever.
+          <br />
+          When the countdown reaches zero, IOH Points are planned to evolve into IOHcoin, ecosystem transfers will activate, and the next chapter of the IOH Universe will begin.
+          <br />
+          Some will discover the world after it opens. Others will remember helping build it before the gates ever existed.
         </p>
       </div>
     </section>
