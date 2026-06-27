@@ -17,8 +17,8 @@ Last updated: 2026-06-27
   - "05 / GUVEN BILGILERI" (Trust) bölümündeki 3 adet bilgi maddesi tamamen yeni İngilizce açıklamalar ile değiştirildi.
   - Manifesto bölümündeki Main Heading ve Side Description alanları yeni İngilizce felsefi metinlerle değiştirildi.
   - `/token-sale` sayfasında yer alan tüm Türkçe navigasyon menüleri, cüzdan alanları, butonlar ve telemetri metinleri İngilizceye çevrildi.
-  - Kullanım alanları kartlarının farklı metin uzunlukları nedeniyle hizalanmaması problemi CSS Grid `height: 100%` ile çözüldü.
-  - Değişiklikler başarıyla commitleyip GitHub'a pushlandı (`51c60ac`).
+  - Kullanım alanları kartlarının farklı metin uzunlukları nedeniyle hizalanmaması problemi CSS Grid `height: 100%` ve flex-direction column hizalaması ile tamamen çözüldü. Başlıklar ve açıklamalar yatayda milimetrik hizada durmaktadır.
+  - Değişiklikler başarıyla commitleyip GitHub'a pushlandı (`469e149`).
 - **Otomatik Canlı Dağıtım:** Vercel otomatik deployment süreci GitHub tetiklenmesiyle başladı.
 - **Testler:** Proje yapısı yerel ve uzak testlerle uyumlu şekilde korunmaktadır.
 
@@ -32,9 +32,3 @@ Last updated: 2026-06-27
 ## Open Risks
 
 - Yok. Shopier callback/webhook ve yönlendirme akışı stabil durumdadır.
-
-
-
-
-
-
