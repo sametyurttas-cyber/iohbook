@@ -175,6 +175,118 @@ export async function deleteTokenPackage(formData: FormData) {
   redirect("/admin/token-campaigns?saved=package-deleted");
 }
 
+export async function updateTokenPackage(formData: FormData) {
+  const staff = await requireStaff(["owner", "admin_ops"]);
+  if (!staff) redirect("/unauthorized");
+
+  const packageId = text(formData, "package_id");
+  const title = text(formData, "title");
+  if (!packageId || !title) {
+    redirect("/admin/token-campaigns?error=missing-package");
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const { data: currentPackage, error: currentPackageError } = await supabase
+    .from("token_sale_packages")
+    .select("id, campaign_id")
+    .eq("id", packageId)
+    .maybeSingle();
+
+  if (currentPackageError) {
+    redirect(`/admin/token-campaigns?error=${encodeURIComponent(currentPackageError.code ?? "package-check-failed")}`);
+  }
+
+  if (!currentPackage) {
+    redirect("/admin/token-campaigns?error=missing-package");
+  }
+
+  const currency = text(formData, "currency") || "USD";
+  const priceMinor = parseMoneyToMinor(formData.get("price"));
+  const tokenAmount = parseDecimalString(formData.get("token_amount"));
+  const { data: existingPackages, error: existingPackagesError } = await supabase
+    .from("token_sale_packages")
+    .select("currency, price_minor, title, token_amount")
+    .eq("campaign_id", currentPackage.campaign_id)
+    .neq("id", packageId)
+    .limit(500);
+
+  if (existingPackagesError) {
+    redirect(`/admin/token-campaigns?error=${encodeURIComponent(existingPackagesError.code ?? "duplicate-check-failed")}`);
+  }
+
+  const duplicateError = validateTokenPackageDuplicate({
+    currency,
+    existing: existingPackages ?? [],
+    priceMinor,
+    title,
+    tokenAmount
+  });
+
+  if (duplicateError) {
+    redirect(`/admin/token-campaigns?error=${duplicateError}`);
+  }
+
+  const { error } = await supabase
+    .from("token_sale_packages")
+    .update({
+      active: formData.get("active") === "on",
+      currency,
+      max_quantity_per_order: formData.get("max_quantity_per_order")
+        ? parseInteger(formData.get("max_quantity_per_order"), 1)
+        : null,
+      price_minor: priceMinor,
+      sort_order: parseInteger(formData.get("sort_order"), 0),
+      title,
+      token_amount: tokenAmount
+    })
+    .eq("id", packageId);
+
+  if (error) {
+    redirect(`/admin/token-campaigns?error=${encodeURIComponent(error.code ?? "package-update-failed")}`);
+  }
+
+  await supabase.from("audit_logs").insert({
+    action: "token.package_updated",
+    actor_profile_id: staff.user.id,
+    entity_id: packageId,
+    entity_type: "token_sale_package"
+  });
+
+  revalidateTokenSaleAdmin();
+  redirect("/admin/token-campaigns?saved=package-updated");
+}
+
+export async function updateTokenPackageActiveState(formData: FormData) {
+  const staff = await requireStaff(["owner", "admin_ops"]);
+  if (!staff) redirect("/unauthorized");
+
+  const packageId = text(formData, "package_id");
+  const mode = text(formData, "mode");
+  if (!packageId || !["activate", "pause"].includes(mode)) {
+    redirect("/admin/token-campaigns?error=missing-package");
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase
+    .from("token_sale_packages")
+    .update({ active: mode === "activate" })
+    .eq("id", packageId);
+
+  if (error) {
+    redirect(`/admin/token-campaigns?error=${encodeURIComponent(error.code ?? "package-status-update-failed")}`);
+  }
+
+  await supabase.from("audit_logs").insert({
+    action: mode === "activate" ? "token.package_activated" : "token.package_paused",
+    actor_profile_id: staff.user.id,
+    entity_id: packageId,
+    entity_type: "token_sale_package"
+  });
+
+  revalidateTokenSaleAdmin();
+  redirect(`/admin/token-campaigns?saved=${mode === "activate" ? "package-activated" : "package-paused"}`);
+}
+
 export async function deleteTokenCampaign(formData: FormData) {
   const staff = await requireStaff(["owner", "admin_ops"]);
   if (!staff) redirect("/unauthorized");

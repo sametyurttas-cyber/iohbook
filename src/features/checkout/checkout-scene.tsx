@@ -1,9 +1,9 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { BooksIndexFooter } from "@/features/catalog/books-index-scene";
-import { getHeaderUserView } from "@/features/auth/queries";
+import { getCurrentUser, getHeaderUserView } from "@/features/auth/queries";
 import { IohIndexStyles } from "@/features/home/ioh-index-landing";
-import { getActiveCartSnapshot } from "@/features/cart/queries";
+import { getActiveCartSnapshot, type CartLine } from "@/features/cart/queries";
 import { startCheckoutPayment } from "@/features/checkout/actions";
 import { SubmitButton } from "@/components/ui/submit-button";
 import {
@@ -347,7 +347,7 @@ export async function CheckoutScene({
                   </div>
 
                   <div className={styles.summaryRows}>
-                    {cart.lines.map((line) => (
+                    {cart.lines.map((line: CartLine) => (
                       <div className={styles.summaryRow} key={line.id}>
                         <div>
                           <span style={{ color: "var(--c-ink)", fontWeight: 500 }}>

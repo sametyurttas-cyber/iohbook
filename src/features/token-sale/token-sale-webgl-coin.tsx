@@ -15,10 +15,10 @@ function getParticleCount() {
   const width = window.innerWidth;
   const cores = navigator.hardwareConcurrency || 4;
 
-  if (width < 768) return 2200;
-  if (width < 1180 || cores < 6) return 4800;
-  if (width >= 1440 && cores >= 8) return 10000;
-  return 7200;
+  if (width < 768) return 2500;
+  if (width < 1180 || cores < 6) return 5500;
+  if (width >= 1440 && cores >= 8) return 11000;
+  return 8000;
 }
 
 function formCoin(count: number) {
@@ -81,6 +81,48 @@ function formHelix(count: number) {
   return positions;
 }
 
+function formCitySkyline(count: number) {
+  const positions = new Float32Array(count * 3);
+
+  // We define 7 skyscrapers
+  const towers = [
+    { centerX: -5.8, width: 1.4, height: 7.5, depth: 2.2 },
+    { centerX: -3.6, width: 1.5, height: 9.5, depth: 2.2 },
+    { centerX: -1.4, width: 1.7, height: 12.0, depth: 2.2 },
+    { centerX: 1.2, width: 1.6, height: 13.0, depth: 2.2 },
+    { centerX: 3.5, width: 1.4, height: 10.5, depth: 2.2 },
+    { centerX: 5.6, width: 1.2, height: 8.5, depth: 2.2 },
+    { centerX: -0.2, width: 1.1, height: 6.5, depth: 2.2 },
+  ];
+
+  for (let index = 0; index < count; index += 1) {
+    const offset = index * 3;
+    const rand = Math.random();
+
+    if (rand < 0.50) {
+      // 50% Skyscrapers
+      const tower = towers[Math.floor(Math.random() * towers.length)];
+      positions[offset] = tower.centerX + (Math.random() - 0.5) * tower.width;
+      positions[offset + 1] = -6.5 + Math.random() * tower.height; // anchored at bottom
+      positions[offset + 2] = (Math.random() - 0.5) * tower.depth;
+    } else if (rand < 0.75) {
+      // 25% Energy lines rising upwards
+      const tower = towers[Math.floor(Math.random() * towers.length)];
+      positions[offset] = tower.centerX + (Math.random() - 0.5) * 0.15;
+      const towerTop = -6.5 + tower.height;
+      positions[offset + 1] = towerTop + Math.random() * 8.5;
+      positions[offset + 2] = (Math.random() - 0.5) * 0.15;
+    } else {
+      // 25% Particle clouds at the top
+      positions[offset] = (Math.random() - 0.5) * 16;
+      positions[offset + 1] = 2.0 + Math.random() * 6.5;
+      positions[offset + 2] = (Math.random() - 0.5) * 6;
+    }
+  }
+
+  return positions;
+}
+
 export function TokenSaleWebglCoin() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -113,23 +155,32 @@ export function TokenSaleWebglCoin() {
 
     const coinPositions = formCoin(particleCount);
     const helixPositions = formHelix(particleCount);
+    const cityPositions = formCitySkyline(particleCount);
+
     const seeds = new Float32Array(particleCount);
+    const colorTypes = new Float32Array(particleCount);
+
     for (let index = 0; index < particleCount; index += 1) {
       seeds[index] = Math.random();
+      // ~50% gold, ~50% blue
+      colorTypes[index] = Math.random() < 0.5 ? 1.0 : 0.0;
     }
 
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute("position", new THREE.BufferAttribute(coinPositions.slice(), 3));
-    geometry.setAttribute("aFrom", new THREE.BufferAttribute(coinPositions, 3));
-    geometry.setAttribute("aTo", new THREE.BufferAttribute(helixPositions, 3));
+    geometry.setAttribute("aPosCoin", new THREE.BufferAttribute(coinPositions, 3));
+    geometry.setAttribute("aPosHelix", new THREE.BufferAttribute(helixPositions, 3));
+    geometry.setAttribute("aPosCity", new THREE.BufferAttribute(cityPositions, 3));
     geometry.setAttribute("aSeed", new THREE.BufferAttribute(seeds, 1));
+    geometry.setAttribute("aColorType", new THREE.BufferAttribute(colorTypes, 1));
 
     const material = new THREE.ShaderMaterial({
       blending: THREE.AdditiveBlending,
       depthWrite: false,
       transparent: true,
       uniforms: {
-        uColor: { value: new THREE.Color("#00d2ff") },
+        uColorBlue: { value: new THREE.Color("#00d2ff") },
+        uColorGold: { value: new THREE.Color("#e7c574") },
         uMix: { value: 0 },
         uPixelRatio: { value: Math.min(window.devicePixelRatio || 1, 1.25) },
         uRippleAge: { value: 99 },
@@ -138,20 +189,31 @@ export function TokenSaleWebglCoin() {
         uTime: { value: 0 }
       },
       vertexShader: `
-        attribute vec3 aFrom;
-        attribute vec3 aTo;
+        attribute vec3 aPosCoin;
+        attribute vec3 aPosHelix;
+        attribute vec3 aPosCity;
         attribute float aSeed;
+        attribute float aColorType;
+
         uniform float uMix;
         uniform float uPixelRatio;
         uniform float uRippleAge;
         uniform vec3 uRippleOrigin;
         uniform float uSize;
         uniform float uTime;
+
         varying float vAlpha;
         varying float vRipple;
+        varying float vColorType;
 
         void main() {
-          vec3 pos = mix(aFrom, aTo, uMix);
+          vec3 pos;
+          if (uMix < 1.0) {
+            pos = mix(aPosCoin, aPosHelix, uMix);
+          } else {
+            pos = mix(aPosHelix, aPosCity, uMix - 1.0);
+          }
+
           pos.x += sin(uTime * 0.42 + aSeed * 47.0) * 0.09;
           pos.y += cos(uTime * 0.34 + aSeed * 83.0) * 0.09;
           pos.z += sin(uTime * 0.28 + aSeed * 101.0) * 0.09;
@@ -166,19 +228,27 @@ export function TokenSaleWebglCoin() {
           vec4 mv = modelViewMatrix * vec4(pos, 1.0);
           gl_Position = projectionMatrix * mv;
           gl_PointSize = uSize * uPixelRatio * (0.6 + aSeed * 0.8) * (18.0 / -mv.z) * (1.0 + ripple * 0.65);
+          
           vAlpha = 0.45 + 0.55 * sin(uTime * 1.6 + aSeed * 90.0);
           vRipple = ripple * rippleFade;
+          vColorType = aColorType;
         }
       `,
       fragmentShader: `
-        uniform vec3 uColor;
+        uniform vec3 uColorBlue;
+        uniform vec3 uColorGold;
+
         varying float vAlpha;
         varying float vRipple;
+        varying float vColorType;
 
         void main() {
           float d = length(gl_PointCoord - 0.5);
           float alpha = smoothstep(0.5, 0.06, d);
-          vec3 color = mix(uColor, vec3(1.0, 0.86, 0.48), vRipple * 0.45);
+          
+          vec3 baseColor = mix(uColorBlue, uColorGold, vColorType);
+          vec3 color = mix(baseColor, vec3(1.0, 0.95, 0.8), vRipple * 0.45);
+          
           gl_FragColor = vec4(color, alpha * vAlpha * (0.5 + vRipple));
         }
       `
@@ -203,7 +273,8 @@ export function TokenSaleWebglCoin() {
     };
 
     const updateScrollMix = () => {
-      targetMix = clamp(window.scrollY / Math.max(window.innerHeight * 1.4, 1), 0, 1);
+      // Map scrollY: 0 at top, 2.0 when scroll reaches bottom or around 2.2 times window height
+      targetMix = clamp((window.scrollY / Math.max(window.innerHeight * 1.5, 1)) * 2, 0, 2);
     };
 
     const handlePointerMove = (event: PointerEvent) => {

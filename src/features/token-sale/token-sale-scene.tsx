@@ -292,6 +292,125 @@ function TokenSaleTrust() {
   );
 }
 
+function TokenSaleRoadmap() {
+  const phases = [
+    {
+      number: "I",
+      name: "GENESIS",
+      status: "COMPLETED",
+      accent: styles.phaseGenesis,
+      items: [
+        { done: true, label: "Books Published" },
+        { done: true, label: "Community Created" },
+        { done: true, label: "Genesis Allocations Active" },
+        { done: true, label: "IOH Ecosystem Launch" }
+      ]
+    },
+    {
+      number: "II",
+      name: "ACTIVATION",
+      status: "PLANNED",
+      accent: styles.phaseActivation,
+      items: [
+        { done: false, label: "IOH Points → IOHcoin Conversion" },
+        { done: false, label: "Wallet Connectivity" },
+        { done: false, label: "Transfer Activation" },
+        { done: false, label: "User-to-User Trading" }
+      ]
+    },
+    {
+      number: "III",
+      name: "EXPANSION",
+      status: "PLANNED",
+      accent: styles.phaseExpansion,
+      items: [
+        { done: false, label: "Global Community Growth" },
+        { done: false, label: "Creator Economy" },
+        { done: false, label: "Ecosystem Partnerships" },
+        { done: false, label: "Cross-Platform Integrations" }
+      ]
+    },
+    {
+      number: "IV",
+      name: "METAVERSE",
+      status: "PLANNED",
+      accent: styles.phaseMetaverse,
+      items: [
+        { done: false, label: "Digital Cities" },
+        { done: false, label: "Persistent Worlds" },
+        { done: false, label: "Identity Systems" },
+        { done: false, label: "Interactive IOH Experiences" }
+      ]
+    }
+  ];
+
+  return (
+    <section className={styles.roadmap} id="roadmap">
+      <div className={styles.shell}>
+        <div className={styles.roadmapHeader} id="ts-roadmap-header">
+          <Kicker>06 / ECOSYSTEM ROADMAP</Kicker>
+          <h2>THE EVOLUTION OF IOH</h2>
+        </div>
+        <div className={styles.roadmapGrid} id="ts-roadmap-grid">
+          {phases.map((phase) => (
+            <div key={phase.number} className={`${styles.roadmapCard} ${phase.accent}`}>
+              <div className={styles.roadmapCardTop}>
+                <span className={styles.roadmapPhaseNumber}>PHASE {phase.number}</span>
+                <span className={styles.roadmapPhaseStatus}>{phase.status}</span>
+              </div>
+              <h3 className={styles.roadmapPhaseName}>{phase.name}</h3>
+              <ul className={styles.roadmapList}>
+                {phase.items.map((item, idx) => (
+                  <li key={idx} className={item.done ? styles.roadmapItemDone : styles.roadmapItemTodo}>
+                    <span className={styles.roadmapItemIcon}>
+                      {item.done ? "✓" : "○"}
+                    </span>
+                    <span className={styles.roadmapItemLabel}>{item.label}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function TokenSaleCommunity() {
+  return (
+    <section className={styles.community} id="community">
+      <div className={styles.shell}>
+        <div className={styles.communityInner} id="ts-community-inner">
+          <div className={styles.communityGlow} aria-hidden="true" />
+          <Kicker>07 / COMMUNITY ALLIANCE</Kicker>
+          <h2 className={styles.communityTitle}>JOIN THE CIVILIZATION</h2>
+          <p className={styles.communityLead}>
+            Genesis is only the first brick. Connect with other creators, developers, and readers to shape the future of the IOH Universe. Join the alliance today.
+          </p>
+          <div className={styles.communityLinks} id="ts-community-links">
+            <a href="https://t.me/iohbook" target="_blank" rel="noopener noreferrer" className={styles.communityLinkCard} data-hover data-magnet>
+              <span className={styles.communityPlatformSymbol}>TG</span>
+              <span className={styles.communityPlatformLabel}>Telegram</span>
+              <span className={styles.communityPlatformStatus}>Join Chat</span>
+            </a>
+            <a href="https://instagram.com/iohbook" target="_blank" rel="noopener noreferrer" className={styles.communityLinkCard} data-hover data-magnet>
+              <span className={styles.communityPlatformSymbol}>IG</span>
+              <span className={styles.communityPlatformLabel}>Instagram</span>
+              <span className={styles.communityPlatformStatus}>Follow Us</span>
+            </a>
+            <a href="https://x.com/iohbook" target="_blank" rel="noopener noreferrer" className={styles.communityLinkCard} data-hover data-magnet>
+              <span className={styles.communityPlatformSymbol}>𝕏</span>
+              <span className={styles.communityPlatformLabel}>X / Twitter</span>
+              <span className={styles.communityPlatformStatus}>Get Updates</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export async function TokenSaleScene({
   searchParams
 }: {
@@ -320,6 +439,8 @@ export async function TokenSaleScene({
         <TokenSaleUsage />
         <TokenSaleCampaigns campaigns={campaigns} searchParams={searchParams} />
         <TokenSaleTrust />
+        <TokenSaleRoadmap />
+        <TokenSaleCommunity />
         <BooksIndexFooter />
       </main>
     </div>

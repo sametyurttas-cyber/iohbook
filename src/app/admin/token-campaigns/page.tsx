@@ -12,7 +12,9 @@ import {
   createTokenCampaign,
   createTokenPackage,
   deleteTokenCampaign,
-  deleteTokenPackage
+  deleteTokenPackage,
+  updateTokenPackage,
+  updateTokenPackageActiveState
 } from "@/features/token-sale/actions";
 import { listTokenCampaignsForAdmin } from "@/features/token-sale/queries";
 import { formatMoney } from "@/features/products/product-utils";
@@ -40,7 +42,10 @@ const savedMessages: Record<string, string> = {
   campaign: "Kampanya olusturuldu.",
   "campaign-deleted": "Kampanya silindi.",
   package: "Paket eklendi.",
-  "package-deleted": "Paket silindi."
+  "package-activated": "Paket aktif edildi.",
+  "package-deleted": "Paket silindi.",
+  "package-paused": "Paket pasife alindi.",
+  "package-updated": "Paket guncellendi."
 };
 
 export default async function AdminTokenCampaignsPage({
@@ -222,18 +227,74 @@ export default async function AdminTokenCampaignsPage({
 
               <div className={styles.grid}>
                 {campaign.token_sale_packages.map((pkg) => (
-                  <div className={styles.panel} key={pkg.id} style={{ padding: "0.85rem 1rem", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "1rem" }}>
-                    <span className={styles.dd}>{pkg.title}</span>
-                    <form action={deleteTokenPackage}>
-                      <input name="package_id" type="hidden" value={pkg.id} />
-                      <Button size="sm" type="submit" variant="destructive">
-                        Sil
-                      </Button>
-                    </form>
-                    <span className={styles.detailMeta}>
-                      {formatTokenAmount(pkg.token_amount)} {campaign.token_symbol} · {formatMoney(pkg.price_minor, pkg.currency)}
-                    </span>
-                  </div>
+                  <details className={styles.panel} key={pkg.id} style={{ padding: "0.85rem 1rem" }}>
+                    <summary style={{ alignItems: "center", cursor: "pointer", display: "flex", gap: "1rem", justifyContent: "space-between", listStyle: "none" }}>
+                      <span style={{ display: "grid", gap: "0.35rem" }}>
+                        <span className={styles.dd}>{pkg.title}</span>
+                        <span className={styles.detailMeta}>
+                          {pkg.active ? "Aktif" : "Pasif"} / {formatTokenAmount(pkg.token_amount)} {campaign.token_symbol} / {formatMoney(pkg.price_minor, pkg.currency)}
+                        </span>
+                      </span>
+                      <span className={styles.badge + " " + (pkg.active ? styles.badgeGold : "")}>
+                        Paketi Ac
+                      </span>
+                    </summary>
+
+                    <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", marginTop: "1rem", paddingTop: "1rem" }}>
+                      <form action={updateTokenPackage} className={styles.formGrid}>
+                        <input name="package_id" type="hidden" value={pkg.id} />
+                        <div className={styles.formGrid3}>
+                          <label className={styles.formLabel}>
+                            <span className={styles.formLabelText}>Paket Adi</span>
+                            <Input name="title" defaultValue={pkg.title} required />
+                          </label>
+                          <label className={styles.formLabel}>
+                            <span className={styles.formLabelText}>Token Miktari</span>
+                            <Input name="token_amount" defaultValue={pkg.token_amount} required />
+                          </label>
+                          <label className={styles.formLabel}>
+                            <span className={styles.formLabelText}>Fiyat</span>
+                            <Input name="price" defaultValue={String(pkg.price_minor / 100)} required />
+                          </label>
+                        </div>
+                        <div className={styles.formGrid3}>
+                          <label className={styles.formLabel}>
+                            <span className={styles.formLabelText}>Para Birimi</span>
+                            <Input name="currency" defaultValue={pkg.currency} />
+                          </label>
+                          <label className={styles.formLabel}>
+                            <span className={styles.formLabelText}>Max Adet</span>
+                            <Input name="max_quantity_per_order" defaultValue={pkg.max_quantity_per_order ?? ""} />
+                          </label>
+                          <label className={styles.formLabel}>
+                            <span className={styles.formLabelText}>Sira</span>
+                            <Input name="sort_order" defaultValue={pkg.sort_order} />
+                          </label>
+                        </div>
+                        <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--ad-muted)", fontSize: "0.85rem" }}>
+                          <input className="h-4 w-4" style={{ accentColor: "var(--ad-gold)" }} defaultChecked={pkg.active} name="active" type="checkbox" />
+                          Aktif
+                        </label>
+                        <Button type="submit">Paketi Kaydet</Button>
+                      </form>
+
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem", marginTop: "1rem" }}>
+                        <form action={updateTokenPackageActiveState}>
+                          <input name="package_id" type="hidden" value={pkg.id} />
+                          <input name="mode" type="hidden" value={pkg.active ? "pause" : "activate"} />
+                          <Button size="sm" type="submit" variant="outline">
+                            {pkg.active ? "Pasife Al" : "Aktife Al"}
+                          </Button>
+                        </form>
+                        <form action={deleteTokenPackage}>
+                          <input name="package_id" type="hidden" value={pkg.id} />
+                          <Button size="sm" type="submit" variant="destructive">
+                            Sil
+                          </Button>
+                        </form>
+                      </div>
+                    </div>
+                  </details>
                 ))}
               </div>
             </section>

@@ -1604,3 +1604,327 @@
   line-height: 1.6;
 }
 
+/* ---------- ROADMAP ---------- */
+.roadmap {
+  position: relative;
+  padding: 8rem 0;
+  border-top: 1px solid rgba(242, 239, 232, 0.08);
+}
+
+.roadmapHeader {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.roadmapHeader h2 {
+  margin: 1.6rem 0 0;
+  font-size: 5rem;
+  font-weight: 500;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+}
+
+.roadmapGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+.roadmapCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 2.2rem 1.8rem;
+  border: 1px solid var(--ts-line);
+  border-radius: 12px;
+  background: rgba(5, 6, 10, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.roadmapCardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.roadmapPhaseNumber {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+}
+
+.roadmapPhaseStatus {
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.1em;
+  padding: 0.25rem 0.6rem;
+  border-radius: 99px;
+  border: 1px solid var(--ts-line);
+}
+
+.roadmapPhaseName {
+  font-size: 1.8rem;
+  font-weight: 550;
+  margin: 0 0 1.8rem;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+
+.roadmapList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.roadmapItemDone,
+.roadmapItemTodo {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.roadmapItemDone {
+  color: var(--ts-ink);
+}
+
+.roadmapItemTodo {
+  color: var(--ts-muted);
+}
+
+.roadmapItemIcon {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.roadmapItemLabel {
+  font-weight: 300;
+}
+
+/* Phase Accent Rules */
+.phaseGenesis {
+  border-top: 3px solid var(--ts-gold);
+}
+.phaseGenesis .roadmapPhaseNumber {
+  color: var(--ts-gold);
+}
+.phaseGenesis .roadmapPhaseStatus {
+  background: rgba(231, 197, 116, 0.08);
+  border-color: rgba(231, 197, 116, 0.25);
+  color: var(--ts-gold);
+}
+.phaseGenesis .roadmapItemIcon {
+  color: var(--ts-gold);
+}
+
+.phaseActivation {
+  border-top: 3px solid var(--ts-accent);
+}
+.phaseActivation .roadmapPhaseNumber {
+  color: var(--ts-accent);
+}
+.phaseActivation .roadmapPhaseStatus {
+  background: rgba(0, 210, 255, 0.08);
+  border-color: rgba(0, 210, 255, 0.25);
+  color: var(--ts-accent);
+}
+.phaseActivation .roadmapItemIcon {
+  color: var(--ts-accent);
+}
+
+.phaseExpansion {
+  border-top: 3px solid #ff5b5b;
+}
+.phaseExpansion .roadmapPhaseNumber {
+  color: #ff5b5b;
+}
+.phaseExpansion .roadmapPhaseStatus {
+  background: rgba(255, 91, 91, 0.08);
+  border-color: rgba(255, 91, 91, 0.25);
+  color: #ff5b5b;
+}
+
+.phaseMetaverse {
+  border-top: 3px solid #b388ff;
+}
+.phaseMetaverse .roadmapPhaseNumber {
+  color: #b388ff;
+}
+.phaseMetaverse .roadmapPhaseStatus {
+  background: rgba(179, 136, 255, 0.08);
+  border-color: rgba(179, 136, 255, 0.25);
+  color: #b388ff;
+}
+
+.roadmapCard:hover {
+  transform: translateY(-8px);
+  border-color: rgba(242, 239, 232, 0.25);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+.phaseGenesis:hover {
+  border-color: var(--ts-gold);
+}
+.phaseActivation:hover {
+  border-color: var(--ts-accent);
+}
+.phaseExpansion:hover {
+  border-color: #ff5b5b;
+}
+.phaseMetaverse:hover {
+  border-color: #b388ff;
+}
+
+/* ---------- COMMUNITY ---------- */
+.community {
+  position: relative;
+  padding: 8rem 0;
+  border-top: 1px solid rgba(242, 239, 232, 0.08);
+}
+
+.communityInner {
+  position: relative;
+  max-width: 960px;
+  margin-inline: auto;
+  padding: 5rem 4rem;
+  border: 1px solid var(--ts-line);
+  border-radius: 20px;
+  background: rgba(7, 8, 13, 0.4);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+}
+
+.communityGlow {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 50%, rgba(231, 197, 116, 0.03) 0%, transparent 60%);
+}
+
+.communityTitle {
+  font-size: 4rem;
+  font-weight: 500;
+  margin: 1.5rem 0;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  z-index: 1;
+}
+
+.communityLead {
+  max-width: 600px;
+  color: var(--ts-muted);
+  font-size: 1.1rem;
+  line-height: 1.7;
+  margin-bottom: 3.5rem;
+  z-index: 1;
+}
+
+.communityLinks {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  width: 100%;
+  z-index: 1;
+}
+
+.communityLinkCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.2rem 1.5rem;
+  border: 1px solid var(--ts-line);
+  border-radius: 12px;
+  background: rgba(5, 6, 10, 0.5);
+  color: var(--ts-ink);
+  text-decoration: none;
+  transition: all 0.35s ease;
+}
+
+.communityPlatformSymbol {
+  font-family: var(--font-mono);
+  font-size: 1.8rem;
+  color: var(--ts-gold);
+  margin-bottom: 0.8rem;
+  transition: transform 0.3s ease;
+}
+
+.communityPlatformLabel {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 0.4rem;
+}
+
+.communityPlatformStatus {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ts-muted);
+}
+
+.communityLinkCard:hover {
+  border-color: var(--ts-gold);
+  background: rgba(231, 197, 116, 0.05);
+  box-shadow: 0 15px 35px rgba(231, 197, 116, 0.1);
+  transform: translateY(-5px);
+}
+
+.communityLinkCard:hover .communityPlatformSymbol {
+  transform: scale(1.15);
+}
+
+/* Media Queries for Roadmap & Community */
+@media (max-width: 1024px) {
+  .roadmapGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .roadmapHeader h2 {
+    font-size: 3.2rem;
+  }
+  .roadmapGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .communityTitle {
+    font-size: 2.6rem;
+  }
+  .communityLead {
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+  }
+  .communityLinks {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .communityInner {
+    padding: 3rem 1.5rem;
+  }
+}
+
+
