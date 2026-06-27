@@ -316,7 +316,7 @@ function TokenSaleTrust() {
   return (
     <section className={styles.trust}>
       <div className={styles.trustInner}>
-        <div className={styles.trustHeader}>05 / GUVEN BILGILERI</div>
+        <div className={styles.trustHeader}>05 / TRUST INFORMATION</div>
         <ul className={styles.trustList} id="ts-trust-list">
           <li className={styles.trustItem}>
             <span className={styles.trustNumber}>01</span>
