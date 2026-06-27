@@ -218,12 +218,13 @@ function TokenSaleCampaigns({
     <section className={styles.campaigns} id="campaigns">
       <div className={styles.shell}>
         <div className={styles.campaignsHeader} id="ts-campaigns-header">
-          <Kicker>03 / PAKETLER</Kicker>
-          <h2>IOHCOIN PAKETLERI</h2>
+          <Kicker>03 / PACKAGES</Kicker>
+          <h2>IOHCOIN PACKAGES</h2>
           <p className={styles.campaignsLead}>
-            Genesis phase donemi IOHcoin paketleri. Odeme onayindan sonra hesabinizda 
-            community allocation olarak gorunur. Satin alma icin wallet baglama zorunlulugu 
-            yoktur; ileride manuel gonderim gerekirse cuzdan adresi talep edilebilir.
+            Allocations acquired during the Genesis Phase secure your place among the first generation of the IOH Universe.
+            <br />
+            <br />
+            Once payment is confirmed, your allocations are securely recorded within your account. Wallet connectivity is not required during this phase, while additional utility and transfer layers are expected to become available throughout future ecosystem stages.
           </p>
         </div>
 
