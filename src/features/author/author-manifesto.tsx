@@ -266,10 +266,12 @@ function CreatorConsole() {
     }
   ]);
   const [inputVal, setInputVal] = useState("");
-  const historyEndRef = useRef<HTMLDivElement>(null);
+  const consoleBodyRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    historyEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (consoleBodyRef.current) {
+      consoleBodyRef.current.scrollTop = consoleBodyRef.current.scrollHeight;
+    }
   }, [history]);
 
   const executeCommand = (cmd: string) => {
@@ -319,7 +321,7 @@ function CreatorConsole() {
             <div className={styles.consoleStatus}>SYSTEM STATUS: SECURE</div>
           </div>
           
-          <div className={styles.consoleBody}>
+          <div ref={consoleBodyRef} className={styles.consoleBody}>
             <div className={styles.consoleOutput}>
               {history.map((item) => (
                 <div key={item.id} className={item.type === "input" ? styles.consoleInputLine : styles.consoleOutputBlock}>
@@ -335,7 +337,6 @@ function CreatorConsole() {
                   )}
                 </div>
               ))}
-              <div ref={historyEndRef} />
             </div>
             
             <form onSubmit={handleSubmit} className={styles.consoleInputRow}>
