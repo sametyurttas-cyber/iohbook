@@ -9,9 +9,9 @@ function clamp(value: number, min: number, max: number) {
 
 function getParticleCount() {
   const width = window.innerWidth;
-  if (width < 768) return 2000;
-  if (width < 1180) return 4000;
-  return 6000;
+  if (width < 768) return 4000;
+  if (width < 1180) return 8000;
+  return 12000;
 }
 
 // Clone original mathematical shapes from /author page
