@@ -151,71 +151,111 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
 
       </div>
 
-      {/* Optional City brochure panels (Exclusive layout for Agrom with uncropped contain images) */}
-      {company.id === "agrom" && company.images.cityDay && (
+      {/* Optional City brochure panels (Generic layout for any corporation with cityDay assets) */}
+      {company.images.cityDay && (
         <div className="mt-8 pt-8 border-t border-border/10">
-          <span className={styles.secLabel}>AGROM CITY ATLAS DATABASE</span>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mt-4">
+          <span className={styles.secLabel}>{company.cityName.toUpperCase()} ATLAS DATABASE</span>
+          <div className={`grid gap-6 sm:grid-cols-2 mt-4 ${company.images.citySunset ? "lg:grid-cols-4" : "lg:grid-cols-3"}`}>
             
             {/* Day city viewport */}
             <div className="relative border border-border/10 bg-black/40 rounded-lg overflow-hidden p-2 flex flex-col gap-2">
               <div 
                 className="relative w-full aspect-[4/3] rounded-md overflow-hidden bg-black/60 cursor-zoom-in"
-                onClick={() => onZoom(company.images.cityDay)}
+                onClick={() => onZoom(company.images.cityDay!)}
               >
                 <Image
-                  src={company.images.cityDay}
-                  alt="Agrom City street day view"
+                  src={company.images.cityDay!}
+                  alt={`${company.cityName} street day view`}
                   fill
                   className="object-contain p-1"
                   sizes="(max-width: 768px) 100vw, 320px"
                 />
               </div>
               <div className="font-mono text-[10px] text-muted-foreground mt-1 px-1">
-                <span className="text-[#e7c574] block font-semibold mb-0.5">FILE_REF: AC_DAY_01</span>
-                Agrom City dikey mimari ve sokak panoraması. Altın işlemeli spayrlar ve siber sancaklar görünür durumdadır.
+                <span className="text-[#e7c574] block font-semibold mb-0.5">
+                  FILE_REF: {company.id === "agrom" ? "AC_DAY_01" : "OC_DAY_CANAL_01"}
+                </span>
+                {company.id === "agrom" 
+                  ? "Agrom City dikey mimari ve sokak panoraması. Altın işlemeli spayrlar ve siber sancaklar görünür durumdadır." 
+                  : "Orion City kanal mimarisi ve şehir merkezi. Beyaz mermer saraylar ve parlayan siber sancaklar."}
               </div>
             </div>
 
-            {/* Aerial city viewport */}
-            <div className="relative border border-border/10 bg-black/40 rounded-lg overflow-hidden p-2 flex flex-col gap-2">
-              <div 
-                className="relative w-full aspect-[4/3] rounded-md overflow-hidden bg-black/60 cursor-zoom-in"
-                onClick={() => onZoom(company.images.cityCenter)}
-              >
-                <Image
-                  src={company.images.cityCenter}
-                  alt="Agrom City aerial view"
-                  fill
-                  className="object-contain p-1"
-                  sizes="(max-width: 768px) 100vw, 320px"
-                />
+            {/* Center/Night city viewport */}
+            {company.images.cityCenter && (
+              <div className="relative border border-border/10 bg-black/40 rounded-lg overflow-hidden p-2 flex flex-col gap-2">
+                <div 
+                  className="relative w-full aspect-[4/3] rounded-md overflow-hidden bg-black/60 cursor-zoom-in"
+                  onClick={() => onZoom(company.images.cityCenter!)}
+                >
+                  <Image
+                    src={company.images.cityCenter!}
+                    alt={`${company.cityName} center view`}
+                    fill
+                    className="object-contain p-1"
+                    sizes="(max-width: 768px) 100vw, 320px"
+                  />
+                </div>
+                <div className="font-mono text-[10px] text-muted-foreground mt-1 px-1">
+                  <span className="text-[#e7c574] block font-semibold mb-0.5">
+                    FILE_REF: {company.id === "agrom" ? "AC_AERIAL_02" : "OC_NIGHT_CANAL_02"}
+                  </span>
+                  {company.id === "agrom" 
+                    ? "Merkez quantum sunucu kulesinin yörüngesel kalkan halkasıyla uydu kanallarından çekilmiş genel planı." 
+                    : "Orion City kanalları ve devasa holografik reklam panolarının mor ışık seli altındaki gece görünümü."}
+                </div>
               </div>
-              <div className="font-mono text-[10px] text-muted-foreground mt-1 px-1">
-                <span className="text-[#e7c574] block font-semibold mb-0.5">FILE_REF: AC_AERIAL_02</span>
-                Merkez quantum sunucu kulesinin yörüngesel kalkan halkasıyla uydu kanallarından çekilmiş genel planı.
-              </div>
-            </div>
+            )}
 
-            {/* Brochure advertisement */}
-            <div className="relative border border-border/10 bg-black/40 rounded-lg overflow-hidden p-2 flex flex-col gap-2 sm:col-span-2 lg:col-span-1">
-              <div 
-                className="relative w-full aspect-[4/3] rounded-md overflow-hidden bg-black/60 cursor-zoom-in"
-                onClick={() => onZoom(company.images.cityBrochure)}
-              >
-                <Image
-                  src={company.images.cityBrochure}
-                  alt="Agrom City brochure"
-                  fill
-                  className="object-contain p-1"
-                  sizes="(max-width: 768px) 100vw, 320px"
-                />
+            {/* Brochure/Day Palace viewport */}
+            {company.images.cityBrochure && (
+              <div className="relative border border-border/10 bg-black/40 rounded-lg overflow-hidden p-2 flex flex-col gap-2">
+                <div 
+                  className="relative w-full aspect-[4/3] rounded-md overflow-hidden bg-black/60 cursor-zoom-in"
+                  onClick={() => onZoom(company.images.cityBrochure!)}
+                >
+                  <Image
+                    src={company.images.cityBrochure!}
+                    alt={`${company.cityName} brochure view`}
+                    fill
+                    className="object-contain p-1"
+                    sizes="(max-width: 768px) 100vw, 320px"
+                  />
+                </div>
+                <div className="font-mono text-[10px] text-muted-foreground mt-1 px-1">
+                  <span className="text-[#e7c574] block font-semibold mb-0.5">
+                    FILE_REF: {company.id === "agrom" ? "AC_BROCHURE_03" : "OC_DAY_PALACE_03"}
+                  </span>
+                  {company.id === "agrom" 
+                    ? "\"The future is here.\" - Corporate Union propaganda broşürü ve kentsel yaşam modülleri kılavuzu." 
+                    : "Nets Media Oligarchy ana yönetim sarayının dış cephesi ve gökyüzü ulaştırma hatları."}
+                </div>
               </div>
-              <div className="font-mono text-[10px] text-muted-foreground mt-1 px-1">
-                <span className="text-[#e7c574] block font-semibold mb-0.5">FILE_REF: AC_BROCHURE_03</span>
-                "The future is here." - Corporate Union propaganda broşürü ve kentsel yaşam modülleri kılavuzu.
+            )}
+
+            {/* Sunset Palace viewport */}
+            {company.images.citySunset && (
+              <div className="relative border border-border/10 bg-black/40 rounded-lg overflow-hidden p-2 flex flex-col gap-2">
+                <div 
+                  className="relative w-full aspect-[4/3] rounded-md overflow-hidden bg-black/60 cursor-zoom-in"
+                  onClick={() => onZoom(company.images.citySunset!)}
+                >
+                  <Image
+                    src={company.images.citySunset!}
+                    alt={`${company.cityName} sunset view`}
+                    fill
+                    className="object-contain p-1"
+                    sizes="(max-width: 768px) 100vw, 320px"
+                  />
+                </div>
+                <div className="font-mono text-[10px] text-muted-foreground mt-1 px-1">
+                  <span className="text-[#e7c574] block font-semibold mb-0.5">
+                    FILE_REF: OC_SUNSET_PALACE_04
+                  </span>
+                  Orion City gün batımı ve köprü geçiş hattının saray surları ile bütünleşen mor neon aydınlatması.
+                </div>
               </div>
-            </div>
+            )}
 
           </div>
         </div>

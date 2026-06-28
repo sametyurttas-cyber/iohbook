@@ -47,6 +47,7 @@ export type CompanyProfile = {
     cityDay?: string;
     cityCenter?: string;
     cityBrochure?: string;
+    citySunset?: string;
     destruction?: string[];
   };
 };
@@ -141,7 +142,11 @@ export const corporations: CompanyProfile[] = [
     classifiedNote: "Mina'nın geliştirdiği devrimsel görsel filtre ve zaman kilitleme uygulaması, Nets marketine girmek zorunda bırakılmış ve Nets tarafından asimile edilmiştir.",
     images: {
       portrait: "/media/corporations/nets/anne-portrait.jpg",
-      magazine: "/media/corporations/nets/magazine-cover.jpg"
+      magazine: "/media/corporations/nets/magazine-cover.jpg",
+      cityDay: "/media/corporations/nets/city-day-canal.jpg",
+      cityCenter: "/media/corporations/nets/city-night-canal.jpg",
+      cityBrochure: "/media/corporations/nets/city-day-palace.jpg",
+      citySunset: "/media/corporations/nets/city-sunset-palace.jpg"
     }
   },
   {
