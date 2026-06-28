@@ -19,6 +19,60 @@ export default function SwosScene({ user }: SwosSceneProps) {
   const [activeNode, setActiveNode] = useState(0);
   const [openCrisis, setOpenCrisis] = useState<string | null>(null);
   const [activeLightbox, setActiveLightbox] = useState<string | null>(null);
+  
+  // Interactive Citizen Audit Terminal States
+  const [citizenName, setCitizenName] = useState("");
+  const [auditState, setAuditState] = useState<"idle" | "scanning" | "done">("idle");
+  const [auditProgress, setAuditProgress] = useState<string[]>([]);
+  const [auditResult, setAuditResult] = useState<any>(null);
+
+  const handleAudit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!citizenName.trim()) return;
+
+    setAuditState("scanning");
+    setAuditProgress([]);
+    setAuditResult(null);
+
+    const logs = [
+      "> INITIALIZING SWOS SECURE ENCRYPTION...",
+      "> BIOMETRIC PARITY RESOLUTION IN PROGRESS...",
+      "> QUERYING STATE ARCHIVES FOR: " + citizenName.toUpperCase(),
+      "> CALCULATING COMPLIANCE & THREAT COEFFICIENT...",
+      "> INTEGRATING TRANSFERRED DIGITAL EGO HASH...",
+      "> SCAN COMPLETE. DECRYPTING DATA DOSSIER..."
+    ];
+
+    logs.forEach((log, index) => {
+      setTimeout(() => {
+        setAuditProgress(prev => [...prev, log]);
+        if (index === logs.length - 1) {
+          setTimeout(() => {
+            const statuses = ["ACTIVE", "RESTRICTED", "DEVIANT", "TERMINATED"];
+            const clearances = ["LEVEL 1 / PUBLIC", "LEVEL 2 / STAFF", "LEVEL 4 / EXECUTIVE", "LEVEL 0 / SUBJECT"];
+            const actions = ["NO INTERVENTION REQUIRED", "MONITOR COGNITIVE RATIO", "IMMEDIATE DETENTION COMMAND", "VESSEL SHUTDOWN DECREE"];
+            
+            const hash = citizenName.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+            const statusIdx = hash % statuses.length;
+            const clearanceIdx = hash % clearances.length;
+            const actionIdx = hash % actions.length;
+            const threatScore = (hash % 92) + 8; 
+            const egoIntegrity = (100 - (hash % 120) / 10).toFixed(1);
+
+            setAuditResult({
+              id: `SWOS-${(hash * 3).toString(16).toUpperCase().padStart(4, "0")}-${(hash * 7).toString(16).toUpperCase().padStart(4, "0")}`,
+              status: statuses[statusIdx],
+              clearance: clearances[clearanceIdx],
+              threat: `${threatScore}%`,
+              ego: statusIdx === 3 ? "NOT DEPLOYED" : `${egoIntegrity}%`,
+              action: actions[actionIdx]
+            });
+            setAuditState("done");
+          }, 600);
+        }
+      }, (index + 1) * 450);
+    });
+  };
 
   const centriumNodes = [
     { name: "Tax Cores", ref: "HC_TAX_01", x: "32%", y: "45%", desc: "Tüm bağlı dünyalardan vergi ve kaynak kesintisi yapan veri çekirdeği.", leak: "Bağımsız madencilerin kazandığı tokenların %34'üne otomatik olarak el koyan gizli kod parçacıkları barındırır." },
@@ -482,6 +536,119 @@ export default function SwosScene({ user }: SwosSceneProps) {
               <div className={styles.flowStepCircle}>05</div>
               <span className={styles.flowStepName}>RECORD</span>
               <span className={styles.flowStepDesc}>SWOS resmî veri kütüğüne işlenme.</span>
+            </div>
+          </div>
+
+          {/* Interactive Citizen Audit Terminal */}
+          <div className={styles.auditTerminal}>
+            <div className={styles.terminalHeader}>
+              <div className="flex items-center gap-1.5">
+                <span className={styles.terminalDotRed} />
+                <span className={styles.terminalDotYellow} />
+                <span className={styles.terminalDotGreen} />
+              </div>
+              <span className={styles.terminalTitle}>SWOS // SECURE CITIZEN DATABASE QUERY</span>
+              <span className={styles.terminalSecure}>ENCRYPTED CONNECTION</span>
+            </div>
+
+            <div className={styles.terminalBody}>
+              <p className={styles.terminalIntro}>
+                Devlet kayıtlarındaki vatandaşlık durumunuzu, tehdit endeksinizi ve ölüm sonrası dijital egonuzun aktarım durumunu doğrulamak için kimlik isminizi girin.
+              </p>
+
+              <form onSubmit={handleAudit} className={styles.auditForm}>
+                <input
+                  type="text"
+                  placeholder="ENTER CITIZEN FULL NAME..."
+                  value={citizenName}
+                  onChange={(e) => setCitizenName(e.target.value)}
+                  disabled={auditState === "scanning"}
+                  className={styles.auditInput}
+                />
+                <button
+                  type="submit"
+                  disabled={auditState === "scanning" || !citizenName.trim()}
+                  className={styles.auditButton}
+                >
+                  {auditState === "scanning" ? "PROCESSING..." : "RUN SYSTEM AUDIT"}
+                </button>
+              </form>
+
+              {auditState === "scanning" && (
+                <div className={styles.terminalConsole}>
+                  {auditProgress.map((log, idx) => (
+                    <div key={idx} className={styles.consoleLogLine}>
+                      {log}
+                    </div>
+                  ))}
+                  <div className={styles.consoleBlinkCursor} />
+                </div>
+              )}
+
+              {auditState === "done" && auditResult && (
+                <div className={styles.auditResultCard}>
+                  <div className={styles.resultHeader}>
+                    <h4>CITIZEN RECORD RETRIEVED</h4>
+                    <span className={styles.resultId}>{auditResult.id}</span>
+                  </div>
+
+                  <div className={styles.resultGrid}>
+                    <div className={styles.resultRow}>
+                      <span className={styles.resultLabel}>CITIZEN NAME:</span>
+                      <span className={styles.resultValue}>{citizenName.toUpperCase()}</span>
+                    </div>
+
+                    <div className={styles.resultRow}>
+                      <span className={styles.resultLabel}>SWOS STATUS:</span>
+                      <span 
+                        className={styles.resultValue}
+                        style={{ 
+                          color: auditResult.status === "ACTIVE" ? "#7aa7ff" : 
+                                 auditResult.status === "RESTRICTED" ? "#ffc83b" : 
+                                 "#ff3b3b",
+                          fontWeight: "bold"
+                        }}
+                      >
+                        {auditResult.status}
+                      </span>
+                    </div>
+
+                    <div className={styles.resultRow}>
+                      <span className={styles.resultLabel}>CLEARANCE LEVEL:</span>
+                      <span className={styles.resultValue}>{auditResult.clearance}</span>
+                    </div>
+
+                    <div className={styles.resultRow}>
+                      <span className={styles.resultLabel}>THREAT INDEX:</span>
+                      <span 
+                        className={styles.resultValue}
+                        style={{ 
+                          color: parseFloat(auditResult.threat) > 50 ? "#ff3b3b" : "#8b949e"
+                        }}
+                      >
+                        {auditResult.threat}
+                      </span>
+                    </div>
+
+                    <div className={styles.resultRow}>
+                      <span className={styles.resultLabel}>DIGITAL EGO INTEGRITY:</span>
+                      <span className={styles.resultValue}>{auditResult.ego}</span>
+                    </div>
+
+                    <div className={styles.resultRow}>
+                      <span className={styles.resultLabel}>DIRECTIVE ORDER:</span>
+                      <span 
+                        className={styles.resultValue}
+                        style={{ 
+                          color: auditResult.status === "DEVIANT" || auditResult.status === "TERMINATED" ? "#ff3b3b" : "#7aa7ff"
+                        }}
+                      >
+                        {auditResult.action}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </section>
