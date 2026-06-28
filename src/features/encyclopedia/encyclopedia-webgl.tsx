@@ -277,8 +277,8 @@ export function EncyclopediaWebGL({ hoveredIndex, pageContext = "portal" }: Ency
       activeColor.lerp(COLORS[targetPhase], 0.04);
       material.uniforms.uColor.value.copy(activeColor);
 
-      points.rotation.y += 0.001;
       if (pageContext !== "ai") {
+        points.rotation.y += 0.001;
         camera.position.x += (camT.x - camera.position.x) * 0.04;
         camera.position.y += (camT.y - camera.position.y) * 0.04;
       }
