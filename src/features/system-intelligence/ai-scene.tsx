@@ -63,7 +63,7 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
     kown: [{ sender: "ai", text: "[KOWN_NODE_ONLINE]: UNIT_OBEY // Askeri birlik komuta hattı aktif. Emirleri bekliyorum.", time: "20:00:00" }]
   });
   const [isTyping, setIsTyping] = useState(false);
-  const chatEndRef = useRef<HTMLDivElement>(null);
+  const chatStreamRef = useRef<HTMLDivElement>(null);
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,10 +102,10 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
     }, 1200);
   };
 
-  // Auto-scroll chat window when history updates
+  // Auto-scroll chat window when history updates (scroll only inner container)
   React.useEffect(() => {
-    if (chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+    if (chatStreamRef.current) {
+      chatStreamRef.current.scrollTop = chatStreamRef.current.scrollHeight;
     }
   }, [chatHistory, activeAi]);
 
@@ -893,7 +893,7 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
               </div>
             </div>
 
-            <div className={styles.chatStream}>
+            <div ref={chatStreamRef} className={styles.chatStream}>
               {chatHistory[activeAi]?.map((msg: any, idx: number) => (
                 <div 
                   key={idx} 
@@ -915,7 +915,7 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
                   </div>
                 </div>
               )}
-              <div ref={chatEndRef} />
+
             </div>
 
             <div className={styles.chatInputArea}>
