@@ -288,6 +288,56 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
               </div>
             )}
 
+            {/* Extra 2 City viewport */}
+            {company.images.cityExtra2 && (
+              <div className="relative border border-border/10 bg-black/40 rounded-lg overflow-hidden p-2 flex flex-col gap-2">
+                <div 
+                  className="relative w-full aspect-[4/3] rounded-md overflow-hidden bg-black/60 cursor-zoom-in"
+                  onClick={() => onZoom(company.images.cityExtra2!)}
+                >
+                  <Image
+                    src={company.images.cityExtra2!}
+                    alt={`${company.cityName} extra view 2`}
+                    fill
+                    className="object-contain p-1"
+                    sizes="(max-width: 768px) 100vw, 320px"
+                    unoptimized
+                  />
+                </div>
+                <div className="font-mono text-[10px] text-muted-foreground mt-1 px-1">
+                  <span className="text-[#e7c574] block font-semibold mb-0.5">
+                    FILE_REF: TC_ARENA_GATE_06
+                  </span>
+                  Tencon Arena ana giriş kapısı ve siber güvenlik kontrol noktası. Dev turnuva için toplanan kalabalık.
+                </div>
+              </div>
+            )}
+
+            {/* Extra 3 City viewport */}
+            {company.images.cityExtra3 && (
+              <div className="relative border border-border/10 bg-black/40 rounded-lg overflow-hidden p-2 flex flex-col gap-2">
+                <div 
+                  className="relative w-full aspect-[4/3] rounded-md overflow-hidden bg-black/60 cursor-zoom-in"
+                  onClick={() => onZoom(company.images.cityExtra3!)}
+                >
+                  <Image
+                    src={company.images.cityExtra3!}
+                    alt={`${company.cityName} extra view 3`}
+                    fill
+                    className="object-contain p-1"
+                    sizes="(max-width: 768px) 100vw, 320px"
+                    unoptimized
+                  />
+                </div>
+                <div className="font-mono text-[10px] text-muted-foreground mt-1 px-1">
+                  <span className="text-[#e7c574] block font-semibold mb-0.5">
+                    FILE_REF: TC_ARENA_OCTAGON_07
+                  </span>
+                  Tencon Arena siber octagon dövüş alanı. Kırmızı ışıklar ve dev hologram ekranları eşliğinde nihai karşılaşma sahnesi.
+                </div>
+              </div>
+            )}
+
           </div>
         </div>
       )}

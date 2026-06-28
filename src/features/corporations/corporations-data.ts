@@ -49,6 +49,8 @@ export type CompanyProfile = {
     cityBrochure?: string;
     citySunset?: string;
     cityExtra?: string;
+    cityExtra2?: string;
+    cityExtra3?: string;
     destruction?: string[];
   };
 };
@@ -198,7 +200,9 @@ export const corporations: CompanyProfile[] = [
       cityCenter: "/media/corporations/tencon/city-arena.jpg",
       cityBrochure: "/media/corporations/tencon/city-street-node.jpg",
       citySunset: "/media/corporations/tencon/city-bangkok.jpg",
-      cityExtra: "/media/corporations/tencon/city-hongkong.jpg"
+      cityExtra: "/media/corporations/tencon/city-hongkong.jpg",
+      cityExtra2: "/media/corporations/tencon/city-arena-gate.jpg",
+      cityExtra3: "/media/corporations/tencon/city-arena-inside.jpg"
     }
   },
   {
