@@ -3,6 +3,9 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { IohSceneHeader } from "@/components/layout/ioh-scene-header";
+import { BooksIndexFooter } from "@/features/catalog/books-index-scene";
+import { IohIndexStyles } from "@/features/home/ioh-index-landing";
 import { swosData } from "./swos-data";
 import styles from "./swos.module.css";
 
@@ -31,6 +34,8 @@ export default function SwosScene({ user }: SwosSceneProps) {
 
   return (
     <div className={styles.swosContainer}>
+      <IohIndexStyles />
+      <IohSceneHeader user={user} />
       
       {/* 02. Resmî Üst Navigasyon */}
       <header className={styles.stateNav}>
@@ -623,6 +628,9 @@ export default function SwosScene({ user }: SwosSceneProps) {
         </section>
 
       </main>
+
+      {/* Footer */}
+      <BooksIndexFooter context="encyclopedia" />
 
       {/* Global Lightbox Modal viewport */}
       {activeLightbox && (
