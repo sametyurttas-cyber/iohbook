@@ -22,6 +22,7 @@ export type CharacterProfile = {
   weaknesses: string[];
   tags: string[];
   stats: CharacterStat[];
+  posterImage?: string;
 };
 
 export const characters: CharacterProfile[] = [
@@ -30,6 +31,7 @@ export const characters: CharacterProfile[] = [
     name: "Algus",
     accent: "#e7c574",
     image: "/media/characters/algus.jpg",
+    posterImage: "/media/characters/algus-poster.jpg",
     role: "Strategic Architect / Hacker",
     expertise: "Hacking, Strateji, Liderlik",
     organization: "Agrom Technology / Rebellion",

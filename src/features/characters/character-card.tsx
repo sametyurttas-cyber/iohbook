@@ -114,7 +114,32 @@ export function CharacterCard({ character, index }: CharacterCardProps) {
           ))}
         </div>
 
-        {/* 4. Classified Details Spoiler */}
+        {/* 4. Poster Visual Archive details */}
+        {character.posterImage && (
+          <div className={styles.posterBlock}>
+            <details className={styles.posterToggle}>
+              <summary className={styles.posterSummary}>
+                <div className={styles.summaryLabel}>
+                  <span>[▼] ACCESS NEXUS ARCHIVE DATABASE POSTER (MAGAZINE)</span>
+                </div>
+                <span className={styles.posterStatus}>DECRYPTED</span>
+              </summary>
+              <div className={styles.posterContent}>
+                <div className={styles.posterImageWrapper}>
+                  <Image
+                    src={character.posterImage}
+                    alt={`${character.name} database poster`}
+                    fill
+                    className={styles.posterImg}
+                    sizes="(max-width: 768px) 100vw, 800px"
+                  />
+                </div>
+              </div>
+            </details>
+          </div>
+        )}
+
+        {/* 5. Classified Details Spoiler */}
         <div className={styles.classifiedBlock}>
           <details className={styles.classifiedToggle}>
             <summary className={styles.classifiedSummary}>
