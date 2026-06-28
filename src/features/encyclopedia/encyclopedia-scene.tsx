@@ -10,6 +10,7 @@ import { BooksIndexFooter } from "@/features/catalog/books-index-scene";
 import { IohIndexStyles } from "@/features/home/ioh-index-landing";
 import { EncyclopediaTracker } from "@/features/analytics/encyclopedia-tracker";
 import { factions, technologies, timeline } from "./encyclopedia-data";
+import { EncyclopediaWebGL } from "./encyclopedia-webgl";
 import styles from "./encyclopedia-scene.module.css";
 
 export function EncyclopediaScene({ user }: { user: IohSceneHeaderUser }) {
@@ -26,6 +27,7 @@ export function EncyclopediaScene({ user }: { user: IohSceneHeaderUser }) {
   return (
     <div className={styles.page}>
       <IohIndexStyles />
+      <EncyclopediaWebGL hoveredIndex={hoveredMonitor} />
       <style
         dangerouslySetInnerHTML={{
           __html: "body{cursor:auto!important}a,button,[data-hover],[data-magnet]{cursor:pointer!important}"
