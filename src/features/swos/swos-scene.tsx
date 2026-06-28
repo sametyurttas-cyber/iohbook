@@ -39,30 +39,7 @@ export default function SwosScene({ user }: SwosSceneProps) {
       <IohSceneHeader user={user} />
       <SwosWebGL />
       
-      {/* 02. Resmî Üst Navigasyon */}
-      <header className={styles.stateNav}>
-        <div className="flex items-center gap-6">
-          <Link href="/swos" className={styles.stateLogo}>
-            SWOS.GOV // SYSTEM
-          </Link>
-          <div className={styles.stateLinks}>
-            <a href="#state">STATE</a>
-            <a href="#capital">CAPITAL</a>
-            <a href="#defense">DEFENSE</a>
-            <a href="#currency">CURRENCY</a>
-            <a href="#citizenship">CITIZENSHIP</a>
-            <a href="#crisis">CRISIS ARCHIVE</a>
-          </div>
-        </div>
-        <div className="flex items-center gap-6">
-          <div className={styles.stateStatus}>
-            <span className="text-[#8b949e] font-mono text-[10px] uppercase">
-              PRESIDENT: MATT // STATUS: EMERGENCY
-            </span>
-            <span className={styles.statusIndicator} />
-          </div>
-        </div>
-      </header>
+
 
       <main className={styles.shell}>
         
