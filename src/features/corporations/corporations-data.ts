@@ -211,7 +211,7 @@ export const corporations: CompanyProfile[] = [
     displayName: "Qualty Energy",
     leader: "James",
     leaderTitle: "Reactor General",
-    accent: "#ff9f43", // Plasma Orange
+    accent: "#d4af37", // Gold
     cityName: "Solaris A & Solaris B",
     tagline: "Every city needs light. James decides who receives it.",
     overview: "System'in ve megacity'lerin hayatta kalmasını sağlayan reaktör zinciri ve space mining operasyonlarını yöneten enerji omurgası.",
@@ -236,12 +236,13 @@ export const corporations: CompanyProfile[] = [
     ],
     tags: ["Energy Conglomerate", "Space Mining", "Reactor Grid", "System Power"],
     visualIdentity: {
-      colors: ["#ff9f43", "#ff5e3a", "#0d0a08"],
-      architecture: "Güneş sarısı ve plazma turuncusu reaktör halkaları, roket rampaları ve uzay limanları ile kaplı endüstriyel dev kuleler."
+      colors: ["#d4af37", "#0c0e14", "#1a1508"],
+      architecture: "Altın sarısı enerji hatları ve mat siyah kaplama reaktör kuleleri, roket rampaları ve uzay limanları ile kaplı endüstriyel dev kuleler."
     },
     classifiedNote: "James, kriz anlarında gösterişli maskesini düşürüp siber diktatörlük çağrıları yapabilecek kadar acımasız bir politik figürdür.",
     images: {
-      portrait: "/media/characters/kevin-portrait.jpg" // Fallback portrait
+      portrait: "/media/corporations/qualty/james-portrait.jpg",
+      magazine: "/media/corporations/qualty/magazine-cover.jpg"
     }
   },
   {
