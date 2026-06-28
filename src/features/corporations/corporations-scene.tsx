@@ -56,7 +56,7 @@ export function CorporationsScene({ user }: CorporationsSceneProps) {
           <p className={styles.mapDesc}>
             A live data flow diagram of cyber channels connecting megacities, energy reactors, and underground mining cities controlled by the oligarchies.
           </p>
-          <CorporateMap activeId="agrom" onSelect={() => {}} />
+          <CorporateMap />
         </section>
 
         {/* Corporate Union Section Header */}

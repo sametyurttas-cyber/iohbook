@@ -103,7 +103,7 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
 
     const now = new Date();
     const timeStr = now.toTimeString().split(" ")[0];
-    const userMsg = { sender: "user", text: chatInput, time: timeStr };
+    const userMsg = { sender: "user" as const, text: chatInput, time: timeStr };
 
     setChatHistory(prev => ({
       ...prev,
