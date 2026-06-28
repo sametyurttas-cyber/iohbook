@@ -175,12 +175,13 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
               </div>
               <div className="font-mono text-[10px] text-muted-foreground mt-1 px-1">
                 <span className="text-[#e7c574] block font-semibold mb-0.5">
-                  FILE_REF: {company.id === "agrom" ? "AC_DAY_01" : company.id === "nets" ? "OC_DAY_CANAL_01" : company.id === "tencon" ? "TC_AERIAL_01" : "SC_CAPITAL_01"}
+                  FILE_REF: {company.id === "agrom" ? "AC_DAY_01" : company.id === "nets" ? "OC_DAY_CANAL_01" : company.id === "tencon" ? "TC_AERIAL_01" : company.id === "qualty" ? "SC_CAPITAL_01" : "NC_CENTER_01"}
                 </span>
                 {company.id === "agrom" && "Agrom City dikey mimari ve sokak panoraması. Altın işlemeli spayrlar ve siber sancaklar görünür durumdadır."}
                 {company.id === "nets" && "Orion City kanal mimarisi ve şehir merkezi. Beyaz mermer saraylar ve parlayan siber sancaklar."}
                 {company.id === "tencon" && "Tencon City Sector 17 genel görünümü ve Synapse Grid kuantum reaktör ağı şeması."}
                 {company.id === "qualty" && "Solaris A başkent bölgesi ve Qualty Energy merkez reaktör kulelerinin gün batımı altındaki görkemli panoraması."}
+                {company.id === "ubless" && "Nexum City gümüş kuleleri ve merkez ulaşım kanallarının bulutlu gün ışığı altındaki görkemli panoraması."}
               </div>
             </div>
 
@@ -202,12 +203,13 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
                 </div>
                 <div className="font-mono text-[10px] text-muted-foreground mt-1 px-1">
                   <span className="text-[#e7c574] block font-semibold mb-0.5">
-                    FILE_REF: {company.id === "agrom" ? "AC_AERIAL_02" : company.id === "nets" ? "OC_NIGHT_CANAL_02" : company.id === "tencon" ? "TC_ARENA_02" : "SC_MINING_HUB_02"}
+                    FILE_REF: {company.id === "agrom" ? "AC_AERIAL_02" : company.id === "nets" ? "OC_NIGHT_CANAL_02" : company.id === "tencon" ? "TC_ARENA_02" : company.id === "qualty" ? "SC_MINING_HUB_02" : "NC_AERIAL_02"}
                   </span>
                   {company.id === "agrom" && "Merkez quantum sunucu kulesinin yörüngesel kalkan halkasıyla uydu kanallarından çekilmiş genel planı."}
                   {company.id === "nets" && "Orion City kanalları ve devasa holografik reklam panolarının mor ışık seli altındaki gece görünümü."}
                   {company.id === "tencon" && "Siber spor arenalarının ve KOWN robotik gladyatör dövüşlerinin yapıldığı devasa kubbeli Tencon Arena."}
                   {company.id === "qualty" && "Asteroid kuşağındaki uzay madenciliği merkezi Extraction Hub T9. Kuantum reaktör plazma yakıtı sevkiyatı."}
+                  {company.id === "ubless" && "Nexum City siber veri yolları ve merkez şebeke kulesinin gece çekilmiş genel planı."}
                 </div>
               </div>
             )}
@@ -230,12 +232,13 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
                 </div>
                 <div className="font-mono text-[10px] text-muted-foreground mt-1 px-1">
                   <span className="text-[#e7c574] block font-semibold mb-0.5">
-                    FILE_REF: {company.id === "agrom" ? "AC_BROCHURE_03" : company.id === "nets" ? "OC_DAY_PALACE_03" : company.id === "tencon" ? "TC_STREET_03" : "SC_MINING_HUD_03"}
+                    FILE_REF: {company.id === "agrom" ? "AC_BROCHURE_03" : company.id === "nets" ? "OC_DAY_PALACE_03" : company.id === "tencon" ? "TC_STREET_03" : company.id === "qualty" ? "SC_MINING_HUD_03" : "NC_TRANSPORT_03"}
                   </span>
                   {company.id === "agrom" && "\"The future is here.\" - Corporate Union propaganda broşürü ve kentsel yaşam modülleri kılavuzu."}
                   {company.id === "nets" && "Nets Media Oligarchy ana yönetim sarayının dış cephesi ve gökyüzü ulaştırma hatları."}
                   {company.id === "tencon" && "Tencon City Alpha Bölgesi Node 17 ana caddeleri ve kuantum sunucu kuleleri."}
                   {company.id === "qualty" && "Qualty Energy Asteroid Mining Operation telemetri paneli. Çıkarılan elementlerin ve AI droneların durum kayıtları."}
+                  {company.id === "ubless" && "\"We move consciousness.\" - Ubless Quantum Transport maglev kapsül tren hatları broşürü ve siber aktarım şeması."}
                 </div>
               </div>
             )}
@@ -258,11 +261,12 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
                 </div>
                 <div className="font-mono text-[10px] text-muted-foreground mt-1 px-1">
                   <span className="text-[#e7c574] block font-semibold mb-0.5">
-                    FILE_REF: {company.id === "nets" ? "OC_SUNSET_PALACE_04" : company.id === "tencon" ? "TC_SECTOR_09" : "SC_DAY_STREET_04"}
+                    FILE_REF: {company.id === "nets" ? "OC_SUNSET_PALACE_04" : company.id === "tencon" ? "TC_SECTOR_09" : company.id === "qualty" ? "SC_DAY_STREET_04" : "NC_DAY_STREET_04"}
                   </span>
                   {company.id === "nets" && "Orion City gün batımı ve köprü geçiş hattının saray surları ile bütünleşen mor neon aydınlatması."}
                   {company.id === "tencon" && "Tencon kontrolündeki Bangkok Sektör 09. Yoğun nüfus baskısı altındaki cyberpunk sokaklar ve neural klinikler."}
                   {company.id === "qualty" && "Solaris temiz enerji sokak mimarisi. Dikey binalar üzerindeki dikey bahçeler ve arka planda yükselen enerji spayrları."}
+                  {company.id === "ubless" && "Nexum krom kaplama dikey sokakları ve gökyüzü ulaştırma araçlarının gündüz görünümü."}
                 </div>
               </div>
             )}
@@ -285,10 +289,11 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
                 </div>
                 <div className="font-mono text-[10px] text-muted-foreground mt-1 px-1">
                   <span className="text-[#e7c574] block font-semibold mb-0.5">
-                    FILE_REF: {company.id === "tencon" ? "TC_SECTOR_08" : "SC_NIGHT_STREET_05"}
+                    FILE_REF: {company.id === "tencon" ? "TC_SECTOR_08" : company.id === "qualty" ? "SC_NIGHT_STREET_05" : "NC_NIGHT_STREET_05"}
                   </span>
                   {company.id === "tencon" && "Tencon kontrolündeki Hong Kong Sektör 08. Devasa neon reklam panoları, siber pazar yerleri ve dikey mimari yapıları."}
                   {company.id === "qualty" && "Solaris yapay ışıklandırma kanalları ve köprülü otoyol hatları ile siber gece görünümü."}
+                  {company.id === "ubless" && "Nexum City veri hatları ve siber otoyolların turkuaz ışık seli altındaki gece görünümü."}
                 </div>
               </div>
             )}

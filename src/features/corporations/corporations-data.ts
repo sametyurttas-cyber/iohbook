@@ -287,7 +287,12 @@ export const corporations: CompanyProfile[] = [
     classifiedNote: "John, savaş zamanlarında lojistik öncelik kurallarını değiştirerek System içindeki dengeleri tamamen değiştirebilecek lojistik güce sahiptir.",
     images: {
       portrait: "/media/corporations/ubless/john-portrait.jpg",
-      magazine: "/media/corporations/ubless/magazine-cover.jpg"
+      magazine: "/media/corporations/ubless/magazine-cover.jpg",
+      cityDay: "/media/corporations/ubless/city-nexus-center.jpg",
+      cityCenter: "/media/corporations/ubless/city-nexus-aerial.jpg",
+      cityBrochure: "/media/corporations/ubless/city-quantum-transport.jpg",
+      citySunset: "/media/corporations/ubless/city-day-street.jpg",
+      cityExtra: "/media/corporations/ubless/city-night-street.jpg"
     }
   },
   {
