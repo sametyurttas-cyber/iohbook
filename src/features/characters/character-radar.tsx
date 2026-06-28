@@ -108,7 +108,7 @@ export function CharacterRadar({ stats, accentColor }: CharacterRadarProps) {
           const ly = center + labelDist * Math.sin(angle);
 
           // Fine tune label text anchoring
-          let textAnchor = "middle";
+          let textAnchor: "start" | "end" | "middle" = "middle";
           if (Math.cos(angle) > 0.1) textAnchor = "start";
           if (Math.cos(angle) < -0.1) textAnchor = "end";
 
