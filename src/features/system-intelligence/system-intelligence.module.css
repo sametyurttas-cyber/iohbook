@@ -1046,6 +1046,156 @@
   word-break: break-all;
 }
 
+/* Biometric Decryption Node styles */
+.decryptSection {
+  background: rgba(9, 13, 20, 0.7);
+  border: 1px dashed rgba(255, 49, 49, 0.25);
+  border-radius: 16px;
+  padding: 2.5rem;
+  margin-bottom: 6rem;
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+.decryptHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 49, 49, 0.15);
+  padding-bottom: 0.8rem;
+  margin-bottom: 1.5rem;
+}
+
+.decryptTitle {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.8rem;
+  color: #ff3131;
+  letter-spacing: 0.15em;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.lockIcon {
+  fill: #ff3131;
+  width: 16px;
+  height: 16px;
+  animation: lockPulseAnim 2s infinite ease-in-out;
+}
+
+@keyframes lockPulseAnim {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.08); }
+}
+
+.decryptStatusBadge {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: #ff3131;
+  border: 1px solid rgba(255, 49, 49, 0.3);
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+}
+
+.decryptBody {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.decryptInstructions {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: #c9d1d9;
+  font-weight: 300;
+  max-width: 800px;
+}
+
+.decryptTerminal {
+  background: rgba(3, 4, 6, 0.95);
+  border: 1px solid rgba(255, 49, 49, 0.15);
+  border-radius: 8px;
+  padding: 1.5rem;
+  min-height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.9);
+}
+
+.scrambleText {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.8rem;
+  color: #ff3131;
+  letter-spacing: 0.15em;
+  word-break: break-all;
+  line-height: 1.8;
+  opacity: 0.85;
+}
+
+.decryptPayload {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.88rem;
+  line-height: 1.8;
+  color: #e9d9ae;
+  width: 100%;
+}
+
+.payloadHeader {
+  color: #ff3131;
+  font-weight: bold;
+  border-bottom: 1px dashed rgba(255, 49, 49, 0.2);
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.8rem;
+  display: block;
+}
+
+.payloadText {
+  font-style: italic;
+  font-weight: 300;
+  color: #ffffff;
+  display: block;
+}
+
+.payloadSignature {
+  margin-top: 1rem;
+  display: block;
+  text-align: right;
+  color: #e7c574;
+  font-weight: bold;
+  font-size: 0.8rem;
+}
+
+.decryptButton {
+  align-self: flex-start;
+  background: rgba(255, 49, 49, 0.05);
+  border: 1px solid #ff3131;
+  color: #ff3131;
+  border-radius: 6px;
+  padding: 0.9rem 1.8rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 12px rgba(255, 49, 49, 0.1);
+}
+
+.decryptButton:hover:not(:disabled) {
+  background: #ff3131;
+  color: #05070c;
+  box-shadow: 0 0 20px rgba(255, 49, 49, 0.4);
+}
+
+.decryptButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 @media (max-width: 1024px) {
   .heroTitle {
     font-size: 3.5rem;

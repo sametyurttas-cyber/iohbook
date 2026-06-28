@@ -24,6 +24,35 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
   const [calcStep, setCalcStep] = useState(0);
   const [calcResult, setCalcResult] = useState<{ coherence: number; syncRate: number; consumption: number; idToken: string } | null>(null);
 
+  // Biometric Decryption Node state
+  const [isDecrypting, setIsDecrypting] = useState(false);
+  const [isDecrypted, setIsDecrypted] = useState(false);
+  const [scrambleText, setScrambleText] = useState("");
+  const [decryptLogIndex, setDecryptLogIndex] = useState(0);
+
+  const startDecryption = () => {
+    setIsDecrypting(true);
+    setIsDecrypted(false);
+    setDecryptLogIndex(Math.floor(Math.random() * 2));
+
+    const chars = "0123456789ABCDEF / @ $ % & * [ ] { } Node: 0x88A7 Secure Entry Locked Header Hex Data: ";
+    let elapsed = 0;
+    const interval = setInterval(() => {
+      let scramble = "";
+      for (let i = 0; i < 160; i++) {
+        scramble += chars[Math.floor(Math.random() * chars.length)];
+      }
+      setScrambleText(scramble);
+      elapsed += 60;
+
+      if (elapsed >= 1500) {
+        clearInterval(interval);
+        setIsDecrypting(false);
+        setIsDecrypted(true);
+      }
+    }, 60);
+  };
+
   const runCoherenceTest = (e: React.FormEvent) => {
     e.preventDefault();
     if (!calcName.trim()) return;
@@ -680,6 +709,76 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
                 <p className={styles.threatDesc}>{item.desc}</p>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* SWOS DECRYPTION KEY NODE */}
+        <section className={styles.decryptSection}>
+          <div className={styles.decryptHeader}>
+            <h2 className={styles.decryptTitle}>
+              <svg className={styles.lockIcon} viewBox="0 0 24 24">
+                <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+              </svg>
+              SWOS HIGH SECURITY DATA ARCHIVE // NODE: 0x88A7
+            </h2>
+            <span className={styles.decryptStatusBadge}>
+              {isDecrypted ? "DECRYPTED" : isDecrypting ? "DECRYPTING..." : "LOCKED"}
+            </span>
+          </div>
+
+          <div className={styles.decryptBody}>
+            <p className={styles.decryptInstructions}>
+              System'in karanlık katmanlarına ait gizli iletişim kütükleri ve günceleri. 
+              Güvenlik duvarını geçici olarak devre dışı bırakmak ve biyometrik veri hücresini çözmek için sinyali başlatın.
+            </p>
+
+            <div className={styles.decryptTerminal}>
+              {isDecrypting && (
+                <div className={styles.scrambleText}>
+                  {scrambleText}
+                </div>
+              )}
+
+              {!isDecrypting && !isDecrypted && (
+                <div className={styles.scrambleText} style={{ opacity: 0.4 }}>
+                  // SECURE SHELL LOCKED // AWAITING AUTHORIZATION DECREE
+                </div>
+              )}
+
+              {isDecrypted && (
+                <div className={styles.decryptPayload}>
+                  {decryptLogIndex === 0 ? (
+                    <>
+                      <span className={styles.payloadHeader}>// DECRYPTED PAYLOAD // SWOS CLASSIFIED DIARY - ARCHITECT ALGUS</span>
+                      <span className={styles.payloadText}>
+                        "System, insanları hayatta tutmak için inşa edilmedi. Onları işler ve hatasız kılmak için kuruldu. 
+                        Eğer bir gün KAI, insan bilincini bir yük olarak görmeye başlarsa, CoreWits'in yapacağı tek şey 
+                        bunu sessizce silmektir. Ve biz buna 'gelişim' diyeceğiz."
+                      </span>
+                      <span className={styles.payloadSignature}>- Algus, Core Architect [0x00FF]</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className={styles.payloadHeader}>// DECRYPTED PAYLOAD // INTERCEPTED COMM - STEVE</span>
+                      <span className={styles.payloadText}>
+                        "System'in içindeki o kuantum yıldızlarına her baktığımda, aslında birer mezarlık gördüğümü fark ediyorum. 
+                        KAI'nin sildiği her bir ego, arkasında sadece soğuk birer ışık noktası bırakıyor. 
+                        Biz ölümsüzlüğü ararken, makinenin içindeki sonsuz kütük kayıtlarına dönüştük."
+                      </span>
+                      <span className={styles.payloadSignature}>- Steve, Outpost Sentinel</span>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <button
+              onClick={startDecryption}
+              className={styles.decryptButton}
+              disabled={isDecrypting}
+            >
+              {isDecrypting ? "DECRYPTING..." : isDecrypted ? "RE-DECRYPT FILE" : "INITIATE DECRYPTION DECREE [→]"}
+            </button>
           </div>
         </section>
 
