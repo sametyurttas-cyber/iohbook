@@ -220,37 +220,35 @@ export default function SwosScene({ user }: SwosSceneProps) {
 
             <div className={styles.diagramRow}>
               <div className={styles.diagramNode}>
-                <span className={styles.nodeTitle}>COUNCIL</span>
-                <span className={styles.nodeValue}>Ministers Council</span>
-                <span className={styles.nodeLeader}>Coordinators</span>
+                <span className={styles.nodeTitle}>VICE PRESIDENT</span>
+                <span className={styles.nodeValue}>Jeff</span>
+                <span className={styles.nodeLeader}>Executive Deputy</span>
                 <div className={styles.diagramLineVertical} />
               </div>
               <div className={styles.diagramNode}>
-                <span className={styles.nodeTitle}>SECURITY</span>
-                <span className={styles.nodeValue}>General Security</span>
-                <span className={styles.nodeLeader}>Alice & John</span>
+                <span className={styles.nodeTitle}>GENERAL SECRETARY</span>
+                <span className={styles.nodeValue}>Alice</span>
+                <span className={styles.nodeLeader}>Administration</span>
                 <div className={styles.diagramLineVertical} />
               </div>
               <div className={styles.diagramNode}>
-                <span className={styles.nodeTitle}>MINISTRIES</span>
-                <span className={styles.nodeValue}>State Bureaus</span>
-                <span className={styles.nodeLeader}>Samuel Fox & Sergei</span>
+                <span className={styles.nodeTitle}>REPRESENTATIVE OF STATES</span>
+                <span className={styles.nodeValue}>Linda Olesiv</span>
+                <span className={styles.nodeLeader}>Federal Council</span>
                 <div className={styles.diagramLineVertical} />
               </div>
             </div>
 
             <div className={styles.diagramRow}>
               <div className={styles.diagramNode}>
-                <span className={styles.nodeTitle}>ECONOMY</span>
-                <span className={styles.nodeValue}>Minister Sergei</span>
-              </div>
-              <div className={styles.diagramNode}>
-                <span className={styles.nodeTitle}>MILITARY</span>
+                <span className={styles.nodeTitle}>MINISTER OF DEFENSE</span>
                 <span className={styles.nodeValue}>Samuel Fox</span>
+                <span className={styles.nodeLeader}>Military Command</span>
               </div>
               <div className={styles.diagramNode}>
-                <span className={styles.nodeTitle}>CORE SYSTEMS</span>
-                <span className={styles.nodeValue}>Tech Core AI</span>
+                <span className={styles.nodeTitle}>MINISTER OF ECONOMICS</span>
+                <span className={styles.nodeValue}>Sergei Petkov</span>
+                <span className={styles.nodeLeader}>Financial Control</span>
               </div>
             </div>
           </div>
