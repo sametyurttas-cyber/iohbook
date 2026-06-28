@@ -1,9 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import {
   IohSceneHeader,
   type IohSceneHeaderUser
@@ -15,11 +13,14 @@ import { factions, technologies, timeline } from "./encyclopedia-data";
 import styles from "./encyclopedia-scene.module.css";
 
 export function EncyclopediaScene({ user }: { user: IohSceneHeaderUser }) {
-  const [activeColumn, setActiveColumn] = useState<number | null>(null);
-  const [systemOnline, setSystemOnline] = useState(false);
+  const [hoveredMonitor, setHoveredMonitor] = useState<number | null>(null);
+  const [pulseVal, setPulseVal] = useState(94.2);
 
   useEffect(() => {
-    setSystemOnline(true);
+    const interval = setInterval(() => {
+      setPulseVal(prev => +(prev + (Math.random() * 0.4 - 0.2)).toFixed(2));
+    }, 1500);
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -33,7 +34,7 @@ export function EncyclopediaScene({ user }: { user: IohSceneHeaderUser }) {
       <div className={styles.vignette} aria-hidden="true" />
       <div className={styles.grain} aria-hidden="true" />
       
-      {/* Main Header */}
+      {/* Main Navigation Header */}
       <IohSceneHeader user={user} />
       <EncyclopediaTracker />
 
@@ -42,7 +43,7 @@ export function EncyclopediaScene({ user }: { user: IohSceneHeaderUser }) {
         <div className={styles.subHeaderInner}>
           <span className={styles.systemStatus}>
             <span className={styles.statusPulse} />
-            ARCHIVE SYSTEM ACTIVE
+            LORE DIRECTORY ONLINE // SECURE NODE PORTAL
           </span>
           <nav className={styles.subHeaderNav}>
             <Link href="/encyclopedia" className={styles.subHeaderLinkActive}>
@@ -62,189 +63,230 @@ export function EncyclopediaScene({ user }: { user: IohSceneHeaderUser }) {
       </div>
 
       <main className={styles.main}>
-        {/* Portal Hero */}
-        <section className={styles.heroSection}>
-          <div className={styles.heroGlow} />
-          <h1 className={styles.heroTitle}>THE ARCHIVE</h1>
-          <p className={styles.heroSubtitle}>
-            IOH UNIVERSE CORE DIRECTORY // ACCESS COMPLETED FOR YEAR 2303
+        {/* Terminal Header */}
+        <section className={styles.terminalIntroHeader}>
+          <div className={styles.glitchGlow} />
+          <span className={styles.terminalLabelKicker}>// ENCYCLOPEDIA DATABASE REFERENCE</span>
+          <h1 className={styles.terminalTitleMain}>UNIVERSAL CORE</h1>
+          <p className={styles.terminalSubtitle}>
+            SELECT LORE MONITOR VECTOR TO EXPAND SECTOR INTELLIGENCE
           </p>
         </section>
 
-        {/* 3-Column Tri-Sector Gateway */}
-        <section className={styles.portalGrid}>
-          {/* Column 1: Characters */}
+        {/* 3-Column Cyber Monitor Deck */}
+        <section className={styles.hudGrid}>
+          {/* Monitor 1: Karakterler */}
           <div 
-            className={`${styles.portalColumn} ${activeColumn === 0 ? styles.columnExpanded : ""} ${activeColumn !== null && activeColumn !== 0 ? styles.columnCollapsed : ""}`}
-            onMouseEnter={() => setActiveColumn(0)}
-            onMouseLeave={() => setActiveColumn(null)}
-            style={{ "--accent-color": "#e7c574" } as React.CSSProperties}
+            className={`${styles.monitorCard} ${hoveredMonitor === 0 ? styles.monitorFocused : ""} ${hoveredMonitor !== null && hoveredMonitor !== 0 ? styles.monitorDimmed : ""}`}
+            onMouseEnter={() => setHoveredMonitor(0)}
+            onMouseLeave={() => setHoveredMonitor(null)}
+            style={{ "--monitor-accent": "#e7c574" } as React.CSSProperties}
           >
-            <div className={styles.columnBackground} style={{ backgroundImage: "url('/media/encyclopedia/characters/algus.webp')" }} />
-            <div className={styles.columnOverlay} />
-            <div className={styles.columnGlow} />
+            {/* Vector grid backdrop */}
+            <div className={styles.monitorGridBackdrop} />
+            <div className={styles.monitorGlowLine} />
             
-            <div className={styles.columnContent}>
-              <div className={styles.sectorMeta}>
-                <span>SECTOR 01 // RESISTANCE</span>
-                <span className={styles.securityBadge} style={{ color: "#e7c574", borderColor: "#e7c574" }}>CODE GOD</span>
-              </div>
-              <h2 className={styles.columnTitle}>KARAKTERLER (THE TEAM)</h2>
-              <p className={styles.columnDesc}>
-                Godcode programcıları, siber aktivistler ve fiziksel gerçeklik anılarını korumaya çalışan isyankar bilinçler.
+            <div className={styles.monitorHeaderTab}>
+              <span className={styles.monitorDot} style={{ backgroundColor: "#e7c574" }} />
+              <span className={styles.monitorId}>MONITOR // RESISTANCE_CELLS</span>
+            </div>
+
+            <div className={styles.monitorBody}>
+              <h2 className={styles.monitorTitle}>KARAKTERLER</h2>
+              <span className={styles.monitorKicker}>DECENTRALIZED RESISTANCE</span>
+              <p className={styles.monitorDesc}>
+                Fiziksel dünya anılarını korumak ve merkezi veri hegemonyasını kırmak için savaşan siber aktivistler ve kod kaçakçıları.
               </p>
-              
-              <div className={styles.telemetryGrid}>
-                <div className={styles.telemetryItem}>
-                  <span className={styles.telemetryLabel}>REGISTERED COGNITIONS</span>
-                  <span className={styles.telemetryValue}>5 ACTIVE DOSSIERS</span>
+
+              {/* Graphic/Vector Simulation inside card */}
+              <div className={styles.monitorGraphic}>
+                <div className={styles.vectorNodes}>
+                  <div className={styles.nodePoint} style={{ left: "20%", top: "30%" }} />
+                  <div className={styles.nodePoint} style={{ left: "70%", top: "60%" }} />
+                  <div className={styles.nodePoint} style={{ left: "50%", top: "40%" }} />
+                  <div className={styles.connectingLine} />
                 </div>
-                <div className={styles.telemetryItem}>
-                  <span className={styles.telemetryLabel}>THREAT ASSESSMENT</span>
-                  <span className={styles.telemetryValue} style={{ color: "#ff3b3b" }}>CRITICAL OUTLIER</span>
+                <div className={styles.graphicOverlayText}>
+                  <span>GRID: ACTIVE // SPOILER SAFE</span>
                 </div>
               </div>
 
-              <Link href="/encyclopedia/characters" className={styles.columnBtn}>
-                ENTER DOSSIERS [→]
+              <div className={styles.telemetryStats}>
+                <div className={styles.statRow}>
+                  <span>COGNITIONS DETECTED</span>
+                  <span>5 SUB-DOSSIERS</span>
+                </div>
+                <div className={styles.statRow}>
+                  <span>THREAT COEFFICIENT</span>
+                  <span style={{ color: "#ff3b3b" }}>CRITICAL ALIENATION</span>
+                </div>
+              </div>
+
+              <Link href="/encyclopedia/characters" className={styles.monitorBtn}>
+                OPEN DOSSIERS [→]
               </Link>
             </div>
           </div>
 
-          {/* Column 2: Corporations */}
+          {/* Monitor 2: Sirketler */}
           <div 
-            className={`${styles.portalColumn} ${activeColumn === 1 ? styles.columnExpanded : ""} ${activeColumn !== null && activeColumn !== 1 ? styles.columnCollapsed : ""}`}
-            onMouseEnter={() => setActiveColumn(1)}
-            onMouseLeave={() => setActiveColumn(null)}
-            style={{ "--accent-color": "#ff5533" } as React.CSSProperties}
+            className={`${styles.monitorCard} ${hoveredMonitor === 1 ? styles.monitorFocused : ""} ${hoveredMonitor !== null && hoveredMonitor !== 1 ? styles.monitorDimmed : ""}`}
+            onMouseEnter={() => setHoveredMonitor(1)}
+            onMouseLeave={() => setHoveredMonitor(null)}
+            style={{ "--monitor-accent": "#ff5533" } as React.CSSProperties}
           >
-            <div className={styles.columnBackground} style={{ backgroundImage: "url('/media/encyclopedia/cities/archive-map.webp')" }} />
-            <div className={styles.columnOverlay} />
-            <div className={styles.columnGlow} />
+            <div className={styles.monitorGridBackdrop} />
+            <div className={styles.monitorGlowLine} />
 
-            <div className={styles.columnContent}>
-              <div className={styles.sectorMeta}>
-                <span>SECTOR 02 // CAPITALISM</span>
-                <span className={styles.securityBadge} style={{ color: "#ff5533", borderColor: "#ff5533" }}>CODE WAR</span>
-              </div>
-              <h2 className={styles.columnTitle}>ŞİRKETLER (CORPORATIONS)</h2>
-              <p className={styles.columnDesc}>
-                Centrium kaynaklarını, siber sunucuları ve zihin aktarım portallarını yöneten acımasız şirketler koalisyonu.
+            <div className={styles.monitorHeaderTab}>
+              <span className={styles.monitorDot} style={{ backgroundColor: "#ff5533" }} />
+              <span className={styles.monitorId}>MONITOR // CORPORATE_NEXUS</span>
+            </div>
+
+            <div className={styles.monitorBody}>
+              <h2 className={styles.monitorTitle}>ŞİRKETLER</h2>
+              <span className={styles.monitorKicker}>CONGLOMERATE ALLIANCE</span>
+              <p className={styles.monitorDesc}>
+                Centrium'un devasa bilgi sunucularını ve zihin transferi portallarını kontrol eden sermaye oligarşisi.
               </p>
 
-              <div className={styles.telemetryGrid}>
-                <div className={styles.telemetryItem}>
-                  <span className={styles.telemetryLabel}>CONTROL RATIO</span>
-                  <span className={styles.telemetryValue}>64.8% TOTAL CAPITAL</span>
+              {/* Graphic/Vector Simulation inside card */}
+              <div className={styles.monitorGraphic}>
+                <div className={styles.networkMesh}>
+                  <div className={styles.meshLine} style={{ transform: "rotate(15deg)" }} />
+                  <div className={styles.meshLine} style={{ transform: "rotate(-30deg)" }} />
+                  <div className={styles.meshCircle} />
                 </div>
-                <div className={styles.telemetryItem}>
-                  <span className={styles.telemetryLabel}>PRIMARY OBJECTIVE</span>
-                  <span className={styles.telemetryValue}>EGO COMMERCIALIZATION</span>
+                <div className={styles.graphicOverlayText}>
+                  <span>CAPITAL RATIO: 64.8%</span>
                 </div>
               </div>
 
-              <Link href="/encyclopedia/corporations" className={styles.columnBtn}>
-                ACCESS CONGLOMERATE [→]
+              <div className={styles.telemetryStats}>
+                <div className={styles.statRow}>
+                  <span>SECTOR SHARES</span>
+                  <span>CENTRIUM INFRA</span>
+                </div>
+                <div className={styles.statRow}>
+                  <span>CORE TARGET</span>
+                  <span>EGO COMMERCIALIZATION</span>
+                </div>
+              </div>
+
+              <Link href="/encyclopedia/corporations" className={styles.monitorBtn}>
+                ACCESS CORPORATIONS [→]
               </Link>
             </div>
           </div>
 
-          {/* Column 3: SWOS */}
+          {/* Monitor 3: SWOS */}
           <div 
-            className={`${styles.portalColumn} ${activeColumn === 2 ? styles.columnExpanded : ""} ${activeColumn !== null && activeColumn !== 2 ? styles.columnCollapsed : ""}`}
-            onMouseEnter={() => setActiveColumn(2)}
-            onMouseLeave={() => setActiveColumn(null)}
-            style={{ "--accent-color": "#7aa7ff" } as React.CSSProperties}
+            className={`${styles.monitorCard} ${hoveredMonitor === 2 ? styles.monitorFocused : ""} ${hoveredMonitor !== null && hoveredMonitor !== 2 ? styles.monitorDimmed : ""}`}
+            onMouseEnter={() => setHoveredMonitor(2)}
+            onMouseLeave={() => setHoveredMonitor(null)}
+            style={{ "--monitor-accent": "#7aa7ff" } as React.CSSProperties}
           >
-            <div className={styles.columnBackground} style={{ backgroundImage: "url('/media/corporations/centrium-parade-full.jpg')" }} />
-            <div className={styles.columnOverlay} />
-            <div className={styles.columnGlow} />
+            <div className={styles.monitorGridBackdrop} />
+            <div className={styles.monitorGlowLine} />
 
-            <div className={styles.columnContent}>
-              <div className={styles.sectorMeta}>
-                <span>SECTOR 03 // JURISDICTION</span>
-                <span className={styles.securityBadge} style={{ color: "#7aa7ff", borderColor: "#7aa7ff" }}>SYS GOD</span>
-              </div>
-              <h2 className={styles.columnTitle}>SWOS (STATE AUTHORITY)</h2>
-              <p className={styles.columnDesc}>
-                Ölüm sonrası vatandaşlık yasalarını uygulayan, dijital bilinç kalkanları ve merkezi vergi çekirdekleriyle yöneten devlet mekanizması.
+            <div className={styles.monitorHeaderTab}>
+              <span className={styles.monitorDot} style={{ backgroundColor: "#7aa7ff" }} />
+              <span className={styles.monitorId}>MONITOR // STATE_AUTHORITY</span>
+            </div>
+
+            <div className={styles.monitorBody}>
+              <h2 className={styles.monitorTitle}>SWOS</h2>
+              <span className={styles.monitorKicker}>FEDERAL CONTROL AUTHORITY</span>
+              <p className={styles.monitorDesc}>
+                Ölüm sonrası ego bütünlüğü yasalarını, savunma kalkanlarını ve para çekirdeklerini kontrol eden merkezi bürokrasi.
               </p>
 
-              <div className={styles.telemetryGrid}>
-                <div className={styles.telemetryItem}>
-                  <span className={styles.telemetryLabel}>GOVERNMENT MODEL</span>
-                  <span className={styles.telemetryValue}>BUREAUCRATIC UNION</span>
+              {/* Graphic/Vector Simulation inside card */}
+              <div className={styles.monitorGraphic}>
+                <div className={styles.radarSweepCircle}>
+                  <div className={styles.radarLine} />
                 </div>
-                <div className={styles.telemetryItem}>
-                  <span className={styles.telemetryLabel}>ACTIVE MARTIAL PROTOCOLS</span>
-                  <span className={styles.telemetryValue} style={{ color: "#27c93f" }}>D-9 SECURITY ENFORCED</span>
+                <div className={styles.graphicOverlayText}>
+                  <span>SWOS ENCRYPTION: SECURE</span>
                 </div>
               </div>
 
-              <Link href="/encyclopedia/swos" className={styles.columnBtn}>
-                CONNECT TO AUTHORITY [→]
+              <div className={styles.telemetryStats}>
+                <div className={styles.statRow}>
+                  <span>ACTIVE PROTOCOL</span>
+                  <span>D-9 ENFORCEMENT</span>
+                </div>
+                <div className={styles.statRow}>
+                  <span>EGO INTEGRITY</span>
+                  <span>{pulseVal}% // CALIBRATED</span>
+                </div>
+              </div>
+
+              <Link href="/encyclopedia/swos" className={styles.monitorBtn}>
+                CONNECT TO SWOS [→]
               </Link>
             </div>
           </div>
         </section>
 
-        {/* Supplementary Lore Archive Index */}
-        <section className={styles.loreRegistrySection}>
-          <div className={styles.registryHeader}>
-            <span className={styles.registryKicker}>SECONDARY SYSTEMS</span>
-            <h2 className={styles.registryTitle}>Lore Registry</h2>
-            <p className={styles.registrySlogan}>Supplementary factions, technologies, and chronological markers of the 2303 crisis.</p>
+        {/* Supplementary Systems Lore Section */}
+        <section className={styles.supplementarySection}>
+          <div className={styles.supHeader}>
+            <span className={styles.supKicker}>COMPLEMENTARY DATA REGISTRY</span>
+            <h2 className={styles.supTitle}>System Registry</h2>
+            <p className={styles.supDesc}>
+              Aşağıdaki veri kütükleri, evrendeki diğer ikincil organizasyonları ve kuantum teknolojilerini içerir.
+            </p>
           </div>
 
-          <div className={styles.loreGrid}>
-            {/* Factions list */}
-            <div className={styles.loreBlock}>
-              <h3 className={styles.blockTitle}>// 01. ACTIVE FACTIONS</h3>
-              <div className={styles.blockList}>
+          <div className={styles.registryGridContainer}>
+            {/* Factions Block */}
+            <div className={styles.registryBlock}>
+              <h3 className={styles.blockHeadline}>// FACTION REGISTER</h3>
+              <div className={styles.itemContainer}>
                 {factions.map((f, i) => (
-                  <div key={i} className={styles.loreItem} style={{ borderLeft: `2px solid ${f.accent}` }}>
-                    <div className={styles.loreItemHead}>
-                      <span className={styles.loreItemName}>{f.name}</span>
-                      <span className={styles.loreItemSub}>{f.domain}</span>
+                  <div key={i} className={styles.registryItem} style={{ borderLeft: `2px solid ${f.accent}` }}>
+                    <div className={styles.itemHeader}>
+                      <span className={styles.itemName}>{f.name}</span>
+                      <span className={styles.itemMeta}>{f.domain}</span>
                     </div>
-                    <p className={styles.loreItemDesc}>{f.summary}</p>
+                    <p className={styles.itemDesc}>{f.summary}</p>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Technologies list */}
-            <div className={styles.loreBlock}>
-              <h3 className={styles.blockTitle}>// 02. SYSTEM TECH LOGS</h3>
-              <div className={styles.blockList}>
+            {/* Technologies Block */}
+            <div className={styles.registryBlock}>
+              <h3 className={styles.blockHeadline}>// TECH PROTOCOLS</h3>
+              <div className={styles.itemContainer}>
                 {technologies.map((t, i) => (
-                  <div key={i} className={styles.loreItem} style={{ borderLeft: `2px solid ${t.accent}` }}>
-                    <div className={styles.loreItemHead}>
-                      <span className={styles.loreItemName}>{t.name}</span>
-                      <span className={styles.loreItemSub}>{t.code}</span>
+                  <div key={i} className={styles.registryItem} style={{ borderLeft: `2px solid ${t.accent}` }}>
+                    <div className={styles.itemHeader}>
+                      <span className={styles.itemName}>{t.name}</span>
+                      <span className={styles.itemMeta}>{t.code}</span>
                     </div>
-                    <p className={styles.loreItemDesc}>{t.summary}</p>
+                    <p className={styles.itemDesc}>{t.summary}</p>
                   </div>
                 ))}
               </div>
             </div>
           </div>
 
-          {/* Timeline Block */}
+          {/* Timeline Registry */}
           <div className={styles.timelineBlock}>
-            <h3 className={styles.blockTitle}>// 03. SYSTEM CHRONOLOGY</h3>
-            <div className={styles.timelineRowGrid}>
+            <h3 className={styles.blockHeadline}>// CHRONOLOGICAL MARKERS</h3>
+            <div className={styles.timelineHorizontal}>
               {timeline.map((entry, idx) => (
                 <div key={idx} className={styles.timelineCard}>
                   <time className={styles.timelineYear}>{entry.year}</time>
-                  <h4 className={styles.timelineTitle}>{entry.title}</h4>
-                  <p className={styles.timelineEvent}>{entry.event}</p>
+                  <h4 className={styles.timelineCardTitle}>{entry.title}</h4>
+                  <p className={styles.timelineCardDesc}>{entry.event}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
-
       </main>
 
       <BooksIndexFooter context="encyclopedia" />
