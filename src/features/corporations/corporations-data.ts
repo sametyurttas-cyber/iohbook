@@ -242,7 +242,12 @@ export const corporations: CompanyProfile[] = [
     classifiedNote: "James, kriz anlarında gösterişli maskesini düşürüp siber diktatörlük çağrıları yapabilecek kadar acımasız bir politik figürdür.",
     images: {
       portrait: "/media/corporations/qualty/james-portrait.jpg",
-      magazine: "/media/corporations/qualty/magazine-cover.jpg"
+      magazine: "/media/corporations/qualty/magazine-cover.jpg",
+      cityDay: "/media/corporations/qualty/city-capital.jpg",
+      cityCenter: "/media/corporations/qualty/city-space-mining.jpg",
+      cityBrochure: "/media/corporations/qualty/city-mining-telemetry.jpg",
+      citySunset: "/media/corporations/qualty/city-day-street.jpg",
+      cityExtra: "/media/corporations/qualty/city-night-street.jpg"
     }
   },
   {
