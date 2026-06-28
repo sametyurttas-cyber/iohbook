@@ -256,7 +256,7 @@ export const corporations: CompanyProfile[] = [
     displayName: "Ubless",
     leader: "John",
     leaderTitle: "Grid Director",
-    accent: "#f5d26a", // Cable Amber
+    accent: "#00f5d4", // Cyber Turquoise
     cityName: "Nexum City",
     tagline: "The world moves because Ubless allows it to move.",
     overview: "Hem fiziksel lojistiği hem de siber veri yollarını elinde tutan hareket tekelcisi. Şehirler arası tünelleri ve okyanus altı kabloları yönetir.",
@@ -281,12 +281,13 @@ export const corporations: CompanyProfile[] = [
     ],
     tags: ["Global Logistics", "Data Routes", "System Engines", "Cable Authority"],
     visualIdentity: {
-      colors: ["#f5d26a", "#ffffff", "#121216"],
-      architecture: "Turuncu ışıklı hatlarla örülmüş dev kablo kanalları, yük limanları, tüneller ve sürekli hareket eden manyetik konteyner terminalleri."
+      colors: ["#00f5d4", "#008f7a", "#070c0f"],
+      architecture: "Turkuaz ışıklı hatlarla örülmüş dev kablo kanalları, yük limanları, tüneller ve sürekli hareket eden manyetik konteyner terminalleri."
     },
     classifiedNote: "John, savaş zamanlarında lojistik öncelik kurallarını değiştirerek System içindeki dengeleri tamamen değiştirebilecek lojistik güce sahiptir.",
     images: {
-      portrait: "/media/characters/elia-portrait.jpg" // Fallback portrait
+      portrait: "/media/corporations/ubless/john-portrait.jpg",
+      magazine: "/media/corporations/ubless/magazine-cover.jpg"
     }
   },
   {
