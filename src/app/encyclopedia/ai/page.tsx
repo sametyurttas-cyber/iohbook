@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getHeaderUserView } from "@/features/auth/queries";
-import { AiScene } from "@/features/encyclopedia/ai-scene";
+import { AiScene } from "@/features/system-intelligence/ai-scene";
 import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildPageMetadata({

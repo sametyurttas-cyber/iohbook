@@ -1,0 +1,788 @@
+.page {
+  position: relative;
+  min-height: 100vh;
+  background-color: #05070c;
+  color: #f2efe8;
+  overflow-x: hidden;
+  padding-top: 110px;
+}
+
+/* Atmospheric elements */
+.vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(ellipse 80% 70% at 50% 45%, transparent 50%, rgba(2, 3, 6, 0.95) 100%);
+}
+
+.grain {
+  position: fixed;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='2'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 8s steps(10) infinite;
+}
+
+@keyframes grain {
+  0%,100%{transform:translate(0,0)}10%{transform:translate(-5%,-8%)}30%{transform:translate(4%,-3%)}
+  50%{transform:translate(-7%,5%)}70%{transform:translate(6%,8%)}90%{transform:translate(-3%,3%)}
+}
+
+/* Sub-Header Navigation bar */
+.subHeader {
+  position: fixed;
+  top: 54px;
+  left: 0;
+  right: 0;
+  height: 48px;
+  background: rgba(5, 7, 12, 0.9);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(111, 143, 191, 0.15);
+  z-index: 40;
+}
+
+.subHeaderInner {
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+}
+
+.systemStatus {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  color: #6f8fbf;
+}
+
+.statusPulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #6f8fbf;
+  box-shadow: 0 0 8px rgba(111, 143, 191, 0.8);
+  animation: pulse 2.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+
+.subHeaderNav {
+  display: flex;
+  gap: 1.8rem;
+  height: 100%;
+}
+
+.subHeaderLink, .subHeaderLinkActive {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.18em;
+  text-decoration: none;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.subHeaderLink {
+  color: rgba(242, 239, 232, 0.5);
+}
+
+.subHeaderLink:hover {
+  color: #ffffff;
+}
+
+.subHeaderLinkActive {
+  color: #6f8fbf;
+}
+
+.subHeaderLinkActive::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #6f8fbf;
+  box-shadow: 0 0 8px #6f8fbf;
+}
+
+/* Page Frame shell */
+.main {
+  position: relative;
+  z-index: 10;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 2rem 6rem;
+}
+
+/* 01 Hero Section */
+.heroSection {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  padding: 6rem 0;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 10;
+  max-width: 800px;
+}
+
+.heroSubtitle {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.85rem;
+  letter-spacing: 0.25em;
+  color: #6f8fbf;
+  text-transform: uppercase;
+}
+
+.heroTitle {
+  font-size: 5rem;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  line-height: 1.1;
+  margin: 1.5rem 0;
+  text-transform: uppercase;
+  color: #ffffff;
+  text-shadow: 0 0 20px rgba(111, 143, 191, 0.25);
+}
+
+.heroLead {
+  font-size: 1.25rem;
+  font-weight: 300;
+  letter-spacing: 0.05em;
+  color: rgba(242, 239, 232, 0.8);
+  margin-bottom: 3.5rem;
+  font-family: var(--font-serif), serif;
+  font-style: italic;
+}
+
+.heroDirectives {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  color: rgba(242, 239, 232, 0.4);
+  border-top: 1px solid rgba(111, 143, 191, 0.15);
+  border-bottom: 1px solid rgba(111, 143, 191, 0.15);
+  padding: 1.5rem 0;
+}
+
+.directiveItem strong {
+  color: #ffffff;
+}
+
+/* Background Core visualization */
+.quantumCoreBackground {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  opacity: 0.15;
+}
+
+.humanSilhouetteContainer {
+  position: relative;
+  width: 450px;
+  height: 600px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Draw a glowing blueprint circular grid behind silhouette */
+.blueprintGridCircle {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border: 1px dashed rgba(111, 143, 191, 0.4);
+  border-radius: 50%;
+  animation: spinSlow 40s linear infinite;
+}
+
+@keyframes spinSlow {
+  to { transform: rotate(360deg); }
+}
+
+.silhouetteSvg {
+  width: 100%;
+  height: 100%;
+  stroke: #6f8fbf;
+  fill: none;
+  stroke-width: 0.75;
+  filter: drop-shadow(0 0 15px rgba(111, 143, 191, 0.5));
+}
+
+.veinPaths {
+  stroke: #9be7ff;
+  stroke-width: 1.5;
+  stroke-dasharray: 6 3;
+  animation: pulseVeins 3s ease-in-out infinite;
+}
+
+@keyframes pulseVeins {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* 02 AI Hierarchy Section */
+.hierarchySection {
+  background: rgba(9, 13, 20, 0.85);
+  border: 1px solid rgba(111, 143, 191, 0.2);
+  border-radius: 16px;
+  padding: 3rem;
+  margin: 4rem 0 6rem;
+  backdrop-filter: blur(10px);
+}
+
+.sectionHeadline {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  color: #6f8fbf;
+  margin-bottom: 2rem;
+  border-left: 2px solid #6f8fbf;
+  padding-left: 0.8rem;
+}
+
+.hierarchyContainer {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.verticalTopology {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3.5rem;
+  padding: 2rem 0;
+}
+
+.topologyLine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(180deg, rgba(111, 143, 191, 0.05), #6f8fbf 20%, #6f8fbf 80%, rgba(111, 143, 191, 0.05));
+  z-index: 1;
+}
+
+.topologyNode {
+  position: relative;
+  z-index: 5;
+  width: 320px;
+  background: #05070c;
+  border: 1px solid rgba(111, 143, 191, 0.4);
+  border-radius: 10px;
+  padding: 1.2rem;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  transition: all 0.4s ease;
+}
+
+.topologyNode:hover {
+  border-color: var(--node-color);
+  box-shadow: 0 0 20px rgba(111, 143, 191, 0.15);
+  transform: translateY(-2px);
+}
+
+.nodeTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin: 0 0 0.3rem;
+  color: #ffffff;
+}
+
+.nodeLabel {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  color: #8b949e;
+  text-transform: uppercase;
+}
+
+.hierarchyDescription {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.hierarchyLead {
+  font-size: 1.15rem;
+  line-height: 1.75;
+  color: rgba(242, 239, 232, 0.9);
+  font-weight: 300;
+}
+
+.hierarchyDetail {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: #8b949e;
+  font-weight: 300;
+}
+
+/* Blueprint Layer Section (KAI, CoreWit, Antivirus, KOWN) */
+.layerBlueprintSection {
+  margin-bottom: 8rem;
+  scroll-margin-top: 140px;
+}
+
+.blueprintContainer {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 4rem;
+  align-items: start;
+}
+
+/* Image Core side */
+.blueprintVisualBlock {
+  position: relative;
+  background: #030407;
+  border: 1px solid rgba(111, 143, 191, 0.25);
+  border-radius: 12px;
+  padding: 0.6rem;
+}
+
+.blueprintLabelLeft {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  color: #6f8fbf;
+  z-index: 10;
+}
+
+.blueprintActiveStatus {
+  position: absolute;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.activeDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--theme-color);
+  box-shadow: 0 0 8px var(--theme-color);
+}
+
+.alarmDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #ff3131;
+  box-shadow: 0 0 8px #ff3131;
+  animation: pulse 1s infinite;
+}
+
+.radarScanLine {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--theme-color), transparent);
+  box-shadow: 0 0 10px var(--theme-color);
+  z-index: 12;
+  top: 0;
+  animation: scan 6s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes scan {
+  0% { top: 0%; }
+  100% { top: 100%; }
+}
+
+.visualFrame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.visualArtwork {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.9;
+  filter: contrast(1.04) brightness(0.95);
+  transition: transform 0.8s ease;
+}
+
+.blueprintVisualBlock:hover .visualArtwork {
+  transform: scale(1.02);
+}
+
+/* Text Specs side */
+.blueprintDetailsBlock {
+  display: flex;
+  flex-direction: column;
+}
+
+.specCode {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  color: var(--theme-color);
+  text-transform: uppercase;
+}
+
+.specTitle {
+  font-size: 3rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  margin: 0.5rem 0 0.25rem;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+.specSlogan {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: rgba(242, 239, 232, 0.7);
+  border-bottom: 1px solid rgba(111, 143, 191, 0.15);
+  padding-bottom: 1.2rem;
+  margin-bottom: 1.8rem;
+}
+
+.specSloganTr {
+  display: block;
+  font-size: 0.75rem;
+  font-style: italic;
+  color: #8b949e;
+  margin-top: 0.4rem;
+}
+
+.specDescription {
+  font-size: 0.98rem;
+  line-height: 1.75;
+  color: #c9d1d9;
+  font-weight: 300;
+  white-space: pre-line;
+}
+
+.dossierRows {
+  margin-top: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.rowBlock {
+  border-left: 2px solid var(--theme-color);
+  padding-left: 1rem;
+}
+
+.rowLabel {
+  display: block;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  color: #8b949e;
+  text-transform: uppercase;
+}
+
+.rowVal {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-top: 0.2rem;
+}
+
+/* 07 Comparison Matrix Section */
+.matrixSection {
+  margin-bottom: 8rem;
+}
+
+.tableScrollWrapper {
+  overflow-x: auto;
+  border: 1px solid rgba(111, 143, 191, 0.2);
+  border-radius: 12px;
+  background: rgba(9, 13, 20, 0.4);
+  backdrop-filter: blur(8px);
+}
+
+.matrixTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  min-width: 700px;
+}
+
+.matrixTable th, .matrixTable td {
+  padding: 1.2rem 1.6rem;
+  border-bottom: 1px solid rgba(111, 143, 191, 0.15);
+}
+
+.matrixTable th {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
+  color: #6f8fbf;
+  text-transform: uppercase;
+  background-color: rgba(15, 23, 36, 0.6);
+}
+
+.matrixTable tr:last-child td {
+  border-bottom: none;
+}
+
+.cellHighlight {
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.cellText {
+  font-size: 0.9rem;
+  color: #c9d1d9;
+  font-weight: 300;
+}
+
+/* 08 Field Behavior Section */
+.behaviorSection {
+  margin-bottom: 8rem;
+}
+
+.behaviorGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+
+.behaviorConsole {
+  background: rgba(9, 13, 20, 0.65);
+  border: 1px solid rgba(111, 143, 191, 0.15);
+  border-radius: 12px;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(8px);
+}
+
+.behaviorConsoleBorder {
+  position: absolute;
+  inset: 0;
+  border-left: 3px solid var(--theme-color);
+  pointer-events: none;
+}
+
+.behaviorHeader {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.15em;
+  color: #8b949e;
+  margin-bottom: 0.8rem;
+  text-transform: uppercase;
+}
+
+.behaviorTitle {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 1.2rem;
+}
+
+.behaviorBody {
+  font-size: 0.92rem;
+  line-height: 1.7;
+  color: #c9d1d9;
+  font-weight: 300;
+}
+
+/* 09 Threat Classification Section */
+.threatSection {
+  margin-bottom: 8rem;
+}
+
+.threatGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+.threatCard {
+  background: rgba(9, 13, 20, 0.55);
+  border: 1px solid rgba(111, 143, 191, 0.2);
+  border-radius: 12px;
+  padding: 1.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  backdrop-filter: blur(8px);
+}
+
+.threatLabel {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  color: #8b949e;
+  text-transform: uppercase;
+}
+
+.threatTitle {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.threatBadge {
+  align-self: flex-start;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  color: var(--theme-color);
+  background-color: rgba(111, 143, 191, 0.05);
+  border: 1px solid var(--theme-color);
+  border-radius: 4px;
+  padding: 0.25rem 0.6rem;
+  margin-top: 0.5rem;
+  text-transform: uppercase;
+}
+
+.threatDesc {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: #8b949e;
+  margin: 0.8rem 0 0;
+  font-weight: 300;
+}
+
+/* 10 Final Manifesto */
+.manifestoSection {
+  text-align: center;
+  padding: 6rem 2rem;
+  background: linear-gradient(180deg, rgba(9, 13, 20, 0) 0%, rgba(9, 13, 20, 0.75) 50%, rgba(9, 13, 20, 0) 100%);
+  margin-bottom: 4rem;
+}
+
+.manifestoInner {
+  max-width: 750px;
+  margin: 0 auto;
+}
+
+.manifestoPara {
+  font-family: var(--font-serif), serif;
+  font-style: italic;
+  font-size: 1.6rem;
+  line-height: 1.6;
+  color: #e9d9ae;
+  margin-bottom: 2.5rem;
+}
+
+.manifestoChain {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  color: rgba(242, 239, 232, 0.4);
+  margin-bottom: 3rem;
+  flex-wrap: wrap;
+}
+
+.manifestoChain span {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.manifestoSloganBlock {
+  border-top: 1px solid rgba(111, 143, 191, 0.15);
+  padding-top: 2rem;
+}
+
+.finalSlogan {
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #ffffff;
+  text-transform: uppercase;
+  margin: 0;
+  text-shadow: 0 0 10px rgba(111, 143, 191, 0.2);
+}
+
+.finalSloganTr {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.18em;
+  color: #8b949e;
+  margin-top: 0.6rem;
+  display: block;
+}
+
+/* Responsiveness overrides */
+@media (max-width: 1024px) {
+  .heroTitle {
+    font-size: 3.5rem;
+  }
+  
+  .hierarchyContainer, .blueprintContainer {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+  
+  .behaviorGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .threatGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .heroDirectives, .manifestoChain {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .threatGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .main {
+    padding: 1.5rem 1rem;
+  }
+}
