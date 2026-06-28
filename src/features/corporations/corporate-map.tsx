@@ -1,9 +1,7 @@
 "use client";
 
-import { useState } from "react";
-
 type CityPoint = {
-  id: string;
+  id: string;      // company ID
   name: string;
   corp: string;
   x: number; // percentage
@@ -17,7 +15,7 @@ type CityPoint = {
 
 const cityPoints: CityPoint[] = [
   {
-    id: "agrom-city",
+    id: "agrom",
     name: "Agrom City",
     corp: "Agrom Technology",
     x: 48,
@@ -29,7 +27,7 @@ const cityPoints: CityPoint[] = [
     description: "System zihin aktarım sunucularına ev sahipliği yapan birinci quantum megacity. Steve Agrom'un kalesi."
   },
   {
-    id: "orion-city",
+    id: "nets",
     name: "Orion City",
     corp: "Nets Oligarchy",
     x: 25,
@@ -41,7 +39,7 @@ const cityPoints: CityPoint[] = [
     description: "Eğlence endüstrisinin, karnavalların ve Madam Anne'in algı imparatorluğunun merkez mücevheri."
   },
   {
-    id: "tencon-city",
+    id: "tencon",
     name: "Tencon City",
     corp: "Tencon Games & Defense",
     x: 72,
@@ -53,7 +51,7 @@ const cityPoints: CityPoint[] = [
     description: "Yapay zeka dökümhanelerinin, Hack Wars arenalarının ve KOWN üretim bantlarının merkezi."
   },
   {
-    id: "hexcity",
+    id: "miner-henry",
     name: "Hexcity",
     corp: "Miner Henry Empire",
     x: 82,
@@ -65,7 +63,7 @@ const cityPoints: CityPoint[] = [
     description: "Yüz binlerce hexagon hücreden oluşan IOHcoin/Altcoin madencilik havzası ve Henry'nin çöl kalesi."
   },
   {
-    id: "aulam",
+    id: "social-media",
     name: "Aulam",
     corp: "Social Media Oligarchy",
     x: 35,
@@ -77,7 +75,7 @@ const cityPoints: CityPoint[] = [
     description: "Sosyal medya ana çekirdek sunucusu. Swos kuvvetleri tarafından kuşatılmış zayıf halka."
   },
   {
-    id: "solaris-a",
+    id: "qualty",
     name: "Solaris A",
     corp: "Quality Energy",
     x: 58,
@@ -87,67 +85,46 @@ const cityPoints: CityPoint[] = [
     defenseStatus: "REACTOR_FORCE_SHIELD",
     threatLevel: "MODERATE (ENERGY STRIKE)",
     description: "Uzay maden gemilerinin ve plazma reaktörlerinin enerjisini tüm şehirlere dağıtan birinci ana istasyon."
-  },
-  {
-    id: "solaris-b",
-    name: "Solaris B",
-    corp: "Quality Energy",
-    x: 64,
-    y: 50,
-    population: "28.5 Million",
-    powerUsage: "8.2 GW / Sub-Reactor Output",
-    defenseStatus: "SUB_REACTOR_STABLE",
-    threatLevel: "LOW (SECURE)",
-    description: "Solaris A ile koordineli çalışan, System yörüngesel enerji kalkanını besleyen yedek reaktör şehri."
-  },
-  {
-    id: "nexum-city",
-    name: "Nexum City",
-    corp: "Ubless Transport & Data",
-    x: 18,
-    y: 22,
-    population: "52.7 Million",
-    powerUsage: "7.1 GW / Transit Hub",
-    defenseStatus: "GRID_TRANSIT_SHIELD",
-    threatLevel: "STABLE (LOGISTICS LOG)",
-    description: "Manyetik kapsül tünellerinin, okyanus altı kablolarının ve veri yollarının düğüm noktası."
   }
 ];
 
-export function CorporateMap() {
-  const [selectedCity, setSelectedCity] = useState<CityPoint>(cityPoints[0]);
+type CorporateMapProps = {
+  activeId: string;
+  onSelect: (id: string) => void;
+};
+
+export function CorporateMap({ activeId, onSelect }: CorporateMapProps) {
+  const activeCity = cityPoints.find((c) => c.id === activeId) || cityPoints[0];
 
   return (
-    <div className="w-full rounded-xl border border-border/40 bg-black/60 backdrop-blur-md p-6 lg:p-8 mt-10">
-      
+    <div className="w-full rounded-xl border border-border/10 bg-[#05060a]/50 backdrop-blur-md p-5 sm:p-6 mb-8">
       {/* HUD Header */}
-      <div className="flex justify-between items-center border-b border-border/10 pb-4 mb-6">
+      <div className="flex justify-between items-center border-b border-border/10 pb-3 mb-4 select-none">
         <div className="flex items-center gap-2">
-          <span className="w-2 h-2 bg-emerald-500 rounded-full animate-ping" />
-          <h3 className="font-mono text-xs tracking-wider text-muted-foreground uppercase">
-            CORPORATE UNION GLOBAL GIS MAP / LIVE TELEMETRY
-          </h3>
+          <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+          <span className="font-mono text-[9px] tracking-wider text-muted-foreground uppercase">
+            GEOGRAPHIC CORE PATHWAY MAP
+          </span>
         </div>
-        <span className="font-mono text-[10px] text-[#e7c574]">COORD_GRID_STABLE: 99.8%</span>
+        <span className="font-mono text-[9px] text-[#e7c574]">GRID_SYNC_ACTIVE</span>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-[1.5fr_1fr] items-start">
+      <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr] items-center">
         
-        {/* Left Side: Cyber Map Vector Container */}
-        <div className="relative aspect-[16/10] w-full rounded-lg border border-border/10 bg-[#04060b] overflow-hidden p-2">
+        {/* Left Side: Cyber Map Vector Grid */}
+        <div className="relative aspect-[16/9.5] w-full rounded border border-border/5 bg-[#030407] overflow-hidden">
           
           {/* Cyberpunk corner notches */}
-          <span className="absolute top-2 left-2 w-3.5 h-3.5 border-t border-l border-border/20" />
-          <span className="absolute top-2 right-2 w-3.5 h-3.5 border-t border-r border-border/20" />
-          <span className="absolute bottom-2 left-2 w-3.5 h-3.5 border-b border-l border-border/20" />
-          <span className="absolute bottom-2 right-2 w-3.5 h-3.5 border-b border-r border-border/20" />
+          <span className="absolute top-2 left-2 w-3 h-3 border-t border-l border-white/10" />
+          <span className="absolute top-2 right-2 w-3 h-3 border-t border-r border-white/10" />
+          <span className="absolute bottom-2 left-2 w-3 h-3 border-b border-l border-white/10" />
+          <span className="absolute bottom-2 right-2 w-3 h-3 border-b border-r border-white/10" />
 
           {/* Grid Pattern overlay */}
-          <div className="absolute inset-0 bg-[linear-gradient(rgba(242,239,232,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(242,239,232,0.015)_1px,transparent_1px)] bg-[size:25px_25px] pointer-events-none" />
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none" />
 
           {/* Vector Network Graph */}
-          <svg className="absolute inset-0 w-full h-full opacity-20 pointer-events-none">
-            {/* Draw connection pathways between corporate cities */}
+          <svg className="absolute inset-0 w-full h-full opacity-15 pointer-events-none">
             {cityPoints.map((city, idx) => 
               cityPoints.slice(idx + 1).map((nextCity, nIdx) => (
                 <line
@@ -156,37 +133,35 @@ export function CorporateMap() {
                   y1={`${city.y}%`}
                   x2={`${nextCity.x}%`}
                   y2={`${nextCity.y}%`}
-                  stroke="rgba(242,239,232,0.12)"
-                  strokeWidth="1"
-                  strokeDasharray="4,4"
+                  stroke="rgba(242,239,232,0.1)"
+                  strokeWidth="0.75"
+                  strokeDasharray="3,3"
                 />
               ))
             )}
           </svg>
 
-          {/* Interactive Coordinate Nodes */}
+          {/* Coordinate Nodes */}
           {cityPoints.map((city) => {
-            const isSelected = city.id === selectedCity.id;
+            const isSelected = city.id === activeId;
             return (
               <button
                 key={city.id}
-                onClick={() => setSelectedCity(city)}
+                onClick={() => onSelect(city.id)}
                 style={{ left: `${city.x}%`, top: `${city.y}%` }}
                 className="absolute -translate-x-1/2 -translate-y-1/2 group flex flex-col items-center z-20"
               >
-                {/* Visual Node */}
-                <span className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center transition-all duration-300 ${
+                <span className={`w-2.5 h-2.5 rounded-full border flex items-center justify-center transition-all duration-300 ${
                   isSelected 
-                    ? "bg-[#e7c574] border-[#e7c574] scale-125 shadow-[0_0_12px_#e7c574]" 
-                    : "bg-black border-muted-foreground/30 hover:border-[#e7c574]/60 group-hover:scale-110"
+                    ? "bg-[#e7c574] border-[#e7c574] scale-125 shadow-[0_0_8px_#e7c574]" 
+                    : "bg-black border-white/20 hover:border-white/40"
                 }`}>
-                  <span className="w-1.5 h-1.5 rounded-full bg-black" />
+                  <span className="w-1 h-1 rounded-full bg-black" />
                 </span>
-                {/* Node name popover */}
-                <span className={`absolute top-5 font-mono text-[9px] px-1.5 py-0.5 rounded border transition-all duration-300 ${
+                <span className={`absolute top-4 font-mono text-[8px] px-1 py-0.5 rounded border transition-all duration-300 ${
                   isSelected
                     ? "bg-[#e7c574] text-black border-[#e7c574]"
-                    : "bg-black/90 text-muted-foreground border-border/10 group-hover:text-paper"
+                    : "bg-black/95 text-muted-foreground border-white/5 group-hover:text-paper"
                 }`}>
                   {city.name}
                 </span>
@@ -196,59 +171,46 @@ export function CorporateMap() {
         </div>
 
         {/* Right Side: Selected City Live Telemetry Info */}
-        <div className="relative border border-[#e7c574]/20 rounded-lg overflow-hidden bg-[#030407] p-5 flex flex-col gap-4">
-          
-          <span className="absolute top-2 left-2 w-3 h-3 border-t border-l border-[#e7c574]" />
-          <span className="absolute top-2 right-2 w-3 h-3 border-t border-r border-[#e7c574]" />
-          <span className="absolute bottom-2 left-2 w-3 h-3 border-b border-l border-[#e7c574]" />
-          <span className="absolute bottom-2 right-2 w-3 h-3 border-b border-r border-[#e7c574]" />
-
-          {/* City details header */}
-          <div className="border-b border-border/10 pb-3">
-            <span className="font-mono text-[9px] text-[#e7c574] block uppercase">
-              // TELEMETRY ACTIVE NODE
-            </span>
-            <h4 className="font-display font-medium text-lg text-paper mt-0.5">
-              {selectedCity.name.toUpperCase()}
+        <div className="relative rounded border border-border/10 bg-black/40 p-4 flex flex-col gap-3">
+          <div className="border-b border-white/5 pb-2">
+            <h4 className="font-display font-medium text-sm text-paper tracking-wider">
+              {activeCity.name.toUpperCase()}
             </h4>
-            <span className="font-mono text-[10px] text-muted-foreground uppercase">
-              CONTROL AUTHORITY: {selectedCity.corp}
+            <span className="font-mono text-[9px] text-muted-foreground block mt-0.5">
+              SECTOR: {activeCity.corp.toUpperCase()}
             </span>
           </div>
 
-          {/* Telemetry data rows */}
-          <div className="flex flex-col gap-3 font-mono text-xs">
-            <div className="flex justify-between border-b border-border/5 py-1">
-              <span className="text-muted-foreground">TOTAL POPULATION:</span>
-              <span className="text-paper">{selectedCity.population}</span>
+          <div className="flex flex-col gap-2 font-mono text-[10px]">
+            <div className="flex justify-between border-b border-white/5 pb-1">
+              <span className="text-muted-foreground/60">POPULATION:</span>
+              <span className="text-paper">{activeCity.population}</span>
             </div>
-            <div className="flex justify-between border-b border-border/5 py-1">
-              <span className="text-muted-foreground">ENERGY ABSORPTION:</span>
-              <span className="text-paper">{selectedCity.powerUsage}</span>
+            <div className="flex justify-between border-b border-white/5 pb-1">
+              <span className="text-muted-foreground/60">ABSORPTION:</span>
+              <span className="text-paper">{activeCity.powerUsage}</span>
             </div>
-            <div className="flex justify-between border-b border-border/5 py-1">
-              <span className="text-muted-foreground">DEFENSE SYSTEMS:</span>
-              <span className="text-paper text-[#e7c574]">{selectedCity.defenseStatus}</span>
+            <div className="flex justify-between border-b border-white/5 pb-1">
+              <span className="text-muted-foreground/60">SECURITY:</span>
+              <span className="text-paper" style={{ color: "#e7c574" }}>{activeCity.defenseStatus}</span>
             </div>
-            <div className="flex justify-between border-b border-border/5 py-1">
-              <span className="text-muted-foreground">THREAT CLASSIFICATION:</span>
+            <div className="flex justify-between pb-1">
+              <span className="text-muted-foreground/60">THREAT:</span>
               <span className={`font-semibold ${
-                selectedCity.threatLevel.includes("EXTREME") 
+                activeCity.threatLevel.includes("EXTREME") 
                   ? "text-red-500" 
-                  : selectedCity.threatLevel.includes("HIGH") 
+                  : activeCity.threatLevel.includes("HIGH") 
                   ? "text-amber-500" 
                   : "text-emerald-500"
               }`}>
-                {selectedCity.threatLevel}
+                {activeCity.threatLevel}
               </span>
             </div>
           </div>
 
-          {/* City narrative overview */}
-          <div className="mt-2 border-t border-border/10 pt-4 font-mono text-[11px] text-muted-foreground leading-relaxed">
-            <span className="text-[#e7c574] block mb-1 uppercase">// GEOGRAPHIC DESCRIPTION:</span>
-            {selectedCity.description}
-          </div>
+          <p className="font-mono text-[10px] text-muted-foreground leading-normal border-t border-white/5 pt-2">
+            {activeCity.description}
+          </p>
         </div>
 
       </div>
