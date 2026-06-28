@@ -289,12 +289,18 @@ export default function SwosScene({ user }: SwosSceneProps) {
         <section className={styles.presidentSection}>
           <div className={styles.presidentProfileCard}>
             <div className={styles.presidentBody}>
-              <div className={styles.presidentPortraitWrapper}>
-                {/* Placeholder design */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent" />
-                <div className="absolute inset-0 flex items-center justify-center font-mono text-xs text-[#8b949e]">
-                  [PORTRAIT_SECURE_LOCKED]
-                </div>
+              <div 
+                className="relative w-full aspect-[1/1.35] border border-border/10 bg-black cursor-zoom-in"
+                onClick={() => setActiveLightbox("/media/corporations/president-matt.jpg")}
+              >
+                <Image
+                  src="/media/corporations/president-matt.jpg"
+                  alt="President Matt Supreme Executive Portrait"
+                  fill
+                  className="object-cover"
+                  sizes="280px"
+                  unoptimized
+                />
               </div>
               <div className={styles.presidentTextContainer}>
                 <span className={styles.presidentSub}>SUPREME EXECUTIVE AUTHORITY</span>
