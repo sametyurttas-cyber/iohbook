@@ -84,8 +84,8 @@ export default async function CollectionsPage() {
                     name: book.title,
                     url: absoluteUrl(`/books/${book.slug}`)
                   },
-                  position: index + 1
                 }))
+              }
             },
             {
               "@context": "https://schema.org",
