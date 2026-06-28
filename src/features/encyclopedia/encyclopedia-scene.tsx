@@ -158,6 +158,43 @@ function CharactersSection() {
           </article>
         ))}
       </div>
+
+      <div className={styles.shell} style={{ marginTop: "4rem", paddingBottom: "4rem" }}>
+        <Link 
+          href="/characters"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "0.8rem",
+            padding: "2.5rem",
+            borderRadius: "8px",
+            border: "1px solid rgba(231, 197, 116, 0.15)",
+            background: "rgba(8, 9, 13, 0.4)",
+            backdropFilter: "blur(12px)",
+            textDecoration: "none",
+            transition: "all 0.3s ease",
+            cursor: "pointer"
+          }}
+          className="hover:border-[#e7c574] hover:bg-[#e7c574]/[0.02] group"
+        >
+          <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.62rem", letterSpacing: "0.2em", color: "#e7c574" }}>
+            📂 ACCESS LEVEL: RESTRICTED
+          </span>
+          <h4 style={{ fontSize: "1.5rem", fontWeight: "600", color: "#f2efe8", margin: 0 }}>
+            DETAYLI SİBER GÜVENLİK DOSYALARINI AÇ (THE TEAM)
+          </h4>
+          <p style={{ fontSize: "0.9rem", color: "#8a8fa0", margin: 0, fontWeight: 300, lineHeight: 1.5 }}>
+            Algus, Mina, Kevin, Mike ve Elia için radar güç telemetrisi, özel yetenek modifikasyonları ve spoiler-kilitli kurgu arşivlerini keşfedin.
+          </p>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginTop: "1rem", fontFamily: "var(--font-mono)", fontSize: "0.7rem", color: "#e7c574" }}>
+            <span>CMD: /open_dossiers</span>
+            <span style={{ color: "rgba(242, 239, 232, 0.2)" }}>|</span>
+            <span style={{ fontWeight: "bold" }}>ENTER DOSSIERS</span>
+            <span>→</span>
+          </div>
+        </Link>
+      </div>
+
     </section>
   );
 }
