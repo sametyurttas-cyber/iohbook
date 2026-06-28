@@ -191,7 +191,8 @@ export const corporations: CompanyProfile[] = [
     },
     classifiedNote: "Tencon, ordu ve güvenlik alanında System'in asıl askeri gücüdür. Hack Wars arenalarında keşfedilen yetenekli hackerlar zorla orduya dahil edilir.",
     images: {
-      portrait: "/media/characters/mike-portrait.jpg" // Fallback portrait
+      portrait: "/media/corporations/tencon/xying-portrait.jpg",
+      magazine: "/media/corporations/tencon/magazine-cover.jpg"
     }
   },
   {
