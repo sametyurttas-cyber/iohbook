@@ -62,17 +62,17 @@ export const corporations: CompanyProfile[] = [
     displayName: "Agrom Technology",
     leader: "Steve Agrom",
     leaderTitle: "Founding Father & System Architect",
-    accent: "#e7c574", // Gold
+    accent: "#e7c574",
     cityName: "Agrom City",
     tagline: "The company that did not sell technology. It sold the future.",
-    overview: "Corporate Union'ın kurucu gücü ve teknolojik omurgası. Quantum şehir mimarileri ve veri aktarım teknolojilerinde mutlak tekel sahibi dev holding.",
-    coreBusiness: "Quantum Altyapı, Beden/Kimlik Aktarımı, IOHcoin Çekirdek Sistemi",
-    systemRole: "Bilinç aktarım sunucularını ve System mimarisini kontrol ederek insan ölümsüzlüğünü ticarileştirir.",
+    overview: "The founding force and technological backbone of the Corporate Union. A massive holding company holding an absolute monopoly over quantum city architectures and data transfer protocols.",
+    coreBusiness: "Quantum Infrastructure, Body/Identity Transfer, IOHcoin Core System",
+    systemRole: "Commercializes human immortality by controlling consciousness transfer servers and the System's core architecture.",
     assets: [
-      { name: "Quantum City Servers", description: "Şehir zihinlerini ve insan hafızalarını barındıran devasa soğuk veri kuleleri." },
-      { name: "IOHcoin Core Infrastructure", description: "System genelinde kullanılan resmi para biriminin quantum veri tabanı ve dağıtım ağı." },
-      { name: "Body Transfer Laboratories", description: "Bilinçlerin yeni biyolojik veya sentetik bedenlere göçünü sağlayan patentli aktarım kapsülleri." },
-      { name: "Corporate Union Authority", description: "Şirketler Birliği üzerinde kurucu olmaktan gelen nihai veto ve yönlendirme hakkı." }
+      { name: "Quantum City Servers", description: "Massive cold data spires hosting city minds and human memory records." },
+      { name: "IOHcoin Core Infrastructure", description: "The quantum database and distribution network of the official currency used throughout the System." },
+      { name: "Body Transfer Laboratories", description: "Patented transfer capsules that facilitate the migration of consciousness into new biological or synthetic bodies." },
+      { name: "Corporate Union Authority", description: "Ultimate veto and direction rights originating from being a founding member of the Corporate Union." }
     ],
     influence: {
       economy: 10,
@@ -84,15 +84,15 @@ export const corporations: CompanyProfile[] = [
       publicTrust: 4
     },
     relations: [
-      { target: "nets", type: "complex", description: "Medya ve halkla ilişkiler desteği alırken, Mina'nın geliştirdiği görsel teknolojiler üzerinde patent savaşı yürütüyor." },
-      { target: "miner-henry", type: "ally", description: "Miner Henry, Steve Agrom'un eski dostu olup IOHcoin madencilik hatlarında gizli geçiş yolları sağlamaktadır." }
+      { target: "nets", type: "complex", description: "While receiving media and public relations support, they are engaged in patent battles over the visual technologies developed by Mina." },
+      { target: "miner-henry", type: "ally", description: "Miner Henry is an old friend of Steve Agrom, providing secret bypass channels in the IOHcoin mining lines." }
     ],
     tags: ["System Architect", "IOHcoin Founder Network", "Quantum Infrastructure", "Agrom City"],
     visualIdentity: {
       colors: ["#e7c574", "#ffffff", "#0c0e14"],
-      architecture: "Kule şeklinde dev sunucu mimarileri, steril cam laboratuvarlar, bilinç kapsülleri ve altın kaplama logo işlemeleri."
+      architecture: "Towering server architectures, sterile glass laboratories, consciousness capsules, and gold-plated logo engravings."
     },
-    classifiedNote: "Agrom City'nin yıkılışı ve Steve Agrom'un itibar kaybı, Matt'in manipülasyonları sonucu gerçekleşmiştir. Agrom City, zihinlerin ve yapay ölümsüzlüğün merkezidir.",
+    classifiedNote: "The fall of Agrom City and Steve Agrom's loss of reputation occurred as a result of Matt's manipulations. Agrom City is the epicentre of minds and artificial immortality.",
     images: {
       portrait: "/media/corporations/agrom/steve-portrait.jpg",
       magazine: "/media/corporations/agrom/magazine-cover.jpg",
@@ -113,16 +113,16 @@ export const corporations: CompanyProfile[] = [
     displayName: "Nets",
     leader: "Madam Anne",
     leaderTitle: "Perception Empress",
-    accent: "#a200ff", // Cyber Purple
+    accent: "#a200ff",
     cityName: "Orion City",
     tagline: "They do not control what people see. They control what people want to see.",
-    overview: "Medya, reklam ve görsel gerçeklik pazarlarını yöneten algı imparatorluğu. System'in rüyalar ve eğlence üreten yüzü.",
-    coreBusiness: "Eğlence Endüstrisi, Sanal Festivaller, Holografik Yayıncılık",
-    systemRole: "İnsanların duygu durumlarını ve arzularını manipüle ederek System'e karşı oluşabilecek isyanları engeller.",
+    overview: "The perception empire managing media, advertising, and virtual reality markets. The dream-producing and entertainment face of the System.",
+    coreBusiness: "Entertainment Industry, Virtual Festivals, Holographic Broadcasting",
+    systemRole: "Prevents potential rebellions against the System by manipulating human emotions and desires.",
     assets: [
-      { name: "Orion Broadcast Network", description: "Bütün megacity gökdelenlerini ve gökyüzünü kaplayan devasa holografik reklam ve yayın uyduları." },
-      { name: "Perception Mapping Systems", description: "Toplumun anlık duygu durumunu tarayarak propaganda içeriklerini kişiselleştiren AI algoritmaları." },
-      { name: "Interactive Cinema Blocks", description: "Gerçek zamanlı sinirsel bağlantıyla izleyicinin içine girdiği sınırsız sanal rüya yapımları." }
+      { name: "Orion Broadcast Network", description: "Massive holographic advertisement and broadcast satellites covering every megacity skyscraper and sky grid." },
+      { name: "Perception Mapping Systems", description: "AI algorithms scanning the public's real-time emotional state to personalize propaganda feeds." },
+      { name: "Interactive Cinema Blocks", description: "Limitless virtual dream productions entered by viewers via real-time neural connections." }
     ],
     influence: {
       economy: 8,
@@ -134,15 +134,15 @@ export const corporations: CompanyProfile[] = [
       publicTrust: 7
     },
     relations: [
-      { target: "agrom", type: "complex", description: "Agrom'un quantum altyapısına bağımlıdır fakat yayın tekelini kullanarak pazarlık gücünü korur." },
-      { target: "social-media", type: "rival", description: "Bilgi akışının ve reklam gelirlerinin kontrolü konusunda Brett Perkins ile sürekli bir çekişme halindedir." }
+      { target: "agrom", type: "complex", description: "Dependent on Agrom's quantum infrastructure but maintains bargaining leverage through its broadcast monopoly." },
+      { target: "social-media", type: "rival", description: "Engaged in constant friction with Brett Perkins over the control of information flow and ad revenues." }
     ],
     tags: ["Media Empire", "Perception Control", "Orion City", "Visual Reality"],
     visualIdentity: {
       colors: ["#a200ff", "#6b00b3", "#08040d"],
-      architecture: "Yatay mimariye sahip saraylar, neon pembe ve mor ışık selleriyle kaplı sonsuz sokak partileri ve gökyüzü hologramları."
+      architecture: "Palaces with horizontal architecture, neon pink and purple light rivers, endless street parties, and sky holograms."
     },
-    classifiedNote: "Mina'nın geliştirdiği devrimsel görsel filtre ve zaman kilitleme uygulaması, Nets marketine girmek zorunda bırakılmış ve Nets tarafından asimile edilmiştir.",
+    classifiedNote: "Mina's revolutionary visual filter and time-locking application was forced into the Nets marketplace and subsequently assimilated by them.",
     images: {
       portrait: "/media/corporations/nets/anne-portrait.jpg",
       magazine: "/media/corporations/nets/magazine-cover.jpg",
@@ -164,16 +164,16 @@ export const corporations: CompanyProfile[] = [
     displayName: "Tencon",
     leader: "Xying",
     leaderTitle: "KOWN King & AI Forger",
-    accent: "#ff1e27", // Cyber Red
+    accent: "#ff1e27",
     cityName: "Tencon City",
     tagline: "Where war became a game, and games learned how to kill.",
-    overview: "Savaş simülasyonları, gaming, antivirüs yazılımları ve KOWN koruyucu robot ünitelerini üreten askeri-teknoloji oligarşisi.",
-    coreBusiness: "Siber Savaş, Yapay Zekâ Geliştirme, KOWN Üretim Fabrikaları",
-    systemRole: "System'i tehdit eden hacker saldırılarını savuştururken, halkı siber sporlar ve sanal arenalarla meşgul tutar.",
+    overview: "A military-technology oligarchy producing war simulations, gaming engines, antivirus software, and KOWN guard robotic units.",
+    coreBusiness: "Cyber Warfare, Artificial Intelligence Development, KOWN Manufacturing Facilities",
+    systemRole: "Wards off hacker attacks threatening the System while keeping the public occupied with cyber sports and virtual arenas.",
     assets: [
-      { name: "KOWN Defense Assembly Line", description: "Yapay zeka kontrollü, ağır silahlarla donatılmış siber muhafız robot üretim hatları." },
-      { name: "Hack Wars Arenas", description: "Hacker'ların halka açık dev sanal arenalarda yasal olarak birbiriyle savaştığı dijital gladyatör sporları." },
-      { name: "Tencon Shield Antivirus", description: "System'i dış sızmalardan koruyan, yapay zeka tabanlı dinamik siber kalkan." }
+      { name: "KOWN Defense Assembly Line", description: "AI-controlled, heavily armed cyber guard robotic assembly lines." },
+      { name: "Hack Wars Arenas", description: "Digital gladiator sports where hackers legally battle one another in massive public virtual arenas." },
+      { name: "Tencon Shield Antivirus", description: "AI-based dynamic cyber shields protecting the System from external intrusions." }
     ],
     influence: {
       economy: 9,
@@ -185,14 +185,14 @@ export const corporations: CompanyProfile[] = [
       publicTrust: 5
     },
     relations: [
-      { target: "agrom", type: "dependent", description: "Kendi ürettiği KOWN yazılımlarını korumak için Agrom'un veri tabanı güvenliğine bağımlıdır." }
+      { target: "agrom", type: "dependent", description: "Dependent on Agrom's database security to protect its own KOWN firmware logs." }
     ],
     tags: ["KOWN Manufacturer", "Antivirus Producer", "Hack Wars", "AI Forge"],
     visualIdentity: {
       colors: ["#ff1e27", "#0c0e14", "#1a080a"],
-      architecture: "Krom metal yüzeyler, neon kırmızı ve mat siyah çizgilerle tasarlanmış devasa kubbe arenalar ve yapay zeka dökümhaneleri."
+      architecture: "Massive dome arenas and AI casting forges designed with chrome metallic surfaces, neon red, and matte black lines."
     },
-    classifiedNote: "Tencon, ordu ve güvenlik alanında System'in asıl askeri gücüdür. Hack Wars arenalarında keşfedilen yetenekli hackerlar zorla orduya dahil edilir.",
+    classifiedNote: "Tencon is the true military power of the System in defense and army sectors. Talented hackers discovered in the Hack Wars arenas are forcibly drafted into the forces.",
     images: {
       portrait: "/media/corporations/tencon/xying-portrait.jpg",
       magazine: "/media/corporations/tencon/magazine-cover.jpg",
@@ -211,16 +211,16 @@ export const corporations: CompanyProfile[] = [
     displayName: "Qualty Energy",
     leader: "James",
     leaderTitle: "Reactor General",
-    accent: "#d4af37", // Gold
+    accent: "#d4af37",
     cityName: "Solaris A & Solaris B",
     tagline: "Every city needs light. James decides who receives it.",
-    overview: "System'in ve megacity'lerin hayatta kalmasını sağlayan reaktör zinciri ve space mining operasyonlarını yöneten enerji omurgası.",
-    coreBusiness: "Uzay Madenciliği, Nükleer/Plazma Reaktörleri, Güç Dağıtımı",
-    systemRole: "Enerji akışını kesmekle tehdit ederek sivil yönetim ve diğer şirketler üzerinde doğrudan siyasi şantaj gücüne sahiptir.",
+    overview: "The energy backbone managing reactor networks and space mining operations that keep the System and megacities alive.",
+    coreBusiness: "Space Mining, Nuclear/Plasma Reactors, Power Grid Distribution",
+    systemRole: "Holds direct political leverage over civil administrations and other corporations by threatening to cut energy feeds.",
     assets: [
-      { name: "Orbital Collector Arrays", description: "Güneş enerjisini toplayıp mikrodalga ışınlarıyla megacity reaktörlerine aktaran dev uydu halkaları." },
-      { name: "Asteroid Mining Fleet", description: "Ağır plazma reaktör hammaddelerini taşımak üzere yörüngede görev yapan uzay maden gemileri." },
-      { name: "Plasma Reactor Towers", description: "Bütün şehirleri besleyen, durdurulması felakete yol açacak devasa enerji merkezleri." }
+      { name: "Orbital Collector Arrays", description: "Massive satellite arrays collecting solar energy and transmitting it to megacity reactors via microwave beams." },
+      { name: "Asteroid Mining Fleet", description: "Orbital space mining vessels transporting heavy plasma reactor raw materials." },
+      { name: "Plasma Reactor Towers", description: "Massive power centers feeding entire cities, where shutdowns would trigger existential catastrophes." }
     ],
     influence: {
       economy: 8,
@@ -232,14 +232,14 @@ export const corporations: CompanyProfile[] = [
       publicTrust: 5
     },
     relations: [
-      { target: "ubless", type: "dependent", description: "Uzay madenlerinin ve reaktör hammaddelerinin taşınması için tamamen Ubless lojistik hatlarına bağımlıdır." }
+      { target: "ubless", type: "dependent", description: "Completely dependent on Ubless logistics networks to transport space minerals and reactor raw materials." }
     ],
     tags: ["Energy Conglomerate", "Space Mining", "Reactor Grid", "System Power"],
     visualIdentity: {
       colors: ["#d4af37", "#0c0e14", "#1a1508"],
-      architecture: "Altın sarısı enerji hatları ve mat siyah kaplama reaktör kuleleri, roket rampaları ve uzay limanları ile kaplı endüstriyel dev kuleler."
+      architecture: "Industrial megatowers featuring golden energy conduits, matte black reactor spires, launchpads, and spaceports."
     },
-    classifiedNote: "James, kriz anlarında gösterişli maskesini düşürüp siber diktatörlük çağrıları yapabilecek kadar acımasız bir politik figürdür.",
+    classifiedNote: "James is a political figure ruthless enough to drop his polished mask in times of crisis and issue directives for siber dictatorship.",
     images: {
       portrait: "/media/corporations/qualty/james-portrait.jpg",
       magazine: "/media/corporations/qualty/magazine-cover.jpg",
@@ -256,16 +256,16 @@ export const corporations: CompanyProfile[] = [
     displayName: "Ubless",
     leader: "John",
     leaderTitle: "Grid Director",
-    accent: "#00f5d4", // Cyber Turquoise
+    accent: "#00f5d4",
     cityName: "Nexum City",
     tagline: "The world moves because Ubless allows it to move.",
-    overview: "Hem fiziksel lojistiği hem de siber veri yollarını elinde tutan hareket tekelcisi. Şehirler arası tünelleri ve okyanus altı kabloları yönetir.",
-    coreBusiness: "Fiziksel Lojistik, Veri Otoyolları, Global Fiber Ağ Altyapısı",
-    systemRole: "İletişimi, mal akışını ve ordu transferlerini keserek veya yavaşlatarak savaş durumlarını sabote edebilir.",
+    overview: "The movement monopolist controlling both physical logistics and siber data highways. Manages inter-city vacuum tubes and sub-oceanic fiber cables.",
+    coreBusiness: "Physical Logistics, Data Highways, Global Fiber Infrastructure",
+    systemRole: "Capable of sabotaging tactical situations by cutting or throttling communications, cargo flows, and troop transfers.",
     assets: [
-      { name: "Trans-City Vacuum Tubes", description: "Şehirler arası insan ve Kargo taşımacılığı yapan ultra hızlı manyetik kapsül tren ağları." },
-      { name: "Global Undersea Cables", description: "System kıtaları arasındaki veri transferini sağlayan zırhlı fiber optik okyanus omurgası." },
-      { name: "Orbital Cargo Ring", description: "Uzaydan gelen madenleri şehirlere ulaştıran yörüngesel lojistik istasyon zinciri." }
+      { name: "Trans-City Vacuum Tubes", description: "Ultra-fast magnetic capsule train networks transporting passengers and cargo between cities." },
+      { name: "Global Undersea Cables", description: "Armored fiber optic oceanic backbones carrying data transfers between System continents." },
+      { name: "Orbital Cargo Ring", description: "Orbital logistics station networks delivering raw materials mined in space to the surface." }
     ],
     influence: {
       economy: 9,
@@ -277,14 +277,14 @@ export const corporations: CompanyProfile[] = [
       publicTrust: 6
     },
     relations: [
-      { target: "qualty", type: "ally", description: "Enerji taşımacılığı ve space mining entegrasyonu sebebiyle James ile stratejik bir ortaklığa sahiptir." }
+      { target: "qualty", type: "ally", description: "Maintains a strategic partnership with James due to energy transit and space mining integration." }
     ],
     tags: ["Global Logistics", "Data Routes", "System Engines", "Cable Authority"],
     visualIdentity: {
       colors: ["#00f5d4", "#008f7a", "#070c0f"],
-      architecture: "Turkuaz ışıklı hatlarla örülmüş dev kablo kanalları, yük limanları, tüneller ve sürekli hareket eden manyetik konteyner terminalleri."
+      architecture: "Massive cable conduits lined with turquoise lights, cargo docks, tunnels, and constantly moving magnetic container terminals."
     },
-    classifiedNote: "John, savaş zamanlarında lojistik öncelik kurallarını değiştirerek System içindeki dengeleri tamamen değiştirebilecek lojistik güce sahiptir.",
+    classifiedNote: "John holds the logistical power to completely shift balances inside the System during war periods by altering transit priority protocols.",
     images: {
       portrait: "/media/corporations/ubless/john-portrait.jpg",
       magazine: "/media/corporations/ubless/magazine-cover.jpg",
@@ -301,16 +301,16 @@ export const corporations: CompanyProfile[] = [
     displayName: "Social Media",
     leader: "Brett Perkins",
     leaderTitle: "Trend Sovereign",
-    accent: "#ff4d6d", // Glitch Red
+    accent: "#ff4d6d",
     cityName: "Aulam",
     tagline: "They do not own truth. They own the speed of belief.",
-    overview: "Sosyal medya platformları, halkla ilişkiler algoritmaları ve veri yedekleme sunucularını barındıran geçici oligarşi üyesi.",
-    coreBusiness: "Sosyal Medya, Algı Yönetimi, Viral Propaganda",
-    systemRole: "Kamuoyunu manipüle ederek gerçekleri perdeler ve System lehine viral kampanyalar tasarlar.",
+    overview: "A temporary oligarchy member hosting social media platforms, public relations algorithms, and core data backup servers.",
+    coreBusiness: "Social Media, Perception Management, Viral Propaganda",
+    systemRole: "Obscures realities by manipulating public opinion and designs viral campaigns in favor of the System.",
     assets: [
-      { name: "Aulam Main & Backup Cores", description: "Milyarlarca insanın sosyal verisini, trend geçmişini ve zihinsel haritasını saklayan devasa iki çekirdek sunucu." },
-      { name: "Perception Core Shield", description: "Kullanıcıların inanç hızlarını ve fikir eğilimlerini anlık tarayan yapay zeka zırhı." },
-      { name: "Viral Broadcast Syndicate", description: "İnternet üzerindeki yalan haberleri saniyeler içinde gerçeğe dönüştüren otomatik bot orduları." }
+      { name: "Aulam Main & Backup Cores", description: "Twin core servers storing social data, trend history, and cognitive maps of billions of users." },
+      { name: "Perception Core Shield", description: "An AI shield scanning user belief speeds and ideological inclinations in real-time." },
+      { name: "Viral Broadcast Syndicate", description: "Automated bot armies converting fake news on the net into absolute reality within seconds." }
     ],
     influence: {
       economy: 6,
@@ -322,14 +322,14 @@ export const corporations: CompanyProfile[] = [
       publicTrust: 4
     },
     relations: [
-      { target: "nets", type: "rival", description: "Madam Anne'in medya hegemonyasını kırmak için alternatif iletişim kanallarını provoke etmeye çalışıyor." }
+      { target: "nets", type: "rival", description: "Attempts to provoke alternative communication channels to break Madam Anne's media hegemony." }
     ],
     tags: ["Perception Core", "Aulam", "Trend Authority", "Weakest Link"],
     visualIdentity: {
       colors: ["#ff4d6d", "#1e90ff", "#050508"],
-      architecture: "Glitchli dev ekranlar, sürekli değişen holografik panolar ve kuşatma altındaki veri sunucularını çevreleyen kırmızı neon ışıklar."
+      architecture: "Glitchy megascreens, constantly shifting holographic billboards, and red neon grids surrounding the besieged data servers."
     },
-    classifiedNote: "Social Media Oligarchy, Swos kuvvetleri tarafından 'en zayıf halka' olarak tespit edilmiş ve Aulam'daki iki büyük veri çekirdeği (Main ve Backup Core) ele geçirilmiştir.",
+    classifiedNote: "The Social Media Oligarchy was identified by Swos forces as the 'weakest link,' resulting in the seizure of the two main data hubs (Main and Backup Core) in Aulam.",
     images: {
       portrait: "/media/corporations/social-media/brett-portrait.png",
       magazine: "/media/corporations/social-media/magazine-cover.jpg",
@@ -349,16 +349,16 @@ export const corporations: CompanyProfile[] = [
     displayName: "Miner Henry Empire",
     leader: "Miner Henry",
     leaderTitle: "Altcoin Overlord",
-    accent: "#d6a84f", // Warm Honey Gold
+    accent: "#d6a84f",
     cityName: "Hexcity",
     tagline: "Gold above. Screams beneath.",
-    overview: "IOHcoin ve Altcoin madenciliğinin kalbi. Yüz binlerce hexagon petekten oluşan devasa maden şehrinin mutlak sahibi.",
-    coreBusiness: "Para Madenciliği, Gizli Geçit Ağları, KOWN İş Gücü Yönetimi",
-    systemRole: "System'in finansal döngüsünü ayakta tutan kripto para madenciliğini yeraltı köle iş gücüyle yönetir.",
+    overview: "The heart of IOHcoin and Altcoin mining. The absolute ruler of the massive mining city consisting of hundreds of thousands of hexagonal combs.",
+    coreBusiness: "Currency Mining, Secret Passage Networks, KOWN Labor Management",
+    systemRole: "Coordinates the cryptocurrency mining that sustains the System's financial cycles through underground slave labor forces.",
     assets: [
-      { name: "Hexagonal Mining Cells", description: "İşçilerin haftalarca çıkmadan IOHcoin kazdığı yüz binlerce altıgen petek hücresi." },
-      { name: "Tula AI Guardian", description: "Maden isyanlarını ve kaçak geçişleri engellemek üzere programlanmış devasa yapay zeka muhafız sistemi." },
-      { name: "Secret Access Portals", description: "Şirketler Birliği denetiminden uzak, yeraltı madenlerinden System merkez çekirdeğine uzanan gizli tüneller." }
+      { name: "Hexagonal Mining Cells", description: "Hundreds of thousands of hexagonal hives where workers mine IOHcoin for weeks without leaving." },
+      { name: "Tula AI Guardian", description: "A massive AI guardian system programmed to suppress mining riots and prevent unauthorized escapes." },
+      { name: "Secret Access Portals", description: "Hidden tunnels stretching from underground mines to the System's core, bypassing Corporate Union supervision." }
     ],
     influence: {
       economy: 10,
@@ -370,14 +370,14 @@ export const corporations: CompanyProfile[] = [
       publicTrust: 2
     },
     relations: [
-      { target: "agrom", type: "ally", description: "Steve Agrom ile eski ortaklığa dayanarak IOHcoin core sistemine arka kapı geçişleri sağlamak üzere gizli anlaşmaları bulunur." }
+      { target: "agrom", type: "ally", description: "Maintains secret agreements to provide backdoor access to the IOHcoin core based on an old partnership with Steve Agrom." }
     ],
     tags: ["Iohcoin Mining", "Hexcity", "Altcoin Market", "Hidden Entry"],
     visualIdentity: {
       colors: ["#d6a84f", "#18140f", "#080605"],
-      architecture: "Sarı sıcak altın parıltıları, devasa altıgen silindir yapılar, çöl tozu ve yeraltı kömür/metal rengi kontrastı."
+      architecture: "Industrial contrast featuring warm golden sparkles, massive hexagonal cylinder structures, desert dust, and dark coal/metal textures."
     },
-    classifiedNote: "Hexcity hücrelerinin altında yatan aşırı sömürü ve insanlık dışı çalışma koşulları, System içindeki en büyük işçi isyanlarının doğuş noktasıdır.",
+    classifiedNote: "The extreme exploitation and inhumane conditions beneath Hexcity are the birthing grounds for the largest labor rebellions inside the System.",
     images: {
       portrait: "/media/corporations/henry/henry-portrait.jpg",
       magazine: "/media/corporations/henry/magazine-cover.jpg",

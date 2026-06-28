@@ -149,23 +149,26 @@
   margin: 0;
 }
 
-/* 4-Column Monitor Grid */
+/* 2x2 Cyber Console Grid */
 .hudGrid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.5rem;
-  margin-bottom: 6rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem 3rem;
+  margin-bottom: 4rem;
+  position: relative;
+  z-index: 2;
 }
 
 .monitorCard {
   position: relative;
-  background-color: rgba(9, 13, 20, 0.7);
-  border: 1px solid rgba(48, 54, 61, 0.7);
-  border-radius: 12px;
+  background-color: rgba(2, 3, 5, 0.97);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0px; /* Sharp corners */
   overflow: hidden;
-  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8);
 }
 
 .monitorGridBackdrop {
@@ -216,26 +219,29 @@
 }
 
 .monitorBody {
-  padding: 2rem;
+  padding: 1.25rem;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 0.8rem;
   z-index: 2;
   flex: 1;
 }
 
 .monitorTitle {
-  font-size: 1.5rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
+  font-size: 1.25rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
   margin: 0;
   color: #ffffff;
+  text-transform: uppercase;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
+  transition: text-shadow 0.3s;
 }
 
 .monitorKicker {
   font-family: var(--font-mono), monospace;
-  font-size: 0.65rem;
-  letter-spacing: 0.05em;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
   color: var(--monitor-accent);
   font-weight: 700;
   text-transform: uppercase;
@@ -246,7 +252,7 @@
   color: #8b949e;
   line-height: 1.6;
   margin: 0;
-  height: 72px;
+  height: 52px;
   overflow: hidden;
 }
 
@@ -256,7 +262,7 @@
   background-color: #05070a;
   border: 1px solid rgba(48, 54, 61, 0.8);
   border-radius: 6px;
-  height: 120px;
+  height: 80px;
   overflow: hidden;
 }
 
@@ -400,7 +406,11 @@
 .monitorCard:hover {
   border-color: var(--monitor-accent);
   transform: translateY(-4px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.05), 0 0 15px var(--monitor-accent);
+}
+
+.monitorCard:hover .monitorTitle {
+  text-shadow: 0 0 15px var(--monitor-accent), 0 0 5px #ffffff;
 }
 
 .monitorCard:hover .monitorGlowLine {
@@ -565,6 +575,162 @@
   margin: 0;
 }
 
+/* Sync Status Bar */
+.syncStatusBar {
+  max-width: 320px;
+  margin: 0 auto 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background-color: rgba(9, 13, 20, 0.6);
+  border: 1px solid rgba(48, 54, 61, 0.6);
+  border-radius: 20px;
+  padding: 0.5rem 1.5rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  color: #7aa7ff;
+  box-shadow: 0 0 15px rgba(122, 167, 255, 0.05);
+}
+
+.syncDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #27c93f;
+  box-shadow: 0 0 8px #27c93f;
+  animation: syncPulse 2s infinite ease-in-out;
+}
+
+@keyframes syncPulse {
+  0%, 100% { opacity: 0.4; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+/* Console Wrapper & Network Hub */
+.consoleWrapper {
+  position: relative;
+  margin-bottom: 6rem;
+}
+
+.connectorSvg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.connectorPath {
+  transition: stroke-width 0.3s, stroke 0.3s, opacity 0.3s;
+  opacity: 0.25;
+}
+
+.connectorPathActive {
+  opacity: 0.85;
+  stroke-dashoffset: -10;
+  animation: dashMove 1.5s infinite linear;
+}
+
+@keyframes dashMove {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+
+/* Center Hub */
+.centerHub {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100px;
+  height: 100px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.hubRadarRing {
+  position: absolute;
+  inset: 0;
+  border: 1.5px dashed rgba(122, 167, 255, 0.25);
+  border-radius: 50%;
+  animation: hubSpin 15s infinite linear;
+}
+
+@keyframes hubSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.hubInnerCore {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  background-color: rgba(5, 7, 10, 0.95);
+  border: 2.5px solid rgba(48, 54, 61, 0.9);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 20px rgba(122, 167, 255, 0.15), 0 0 30px rgba(0, 0, 0, 0.8);
+}
+
+.hubCoreGlow {
+  position: absolute;
+  inset: 5px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(122, 167, 255, 0.08) 0%, transparent 70%);
+  animation: corePulse 3s infinite ease-in-out;
+}
+
+@keyframes corePulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.95); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+.hubCoreLabel {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.7rem;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+}
+
+.hubSubText {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.5rem;
+  color: #8b949e;
+  letter-spacing: 0.05em;
+  margin-top: 2px;
+}
+
+.hubRotatingNodes {
+  position: absolute;
+  inset: -5px;
+  animation: hubSpin 20s infinite linear;
+}
+
+.hubOrbiter {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  box-shadow: 0 0 8px currentColor;
+}
+
+/* Position orbiter dots on the ring */
+.hubOrbiter:nth-child(1) { top: 0; left: 50%; transform: translateX(-50%); }
+.hubOrbiter:nth-child(2) { top: 50%; right: 0; transform: translateY(-50%); }
+.hubOrbiter:nth-child(3) { bottom: 0; left: 50%; transform: translateX(-50%); }
+.hubOrbiter:nth-child(4) { top: 50%; left: 0; transform: translateY(-50%); }
+
 /* Responsive Grid rules */
 @media (max-width: 1024px) {
   .hudGrid {
@@ -579,6 +745,10 @@
   .registryGridContainer {
     grid-template-columns: 1fr;
     gap: 3rem;
+  }
+
+  .centerHub, .connectorSvg {
+    display: none;
   }
 }
 

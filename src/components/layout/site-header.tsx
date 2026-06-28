@@ -68,15 +68,59 @@ export async function SiteHeader() {
           </Link>
 
           <nav aria-label="Ana navigasyon" className="hidden items-center gap-1 lg:flex">
-            {navItems.map((item) => (
-              <Link
-                className="mono-label inline-flex min-h-11 items-center rounded-full px-3 py-2 text-[0.6rem] text-mist/78 transition-colors hover:bg-white/[0.055] hover:text-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                href={item.href}
-                key={item.href}
-              >
-                {item.label}
-              </Link>
-            ))}
+            {navItems.map((item) => {
+              if (item.href === "/encyclopedia") {
+                return (
+                  <DropdownMenu key={item.href}>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        className="mono-label inline-flex min-h-11 items-center rounded-full px-3 py-2 text-[0.6rem] text-mist/78 transition-colors hover:bg-white/[0.055] hover:text-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
+                        type="button"
+                      >
+                        {item.label} <span className="ml-1 text-[0.5rem] opacity-70">▼</span>
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="center" className="w-52 border-white/12 bg-ink/95 p-2 shadow-xl backdrop-blur-xl">
+                      <DropdownMenuItem asChild className="cursor-pointer">
+                        <Link href="/encyclopedia" className="w-full text-[0.65rem] font-semibold text-paper">
+                          Encyclopedia Index
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator className="bg-white/10" />
+                      <DropdownMenuItem asChild className="cursor-pointer">
+                        <Link href="/encyclopedia/characters" className="w-full text-[0.65rem] text-mist hover:text-gold">
+                          Characters
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild className="cursor-pointer">
+                        <Link href="/encyclopedia/corporations" className="w-full text-[0.65rem] text-mist hover:text-gold">
+                          Corporations
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild className="cursor-pointer">
+                        <Link href="/encyclopedia/swos" className="w-full text-[0.65rem] text-mist hover:text-gold">
+                          SWOS
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild className="cursor-pointer">
+                        <Link href="/encyclopedia/ai" className="w-full text-[0.65rem] text-mist hover:text-gold">
+                          AI System
+                        </Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                );
+              }
+              return (
+                <Link
+                  className="mono-label inline-flex min-h-11 items-center rounded-full px-3 py-2 text-[0.6rem] text-mist/78 transition-colors hover:bg-white/[0.055] hover:text-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  href={item.href}
+                  key={item.href}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
           </nav>
 
           <div className="flex items-center gap-2">

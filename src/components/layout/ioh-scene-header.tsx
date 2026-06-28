@@ -26,12 +26,17 @@ const navItems = [
 
 export function IohSceneHeader({ user }: { user: IohSceneHeaderUser }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isEncOpen, setIsEncOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const encDropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
+      }
+      if (encDropdownRef.current && !encDropdownRef.current.contains(event.target as Node)) {
+        setIsEncOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -47,11 +52,46 @@ export function IohSceneHeader({ user }: { user: IohSceneHeaderUser }) {
         <span className={styles.logoText}>UNIVERSE</span>
       </Link>
       <nav className="site-nav" aria-label="Ana menu">
-        {navItems.map((item) => (
-          <Link href={item.href} key={item.href}>
-            {item.label}
-          </Link>
-        ))}
+        {navItems.map((item) => {
+          if (item.href === "/encyclopedia") {
+            return (
+              <div key={item.href} className={styles.navDropdownWrapper} ref={encDropdownRef}>
+                <button
+                  type="button"
+                  className={styles.navButton}
+                  onClick={() => setIsEncOpen(!isEncOpen)}
+                >
+                  {item.label} ▾
+                </button>
+                {isEncOpen && (
+                  <div className={styles.navDropdownMenu}>
+                    <Link href="/encyclopedia" onClick={() => setIsEncOpen(false)}>
+                      Encyclopedia Index
+                    </Link>
+                    <div className={styles.navDropdownDivider} />
+                    <Link href="/encyclopedia/characters" onClick={() => setIsEncOpen(false)}>
+                      Characters
+                    </Link>
+                    <Link href="/encyclopedia/corporations" onClick={() => setIsEncOpen(false)}>
+                      Corporations
+                    </Link>
+                    <Link href="/encyclopedia/swos" onClick={() => setIsEncOpen(false)}>
+                      SWOS
+                    </Link>
+                    <Link href="/encyclopedia/ai" onClick={() => setIsEncOpen(false)}>
+                      AI System
+                    </Link>
+                  </div>
+                )}
+              </div>
+            );
+          }
+          return (
+            <Link href={item.href} key={item.href}>
+              {item.label}
+            </Link>
+          );
+        })}
       </nav>
       <div className={`head-actions ${styles.actions}`}>
         {user ? (

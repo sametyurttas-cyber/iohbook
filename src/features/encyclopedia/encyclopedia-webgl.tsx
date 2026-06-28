@@ -145,10 +145,10 @@ export function EncyclopediaWebGL({ hoveredIndex, pageContext = "portal" }: Ency
       new THREE.Color("#ffffff")
     ] : [
       new THREE.Color("#ffffff"), // Neutral (White Stars)
-      new THREE.Color("#e7c574"), // Gold (Karakterler)
-      new THREE.Color("#ff5b5b"), // Red (Corporations)
-      new THREE.Color("#6f9bff"), // Blue (SWOS)
-      new THREE.Color("#d8f3ff")  // Light Blue (AI Monitor)
+      new THREE.Color("#ffb700"), // Neon Gold (Karakterler)
+      new THREE.Color("#ff3c00"), // Neon Red (Corporations)
+      new THREE.Color("#00e5ff"), // Neon Blue (SWOS)
+      new THREE.Color("#ff007f")  // Neon Purple (AI Monitor)
     ];
 
     const seeds = new Float32Array(COUNT);
@@ -268,13 +268,13 @@ export function EncyclopediaWebGL({ hoveredIndex, pageContext = "portal" }: Ency
       }
 
       if (transitionMix < 1) {
-        transitionMix += 0.035;
+        transitionMix += 0.012;
         if (transitionMix > 1) transitionMix = 1;
       }
 
       material.uniforms.uMix.value = transitionMix;
 
-      activeColor.lerp(COLORS[targetPhase], 0.04);
+      activeColor.lerp(COLORS[targetPhase], 0.015);
       material.uniforms.uColor.value.copy(activeColor);
 
       if (pageContext !== "ai") {

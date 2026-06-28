@@ -145,12 +145,12 @@ export default function SwosScene({ user }: SwosSceneProps) {
   }, []);
 
   const centriumNodes = [
-    { name: "Tax Cores", ref: "HC_TAX_01", x: "32%", y: "45%", desc: "Tüm bağlı dünyalardan vergi ve kaynak kesintisi yapan veri çekirdeği.", leak: "Bağımsız madencilerin kazandığı tokenların %34'üne otomatik olarak el koyan gizli kod parçacıkları barındırır." },
-    { name: "Ministries", ref: "HC_MIN_02", x: "48%", y: "30%", desc: "Ekonomi, savunma ve teknoloji politikalarını koordine eden federal meclis binaları.", leak: "Şirketler Birliği temsilcileriyle arka kapıda yapılan gizli anlaşmaların asıl onay merciidir." },
-    { name: "Military Command Grid", ref: "HC_MIL_03", x: "65%", y: "55%", desc: "Yörünge uyduları, savunma kalkanları ve drone orduları komuta şebekesi.", leak: "Sivil isyanlarda şehirleri yok etmek üzere programlanmış acil durum lazer protokollerini yönetir." },
-    { name: "Technology Hub", ref: "HC_TECH_04", x: "25%", y: "65%", desc: "System'in teknolojik sürekliliğini ve kalkan yapısını koruyan geliştirme merkezleri.", leak: "Vatandaşların zihinsel loglarını ve dijital hareket geçmişlerini analiz eden yapay zeka takip algoritmaları geliştirilir." },
-    { name: "Iohcoin Core", ref: "HC_IOH_05", x: "50%", y: "60%", desc: "System içi para damarı ve kuantum veri tabanı.", leak: "SWOS'un ekonomiyi kontrol etmek ve vatandaşları borç döngüsünde tutmak için kullandığı ana enstrüman." },
-    { name: "World Currency Core", ref: "HC_WCC_06", x: "78%", y: "35%", desc: "Eski dünyada yaşayan insanların para kayıtları ve siber aktarımları.", leak: "Quantum entanglement kullanarak her satın alma hareketini izler ve loglar." }
+    { name: "Tax Cores", ref: "HC_TAX_01", x: "32%", y: "45%", desc: "Data core that deducts taxes and resources from all connected worlds.", leak: "Contains hidden code snippets that automatically seize 34% of tokens earned by independent miners." },
+    { name: "Ministries", ref: "HC_MIN_02", x: "48%", y: "30%", desc: "Federal assembly buildings coordinating economic, defense, and technological policies.", leak: "The actual approval authority for secret back-door agreements and concessions made with Corporate Union representatives." },
+    { name: "Military Command Grid", ref: "HC_MIL_03", x: "65%", y: "55%", desc: "Command network for orbital satellites, defensive shields, and drone armies.", leak: "Manages emergency laser protocols programmed to eliminate cities in the event of civil uprisings." },
+    { name: "Technology Hub", ref: "HC_TECH_04", x: "25%", y: "65%", desc: "Development centers maintaining the System's technological continuity and shield infrastructure.", leak: "Develops AI tracking algorithms that analyze citizens' mental logs and digital activity history." },
+    { name: "Iohcoin Core", ref: "HC_IOH_05", x: "50%", y: "60%", desc: "The financial pipeline and quantum database within the System.", leak: "The main instrument utilized by SWOS to control the economy and lock citizens in a continuous debt cycle." },
+    { name: "World Currency Core", ref: "HC_WCC_06", x: "78%", y: "35%", desc: "Financial registries and siber transfers of citizens residing in the old world.", leak: "Traces and logs every purchase and transaction using quantum entanglement." }
   ];
 
   const conflictHotspots = [
@@ -161,7 +161,7 @@ export default function SwosScene({ user }: SwosSceneProps) {
       y: "35%",
       status: "RIOT ACTIVE",
       threat: "CRITICAL",
-      details: "Sivil direnişçiler tarafından portal sunucularına sızma girişimi saptandı. Siber asayiş ekipleri sevk edildi. Sıkıyönetim Protokolü S-12 aktif.",
+      details: "Infiltration attempt into portal servers detected by civil rebels. Cyber security squads deployed. Martial Law Protocol S-12 active.",
       color: "#ff3b3b"
     },
     {
@@ -171,7 +171,7 @@ export default function SwosScene({ user }: SwosSceneProps) {
       y: "15%",
       status: "DEPLOYED",
       threat: "LOW",
-      details: "Yörüngesel iyon topları aktif durumda. Dünya atmosferine giren yabancı veri paketleri taranıyor. Bütünlük %99.8.",
+      details: "Orbital ion cannons active. Scanning foreign data packets entering the Earth's atmosphere. Integrity at 99.8%.",
       color: "#27c93f"
     },
     {
@@ -181,7 +181,7 @@ export default function SwosScene({ user }: SwosSceneProps) {
       y: "65%",
       status: "SABOTAGE DETECTED",
       threat: "HIGH",
-      details: "Madencilik vergi havuzuna yönlendirilen hatlarda siber saldırı uyarısı. Antivirüs ekipleri veri çekirdeği çevresine siber kalkan kurdu.",
+      details: "Cyber attack warning on lines routed to the mining tax pool. Antivirus squads established a siber shield around the data core.",
       color: "#ffbd2e"
     },
     {
@@ -191,7 +191,7 @@ export default function SwosScene({ user }: SwosSceneProps) {
       y: "75%",
       status: "RESTRICTED ACCESS",
       threat: "MEDIUM",
-      details: "Eski dünyadan Centrium'a gerçekleşen ego transferlerinde tutarsızlık saptandı. Karantina protokolü aktif. Geçişler askıya alındı.",
+      details: "Discrepancy detected in ego transfers from the old world to Centrium. Quarantine protocol active. Transitions suspended.",
       color: "#ffbd2e"
     }
   ];
@@ -255,8 +255,8 @@ export default function SwosScene({ user }: SwosSceneProps) {
 
             <p className="max-w-[650px] mx-auto text-base text-[#8b949e] leading-relaxed mb-10">
               {isLeaked 
-                ? "Sistem genelinde genişleyen askeri polis devriyesi ve kuantum takip mekanizmalarıyla sarmalanmış federal kontrol aygıtı." 
-                : "System ve bağlı dünyaların güvenlik, düzen ve sürekliliğini koruyan en üst düzey federal otorite."
+                ? "A federal control apparatus enveloped in expanding military police patrols and quantum tracking mechanisms throughout the System." 
+                : "The highest federal authority safeguarding the security, order, and continuity of the System and connected worlds."
               }
             </p>
 
@@ -279,21 +279,21 @@ export default function SwosScene({ user }: SwosSceneProps) {
               <h2 className={styles.sectionTitle}>State Identity</h2>
               
               <p className={styles.stateText}>
-                SWOS, Great Collapse sonrası eski ulusların kalıntılarından doğan federal yönetim mekanizmasıdır. System’i, kuantum şehirlerini ve hâlâ eski dünyaya bağlı ekonomik damarları tek merkezden yönetir.
+                SWOS is the federal governing mechanism born from the ruins of old nations following the Great Collapse. It centrally manages the System, quantum cities, and the economic pipelines still connected to the old world.
               </p>
 
               {isLeaked ? (
                 <div className={styles.leakedBox}>
                   <h4>// LEAKED INTEL ANALYSIS</h4>
                   <p>
-                    Dünya, Great Collapse sonrası ikiye ayrılmıştır: Bir tarafta Corporate Union, diğer tarafta States Union yani SWOS. SWOS, güvenlik vaadiyle insanları sürekli gözetim ve zorunlu ölüm sonrası dijital kayıt altında tutan merkeziyetçi bir diktatörlüktür.
+                    The world has split in two following the Great Collapse: the Corporate Union on one side, and the States Union (SWOS) on the other. SWOS is a centralized dictatorship that subjects people to constant surveillance and mandatory digital registry even after death, all under the promise of security.
                   </p>
                 </div>
               ) : (
                 <div className={styles.officialBox}>
                   <h4>// OFFICIAL STATE PROMISE</h4>
                   <p>
-                    Tüm System vatandaşları için kaos ve anarşiye karşı sürekli koruma, ekonomik istikrar ve ölümün ötesinde güvenceye alınmış süreklilik.
+                    Continuous order, absolute protection against chaos and anarchy, stable economic conditions, and guaranteed continuity for all citizens beyond death.
                   </p>
                 </div>
               )}
@@ -389,7 +389,7 @@ export default function SwosScene({ user }: SwosSceneProps) {
                   {isLeaked ? "// LEAKED INTERNAL REPORT" : "// OFFICIAL LOGISTICS ARCHIVE"}
                 </span>
                 <p className="text-xs italic text-[#8b949e] leading-relaxed">
-                  {isLeaked ? centriumNodes[activeNode].leak : "Mekansal veri bütünlüğü kontrol edildi. Herhangi bir siber tehdit veya sızıntı tespit edilmedi."}
+                  {isLeaked ? centriumNodes[activeNode].leak : "Spatial data integrity verified. No siber threats or leak vectors detected."}
                 </p>
               </div>
             </div>
@@ -476,7 +476,7 @@ export default function SwosScene({ user }: SwosSceneProps) {
                 <span className={styles.presidentSub}>SUPREME EXECUTIVE AUTHORITY</span>
                 <h3 className={styles.presidentTitle}>President Matt</h3>
                 <p className={styles.presidentDesc}>
-                  Matt, SWOS’un yalnızca başkanı değil; yapının demir iradesidir. Onun yönetiminde devlet, seçimle değişen bir kurum olmaktan çıkar; üç yüzyıllık bir süreklilik makinesine dönüşür.
+                  Matt is not just the president of SWOS; he is the iron will of the structure. Under his regime, the state ceases to be an institution that changes with elections and becomes a three-hundred-year-old machine of continuity.
                 </p>
                 <div className="font-mono text-xs text-muted-foreground flex gap-4 mt-2">
                   <span>OFFICE: SWOS HQ</span>
@@ -496,7 +496,7 @@ export default function SwosScene({ user }: SwosSceneProps) {
               <p className={styles.sectionSlogan}>"Where the capital obeys."</p>
               
               <p className="text-sm text-[#8b949e] leading-relaxed mt-4">
-                Centrium kağıt üzerinde federal başkenttir; fakat gerçek güç, kriz yönetim toplantılarının yapıldığı, en üst düzey yöneticiler ve bakanlar kurulunun acil kodla toplandığı Swos Headquarters'tadır.
+                Centrium is the federal capital on paper; but the true seat of power lies in Swos Headquarters, where crisis management councils convene and the Council of Ministers assembles under emergency codes.
               </p>
             </div>
 
@@ -529,7 +529,7 @@ export default function SwosScene({ user }: SwosSceneProps) {
                 <span className={styles.coreRef}>CORE_SYS_01</span>
               </div>
               <p className={styles.coreDesc}>
-                System içi para damarı ve ana işlem kayıt altyapısı. İşlem geçmişini tamamen siber veri tabanında saklar.
+                The System's internal currency pipeline and primary transaction registry infrastructure. Stores all transaction history entirely within the siber database.
               </p>
             </div>
 
@@ -539,7 +539,7 @@ export default function SwosScene({ user }: SwosSceneProps) {
                 <span className={styles.coreRef}>CORE_SYS_02</span>
               </div>
               <p className={styles.coreDesc}>
-                Hâlâ eski dünyada yaşayan insanların para kayıtları ve kuantum dolanıklık yardımıyla yapılan siber aktarımları.
+                Financial records and siber transfers of citizens still residing in the old world, facilitated via quantum entanglement.
               </p>
             </div>
           </div>
@@ -555,7 +555,7 @@ export default function SwosScene({ user }: SwosSceneProps) {
               <div className={styles.simulatorLayout}>
                 <div className={styles.simulatorFormCol}>
                   <p className={styles.simulatorDesc}>
-                    Devlet maliye politikası gereğince, madencilik faaliyetlerinden veya siber aktarımlardan elde ettiğiniz gelirden kesilecek federal vergiyi hesaplayın.
+                    Calculate the federal tax to be deducted from your mining activities or siber transfers, in accordance with state fiscal policies.
                   </p>
                   <form onSubmit={handleCalculateTax} className={styles.simulatorForm}>
                     <div className={styles.inputWrapper}>
@@ -581,31 +581,31 @@ export default function SwosScene({ user }: SwosSceneProps) {
                   {taxResult ? (
                     <div className={styles.taxDetails}>
                       <div className={styles.taxRow}>
-                        <span>State Core Tax (Devlet Payı %34):</span>
+                        <span>State Core Tax (State Share 34%):</span>
                         <span className="text-[#ff3b3b] font-mono">-{taxResult.stateTax} IOH</span>
                       </div>
                       <div className={styles.taxRow}>
-                        <span>Military Defense Fund (Savaş Katkısı %10):</span>
+                        <span>Military Defense Fund (War Contribution 10%):</span>
                         <span className="text-[#ff3b3b] font-mono">-{taxResult.militaryFund} IOH</span>
                       </div>
                       <div className={styles.taxRow}>
-                        <span>Presidential Directive Commission (Başkanlık Payı %5):</span>
+                        <span>Presidential Directive Commission (Executive Share 5%):</span>
                         <span className="text-[#ff3b3b] font-mono">-{taxResult.leaderShare} IOH</span>
                       </div>
                       <div className={styles.taxRow}>
-                        <span>Vessel Ego Backup Fee (Yedekleme Bedeli %3):</span>
+                        <span>Vessel Ego Backup Fee (Backup Fee 3%):</span>
                         <span className="text-[#ff3b3b] font-mono">-{taxResult.maintenanceFee} IOH</span>
                       </div>
                       
                       <div className={styles.taxDivider} />
 
                       <div className={styles.taxRow}>
-                        <span className="font-semibold text-muted-foreground">Total Deductions (Toplam Kesinti %52):</span>
+                        <span className="font-semibold text-muted-foreground">Total Deductions (Total Deductions 52%):</span>
                         <span className="text-[#ff3b3b] font-mono font-bold">-{taxResult.total} IOH</span>
                       </div>
 
                       <div className={styles.netBakiyeRow}>
-                        <span className="text-white font-bold">NET APPROVED BALANCE (İzin Verilen):</span>
+                        <span className="text-white font-bold">NET APPROVED BALANCE (Approved):</span>
                         <span className="text-[#7aa7ff] font-mono font-bold text-lg">+{taxResult.net} IOH</span>
                       </div>
                     </div>
@@ -632,19 +632,19 @@ export default function SwosScene({ user }: SwosSceneProps) {
               <div className={styles.securityList}>
                 <div className={styles.securityItem}>
                   <span className={styles.securityItemName}>Military Grids</span>
-                  <span className={styles.securityItemDesc}>Yörüngesel kalkanlar ve füze bataryaları kontrolü.</span>
+                  <span className={styles.securityItemDesc}>Control of orbital shields and missile batteries.</span>
                 </div>
                 <div className={styles.securityItem}>
                   <span className={styles.securityItemName}>Security Divisions</span>
-                  <span className={styles.securityItemDesc}>Siber asayiş ekipleri ve devriye ağları.</span>
+                  <span className={styles.securityItemDesc}>Cyber security squads and patrol grids.</span>
                 </div>
                 <div className={styles.securityItem}>
                   <span className={styles.securityItemName}>Drone Enforcement</span>
-                  <span className={styles.securityItemDesc}>Merkez bölgelerin otonom dronlarca izlenmesi.</span>
+                  <span className={styles.securityItemDesc}>Autonomous drone surveillance over central zones.</span>
                 </div>
                 <div className={styles.securityItem}>
                   <span className={styles.securityItemName}>Antivirus Units</span>
-                  <span className={styles.securityItemDesc}>Siber güvenlik ve virüs temizleme ekipleri.</span>
+                  <span className={styles.securityItemDesc}>Siber security and threat clean-up divisions.</span>
                 </div>
               </div>
             </div>
@@ -779,31 +779,31 @@ export default function SwosScene({ user }: SwosSceneProps) {
             <div className={styles.flowStep}>
               <div className={styles.flowStepCircle}>01</div>
               <span className={styles.flowStepName}>DEATH</span>
-              <span className={styles.flowStepDesc}>Fiziksel bedenin son bulması.</span>
+              <span className={styles.flowStepDesc}>Termination of the biological vessel.</span>
             </div>
             <div className={styles.flowConnector}>→</div>
             <div className={styles.flowStep}>
               <div className={styles.flowStepCircle}>02</div>
               <span className={styles.flowStepName}>TRANSFER</span>
-              <span className={styles.flowStepDesc}>Enerji kimliğinin kuantum bilgisayara aktarılması.</span>
+              <span className={styles.flowStepDesc}>Migration of the energy identity into quantum computing grids.</span>
             </div>
             <div className={styles.flowConnector}>→</div>
             <div className={styles.flowStep}>
               <div className={styles.flowStepCircle}>03</div>
               <span className={styles.flowStepName}>REGISTRATION</span>
-              <span className={styles.flowStepDesc}>System sunucularında kayıt açılması.</span>
+              <span className={styles.flowStepDesc}>Establishing a registered profile in System servers.</span>
             </div>
             <div className={styles.flowConnector}>→</div>
             <div className={styles.flowStep}>
               <div className={styles.flowStepCircle}>04</div>
               <span className={styles.flowStepName}>EGO ACCESS</span>
-              <span className={styles.flowStepDesc}>Hafıza ve kimlik yetkilendirmesi.</span>
+              <span className={styles.flowStepDesc}>Authorization of memories and identity tags.</span>
             </div>
             <div className={styles.flowConnector}>→</div>
             <div className={styles.flowStep}>
               <div className={styles.flowStepCircle}>05</div>
               <span className={styles.flowStepName}>RECORD</span>
-              <span className={styles.flowStepDesc}>SWOS resmî veri kütüğüne işlenme.</span>
+              <span className={styles.flowStepDesc}>Commitment into the official SWOS database registries.</span>
             </div>
           </div>
 
@@ -821,7 +821,7 @@ export default function SwosScene({ user }: SwosSceneProps) {
 
             <div className={styles.terminalBody}>
               <p className={styles.terminalIntro}>
-                Devlet kayıtlarındaki vatandaşlık durumunuzu, tehdit endeksinizi ve ölüm sonrası dijital egonuzun aktarım durumunu doğrulamak için kimlik isminizi girin.
+                Enter your identity name to verify your citizenship status, threat coefficient index, and post-death digital ego transfer records in the state registries.
               </p>
 
               <form onSubmit={handleAudit} className={styles.auditForm}>
@@ -937,7 +937,7 @@ export default function SwosScene({ user }: SwosSceneProps) {
                 <span className={styles.monitorTitle}>OFFICIAL DIRECTIVE</span>
               </div>
               <p className={styles.monitorContent}>
-                System genel güvenliğini tehdit eden bozucu unsurlar tespit edilmiştir. Portal ağlarındaki yetkisiz hareketleri anında <span className={styles.monitorHighlight}>Emniyet Birimlerine</span> bildirin.
+                Threat actors violating system-wide security have been identified. Report any unauthorized portal or siber activity immediately to the <span className={styles.monitorHighlight}>Security Divisions</span>.
               </p>
             </div>
 
@@ -947,7 +947,7 @@ export default function SwosScene({ user }: SwosSceneProps) {
                 <span className={styles.monitorTitle} style={{ color: "#ff3b3b" }}>WANTED ANNOUNCEMENT</span>
               </div>
               <p className={styles.monitorContent}>
-                Algus, Kevin, Mike ve Mina. Şirketler Birliği ile iş birliği yaparak Core sistemine sızma girişiminde bulunmuşlardır. Yerlerini bildirenlere büyük <span className={styles.monitorHighlight} style={{ color: "#ff3b3b" }}>Iohcoin ödülü</span> verilecektir.
+                Algus, Kevin, Mike, and Mina. Charged with attempting to breach the Core network in collusion with the Corporate Union. A massive <span className={styles.monitorHighlight} style={{ color: "#ff3b3b" }}>Iohcoin bounty</span> is active for information leading to their capture.
               </p>
             </div>
           </div>
@@ -965,7 +965,7 @@ export default function SwosScene({ user }: SwosSceneProps) {
             <div className={styles.dividedCol}>
               <h3 className={styles.dividedTitle}>SWOS (States Union)</h3>
               <p className={styles.dividedDesc}>
-                Eski ulusların federal mirasını kuantum dünyasında sürdüren, sınırları devlet disiplini, veri kalkanları ve para çekirdekleriyle kontrol eden merkeziyetçi mekanizma.
+                The centralized federal mechanism carrying the legacy of old nations into the quantum age, controlling borders, data shields, and currency cores with state discipline.
               </p>
             </div>
 
@@ -974,7 +974,7 @@ export default function SwosScene({ user }: SwosSceneProps) {
             <div className={`${styles.dividedCol} ${styles.dividedColRight}`}>
               <h3 className={styles.dividedTitleRight}>Corporate Union</h3>
               <p className={styles.dividedDesc}>
-                Şehirleri, veri sunucularını ve siber lojistik ağlarını satın alan, geleceği parayla pazarlayan beş büyük oligarşik holdingin gevşek iş birliği yapısı.
+                A loose alliance structure of five major oligarchic conglomerates that purchased cities, data servers, and siber logistics, commercializing the future.
               </p>
             </div>
           </div>
@@ -1026,22 +1026,22 @@ export default function SwosScene({ user }: SwosSceneProps) {
         {/* 14. En Alt: “SWOS nedir?” - Manifesto */}
         <section className={styles.finalSection}>
           <div className={styles.finalContent}>
-            <h2 className={styles.finalTitle}>SWOS Nedir?</h2>
+            <h2 className={styles.finalTitle}>What is SWOS?</h2>
             
             <p className={styles.finalParagraph}>
-              SWOS — System World States Union — Great Collapse sonrası eski ulusların mirasını yutarak doğan federal yönetim mekanizmasıdır.
+              SWOS — the System World States Union — is the federal governing mechanism born from absorbing the ruins of old nations following the Great Collapse.
             </p>
             
             <p className={styles.finalParagraph}>
-              Kendisini düzenin, güvenliğin ve sürekliliğin temsilcisi olarak tanımlar. System içindeki kuantum şehirleri, eski dünyaya bağlı ekonomik kayıtları, para çekirdeklerini, bakanlık ağlarını ve askerî komuta gridlerini tek merkezden yönetir.
+              It defines itself as the guardian of order, security, and continuity. It centrally governs quantum cities, economic records connected to the old world, currency cores, ministerial channels, and military command networks.
             </p>
 
             <p className={styles.finalHighlight}>
-              "Şirketler Birliği dünyayı satın aldıysa, SWOS dünyayı kayıt altına aldı. Biri geleceği pazarlar, diğeri geleceğe izin verir."
+              "If the Corporate Union purchased the world, SWOS registered it. One markets the future, the other permits it."
             </p>
 
             <p className={styles.finalParagraph}>
-              SWOS’un vaadi basittir: Kaosun geri dönmesini engellemek. Fakat bu vaadin bedeli ağırdır. Çünkü SWOS için güvenlik yalnızca koruma değildir; izleme, sınırlama ve gerektiğinde bastırma hakkıdır. Ölümden sonra bile insan, onun kayıt sisteminden çıkamaz. Beden değişir, şehir değişir, varoluş biçimi değişir; fakat otorite değişmez.
+              The promise of SWOS is simple: preventing the return of chaos. Yet the price of this promise is heavy. For SWOS, security is not merely protection; it is the right of surveillance, restriction, and suppression when necessary. Even after death, humans cannot escape its logging networks. The body changes, the city changes, the mode of existence changes; but the authority remains absolute.
             </p>
 
             <p className={styles.finalSlogan}>

@@ -54,7 +54,7 @@ export function CorporationsScene({ user }: CorporationsSceneProps) {
           <span className={styles.mapKicker}>ARCHIVE 03 / GEOGRAPHIC TELEMETRY</span>
           <h2 className={styles.mapTitle}>Corporate Union Grid Map</h2>
           <p className={styles.mapDesc}>
-            Oligarşilerin kontrolündeki megacityler, enerji reaktörleri ve yeraltı maden şehirlerini bağlayan siber yolların canlı veri akış şeması.
+            A live data flow diagram of cyber channels connecting megacities, energy reactors, and underground mining cities controlled by the oligarchies.
           </p>
           <CorporateMap activeId="agrom" onSelect={() => {}} />
         </section>
@@ -64,7 +64,7 @@ export function CorporationsScene({ user }: CorporationsSceneProps) {
           <span className={styles.mapKicker}>ARCHIVE 04 / CONGLOMERATE INDEX</span>
           <h2 className={styles.mapTitle}>Corporate Union</h2>
           <p className={styles.mapDesc}>
-            System'i yöneten, sınırları ve yasaları belirleyen beş büyük oligarşik holdingin gizli dosyaları ve bölgesel güç dengeleri.
+            Classified files and regional balance of power of the major oligarchic conglomerates that govern the System, defining borders and laws.
           </p>
         </section>
 
@@ -88,39 +88,39 @@ export function CorporationsScene({ user }: CorporationsSceneProps) {
                 <span className={styles.kickerDotRed} />
                 <span>EXECUTIVE ANALYSIS / CLASSIFIED OVERVIEW</span>
               </div>
-              <h2 className={styles.explainerTitle}>Şirketler Birliği Nedir?</h2>
+              <h2 className={styles.explainerTitle}>What is the Corporate Union?</h2>
               
               <p className={styles.explainerParagraph}>
-                Şirketler Birliği, devletlerin zayıfladığı, ekonomilerin çöktüğü ve insanlığın güvenlik arayışı içinde kendi özgürlüğünden vazgeçmeye başladığı dönemde ortaya çıkan yeni güç düzenidir.
+                The Corporate Union is the new power dynamic that emerged in an era when nations weakened, economies collapsed, and humanity began to surrender its own freedom in search of safety.
               </p>
               
               <p className={styles.explainerParagraph}>
-                Bu yapı, yalnızca şirketlerin bir araya gelmesi değildir. Şirketler Birliği; şehirleri yöneten, enerji akışını kontrol eden, medyayı şekillendiren, dijital para sistemlerini işleten, lojistik ağları yöneten ve System’in teknolojik omurgasını elinde tutan kurumsal bir iktidar biçimidir.
+                This structure is not simply a gathering of companies. The Corporate Union is an institutional form of power that rules cities, controls energy flows, shapes media, operates digital currency systems, manages logistics networks, and commands the technological backbone of the System.
               </p>
               
               <div className={styles.explainerQuotes}>
-                <p><strong>Agrom Technology</strong> geleceği inşa eder.</p>
-                <p><strong>Nets</strong> insanların ne gördüğünü ve neye inandığını şekillendirir.</p>
-                <p><strong>Tencon</strong> savaşı oyuna, oyunu savaşa dönüştürür.</p>
-                <p><strong>Qualty Energy</strong> şehirlerin ışığını kimin alacağına karar verir.</p>
-                <p><strong>Ubless</strong> dünyanın hareket etmesini sağlar.</p>
-                <p><strong>Social Media</strong> hakikatin değil, inancın hızını yönetir.</p>
-                <p><strong>Miner Henry</strong> ise dijital ekonominin derinlerinde, altının ve verinin karanlık damarlarını işletir.</p>
+                <p><strong>Agrom Technology</strong> builds the future.</p>
+                <p><strong>Nets</strong> shapes what people see and believe.</p>
+                <p><strong>Tencon</strong> turns war into a game, and games into war.</p>
+                <p><strong>Qualty Energy</strong> decides who receives the cities' lights.</p>
+                <p><strong>Ubless</strong> keeps the world moving.</p>
+                <p><strong>Social Media</strong> controls the speed of belief, not the truth.</p>
+                <p><strong>Miner Henry</strong> operates the dark veins of gold and data deep within the digital economy.</p>
               </div>
 
               <div className={styles.explainerHighlightBox}>
                 <p className="font-mono text-xs text-[#ff1e27] mb-1">// SYSTEM COGNITIVE PROTOCOL</p>
                 <p className="text-sm italic">
-                  "Şirketler Birliği’nin vaadi düzendir. Bedeli ise kontroldür."
+                  "The promise of the Corporate Union is order. The price is control."
                 </p>
               </div>
 
               <p className={styles.explainerParagraph}>
-                Bu evrende şirketler artık yalnızca ürün satmaz. Sınır çizer, şehir kurar, hafıza saklar, para üretir, savaş yönetir ve insanlığın geleceğine yön verir.
+                In this universe, corporations no longer just sell products. They draw borders, build cities, store memories, mint currencies, manage wars, and shape the future of humanity.
               </p>
 
               <p className={styles.explainerParagraph}>
-                Devletlerin çöktüğü yerde şirketler yükselmiştir. Ve yükseldikleri yerde hiçbir şey artık masum değildir.
+                Where nations collapsed, corporations rose. And where they stand, nothing is innocent anymore.
               </p>
             </div>
             

@@ -47,26 +47,26 @@ export const swosData: SwosProfile = {
   establishedAfter: "Great Collapse",
   
   identity: {
-    summary: "SWOS, Great Collapse sonrası eski ulusların kalıntılarından doğan federal yönetim mekanizmasıdır. System’i, quantum şehirlerini ve hâlâ eski dünyaya bağlı ekonomik damarları tek merkezden yönetir.",
-    publicPromise: "Sürekli düzen, kaos ve anarşiye karşı mutlak koruma, tüm vatandaşlar için istikrarlı bir süreklilik.",
-    hiddenCost: "Seçim mekanizmalarının olmadığı, mutlak gözetim, sınırlandırılmış bireysel özgürlük ve ölümden sonra bile zorunlu kayıt altyapısı."
+    summary: "SWOS is the federal governing mechanism born from the ruins of old nations following the Great Collapse. It centrally manages the System, quantum cities, and the economic pipelines still connected to the old world.",
+    publicPromise: "Continuous order, absolute protection against chaos and anarchy, and stable continuity for all citizens.",
+    hiddenCost: "Absence of electoral mechanisms, absolute surveillance, restricted individual liberties, and a mandatory registration infrastructure even after death."
   },
   
   institutions: [
     {
       name: "Executive Office of the President",
-      description: "President Matt liderliğinde System'in en yüksek karar mercii. Acil durum protokollerini yürütür.",
-      leakedInfo: "Seçim mekanizması barındırmaz. Devlet, üç yüz yıllık sürekliliğe sahip bürokratik bir makine olarak çalışır."
+      description: "The highest decision-making authority of the System led by President Matt. Executes emergency protocols.",
+      leakedInfo: "Contains no electoral mechanism. The state functions as a bureaucratic machine with three hundred years of continuity."
     },
     {
       name: "Council of Ministers",
-      description: "Ekonomi, savunma ve teknoloji politikalarını koordine eden federal meclis.",
-      leakedInfo: "Şirketler Birliği temsilcileriyle arka kapıda yapılan gizli anlaşmaların ve tavizlerin asıl onay merciidir."
+      description: "The federal assembly coordinating economic, defense, and technological policies.",
+      leakedInfo: "The actual approval authority for secret back-door agreements and concessions made with Corporate Union representatives."
     },
     {
       name: "Federal Security Directorate",
-      description: "System genelinde kamu düzenini ve veri kalkanlarını yöneten emniyet birimi.",
-      leakedInfo: "Sivil isyanları bastırmak ve System'e izinsiz portal açan tehdit aktörlerini ortadan kaldırmak için kurulan askeri polis teşkilatı."
+      description: "The law enforcement agency managing public order and data shields throughout the System.",
+      leakedInfo: "A military police force established to suppress civil rebellions and eliminate threat actors opening unauthorized portals into the System."
     }
   ],
   
@@ -74,26 +74,26 @@ export const swosData: SwosProfile = {
     {
       name: "World-Currency Core",
       type: "currency",
-      description: "Eski dünyada yaşayan insanların para kayıtları ve siber aktarımları.",
-      leakedInfo: "Quantum entanglement kullanarak her satın alma ve finansal hareketi gecikmesiz olarak takip eder ve loglar."
+      description: "Financial registries and siber transfers of citizens residing in the old world.",
+      leakedInfo: "Traces and logs every purchase and financial movement without delay using quantum entanglement."
     },
     {
       name: "Iohcoin Core",
       type: "currency",
-      description: "System içi para damarı ve kuantum veri tabanı.",
-      leakedInfo: "SWOS'un ekonomiyi köleleştirmek ve vatandaşları sürekli borç döngüsünde tutmak için kullandığı ana enstrüman."
+      description: "The financial pipeline and quantum database within the System.",
+      leakedInfo: "The main instrument utilized by SWOS to enslave the economy and lock citizens in a continuous debt cycle."
     },
     {
       name: "Tax Cores",
       type: "currency",
-      description: "Tüm bağlı dünyalardan vergi ve kaynak kesintisi yapan veri çekirdeği.",
-      leakedInfo: "Bağımsız madencilerin kazandığı tokenların %34'üne otomatik olarak el koyan gizli kod parçacıkları barındırır."
+      description: "The data core executing tax and resource deductions from all connected worlds.",
+      leakedInfo: "Contains hidden code snippets that automatically seize 34% of tokens earned by independent miners."
     },
     {
       name: "Military Command Grids",
       type: "military",
-      description: "Yörünge uyduları, savunma kalkanları ve drone orduları komuta şebekesi.",
-      leakedInfo: "Citadel isyanlarında şehirleri yok etmek üzere programlanmış acil durum lazer protokollerini yönetir."
+      description: "Command network for orbital satellites, defensive shields, and drone armies.",
+      leakedInfo: "Manages emergency laser protocols programmed to eliminate cities in the event of Citadel uprisings."
     }
   ],
   
@@ -101,29 +101,29 @@ export const swosData: SwosProfile = {
     {
       id: "ARCHIVE 001",
       title: "Great Collapse",
-      publicVersion: "Eski ulusların ekonomik ve sivil yetersizlikleri nedeniyle kaçınılmaz dağılışı.",
-      classifiedVersion: "States Union kurucuları ve dev holding ortaklarının kaynakları kontrol etmek için planladığı yapay kriz dalgası.",
+      publicVersion: "The inevitable dissolution of old nations due to economic and civil failures.",
+      classifiedVersion: "An artificial wave of crises planned by the States Union founders and major corporate partners to consolidate resource control.",
       severity: "critical"
     },
     {
       id: "ARCHIVE 002",
       title: "Founding of the System",
-      publicVersion: "İnsan bilincini ölümün ötesinde korumak için tasarlanan siber-cennet.",
-      classifiedVersion: "Enerji kimliklerini quantum bilgisayarlara aktararak insanlığı ebedi ve kaçışı olmayan bir iş gücüne dönüştürme projesi.",
+      publicVersion: "A siber-paradise engineered to protect human consciousness beyond the boundaries of death.",
+      classifiedVersion: "A project designed to transfer energy identities into quantum computing grids, turning humanity into an eternal and inescapable labor force.",
       severity: "high"
     },
     {
       id: "ARCHIVE 003",
       title: "Agrom City Incident",
-      publicVersion: "Dış halka reaktörlerindeki ufak bir teknik arızanın kontrol altına alınması.",
-      classifiedVersion: "Steve Agrom ile SWOS arasındaki yetki paylaşım kavgası sonucu sızdırılan virüsün sebep olduğu binlerce veri silinmesi.",
+      publicVersion: "The containment of a minor technical failure in the outer ring reactors.",
+      classifiedVersion: "Massive data deletions caused by a virus leaked during a power sharing conflict between Steve Agrom and SWOS.",
       severity: "critical"
     },
     {
       id: "ARCHIVE 004",
       title: "Centrium Breach",
-      publicVersion: "Bozucu unsurlar tarafından yapılan lokal bir bina sabotajı.",
-      classifiedVersion: "Başkent Centrium'un merkez sunucularına yapılan sızma sonucu bağlı dünyaların ekonomilerini çökerten büyük siber yıkım.",
+      publicVersion: "A localized building sabotage executed by disruptive elements.",
+      classifiedVersion: "A major siber disruption that collapsed connected world economies, triggered by an infiltration into the capital Centrium's central servers.",
       severity: "critical"
     }
   ]

@@ -81,3 +81,16 @@ a {
   background: #f2c96d;
   color: #050507;
 }
+
+@keyframes telemetry-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-shimmer {
+  animation: telemetry-shimmer 2s infinite linear;
+}

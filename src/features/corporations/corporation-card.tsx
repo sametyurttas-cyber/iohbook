@@ -177,13 +177,13 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
                 <span className="text-[#e7c574] block font-semibold mb-0.5">
                   FILE_REF: {company.id === "agrom" ? "AC_DAY_01" : company.id === "nets" ? "OC_DAY_CANAL_01" : company.id === "tencon" ? "TC_AERIAL_01" : company.id === "qualty" ? "SC_CAPITAL_01" : company.id === "ubless" ? "NC_CENTER_01" : company.id === "social-media" ? "SM_COURTYARD_01" : "HC_STREET_01"}
                 </span>
-                {company.id === "agrom" && "Agrom City dikey mimari ve sokak panoraması. Altın işlemeli spayrlar ve siber sancaklar görünür durumdadır."}
-                {company.id === "nets" && "Orion City kanal mimarisi ve şehir merkezi. Beyaz mermer saraylar ve parlayan siber sancaklar."}
-                {company.id === "tencon" && "Tencon City Sector 17 genel görünümü ve Synapse Grid kuantum reaktör ağı şeması."}
-                {company.id === "qualty" && "Solaris A başkent bölgesi ve Qualty Energy merkez reaktör kulelerinin gün batımı altındaki görkemli panoraması."}
-                {company.id === "ubless" && "Nexum City gümüş kuleleri ve merkez ulaşım kanallarının bulutlu gün ışığı altındaki görkemli panoraması."}
-                {company.id === "social-media" && "Aulam City siber veri sunucuları avlusu ve yönetim binalarının alacakaranlık görünümü."}
-                {company.id === "miner-henry" && "Hexcity derin yeraltı sokakları. Yüz binlerce dikey altıgen metal yaşam hücreleri ve kömür-altın parıltısı."}
+                {company.id === "agrom" && "Agrom City vertical architecture and street panorama. Golden server spires and cyber banners are visible."}
+                {company.id === "nets" && "Orion City canal architecture and city center. White marble palaces and glowing cyber banners."}
+                {company.id === "tencon" && "Tencon City Sector 17 overview and Synapse Grid quantum reactor network diagram."}
+                {company.id === "qualty" && "Solaris A capital district and Qualty Energy central reactor towers majestic panorama under sunset."}
+                {company.id === "ubless" && "Nexum City silver towers and central transportation channels majestic panorama under cloudy daylight."}
+                {company.id === "social-media" && "Aulam City cyber data server courtyard and administrative buildings at twilight."}
+                {company.id === "miner-henry" && "Hexcity deep underground streets. Hundreds of thousands of vertical hexagonal metal living cells and coal-gold shimmer."}
               </div>
             </div>
 
@@ -207,13 +207,13 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
                   <span className="text-[#e7c574] block font-semibold mb-0.5">
                     FILE_REF: {company.id === "agrom" ? "AC_AERIAL_02" : company.id === "nets" ? "OC_NIGHT_CANAL_02" : company.id === "tencon" ? "TC_ARENA_02" : company.id === "qualty" ? "SC_MINING_HUB_02" : company.id === "ubless" ? "NC_AERIAL_02" : company.id === "social-media" ? "SM_TOWER_02" : "HC_HEXAGONAL_02"}
                   </span>
-                  {company.id === "agrom" && "Merkez quantum sunucu kulesinin yörüngesel kalkan halkasıyla uydu kanallarından çekilmiş genel planı."}
-                  {company.id === "nets" && "Orion City kanalları ve devasa holografik reklam panolarının mor ışık seli altındaki gece görünümü."}
-                  {company.id === "tencon" && "Siber spor arenalarının ve KOWN robotik gladyatör dövüşlerinin yapıldığı devasa kubbeli Tencon Arena."}
-                  {company.id === "qualty" && "Asteroid kuşağındaki uzay madenciliği merkezi Extraction Hub T9. Kuantum reaktör plazma yakıtı sevkiyatı."}
-                  {company.id === "ubless" && "Nexum City siber veri yolları ve merkez şebeke kulesinin gece çekilmiş genel planı."}
-                  {company.id === "social-media" && "Aulam City göl kıyısındaki devasa siber kule ve veri dağıtım antenleri."}
-                  {company.id === "miner-henry" && "Hexcity merkez şebeke kulesi ve altıgen maden peteklerinin genel plan görünüşü."}
+                  {company.id === "agrom" && "General view of the central quantum server tower with its orbital shield ring, captured via satellite channels."}
+                  {company.id === "nets" && "Orion City canals and massive holographic billboards at night under purple neon light rivers."}
+                  {company.id === "tencon" && "Tencon Arena, the massive domed stadium where cyber sports events and KOWN gladiator combat take place."}
+                  {company.id === "qualty" && "Extraction Hub T9, the space mining facility located in the asteroid belt. Quantum reactor plasma fuel shipment."}
+                  {company.id === "ubless" && "Nexum City siber highways and central network spire captured at night."}
+                  {company.id === "social-media" && "Aulam City lakeside massive cyber tower and data distribution arrays."}
+                  {company.id === "miner-henry" && "Hexcity central grid tower and hexagonal mining combs general overview."}
                 </div>
               </div>
             )}
@@ -238,12 +238,12 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
                   <span className="text-[#e7c574] block font-semibold mb-0.5">
                     FILE_REF: {company.id === "agrom" ? "AC_BROCHURE_03" : company.id === "nets" ? "OC_DAY_PALACE_03" : company.id === "tencon" ? "TC_STREET_03" : company.id === "qualty" ? "SC_MINING_HUD_03" : company.id === "ubless" ? "NC_TRANSPORT_03" : "SM_CANAL_03"}
                   </span>
-                  {company.id === "agrom" && "\"The future is here.\" - Corporate Union propaganda broşürü ve kentsel yaşam modülleri kılavuzu."}
-                  {company.id === "nets" && "Nets Media Oligarchy ana yönetim sarayının dış cephesi ve gökyüzü ulaştırma hatları."}
-                  {company.id === "tencon" && "Tencon City Alpha Bölgesi Node 17 ana caddeleri ve kuantum sunucu kuleleri."}
-                  {company.id === "qualty" && "Qualty Energy Asteroid Mining Operation telemetri paneli. Çıkarılan elementlerin ve AI droneların durum kayıtları."}
-                  {company.id === "ubless" && "\"We move consciousness.\" - Ubless Quantum Transport maglev kapsül tren hatları broşürü ve siber aktarım şeması."}
-                  {company.id === "social-media" && "Aulam City siber caddeler, su kanalları ve devasa kırmızı neon ışıklı platform reklam panoları."}
+                  {company.id === "agrom" && "\"The future is here.\" - Corporate Union propaganda brochure and urban living modules directory."}
+                  {company.id === "nets" && "Nets Media Oligarchy main administrative palace facade and sky transit channels."}
+                  {company.id === "tencon" && "Tencon City Alpha Zone Node 17 main avenues and quantum server towers."}
+                  {company.id === "qualty" && "Qualty Energy Asteroid Mining Operation telemetry dashboard. Status logs of extracted minerals and AI drones."}
+                  {company.id === "ubless" && "\"We move consciousness.\" - Ubless Quantum Transport maglev capsule train network brochure and cyber transit schematics."}
+                  {company.id === "social-media" && "Aulam City cyber streets, water canals, and massive red neon platform billboard ads."}
                 </div>
               </div>
             )}
@@ -268,10 +268,10 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
                   <span className="text-[#e7c574] block font-semibold mb-0.5">
                     FILE_REF: {company.id === "nets" ? "OC_SUNSET_PALACE_04" : company.id === "tencon" ? "TC_SECTOR_09" : company.id === "qualty" ? "SC_DAY_STREET_04" : "NC_DAY_STREET_04"}
                   </span>
-                  {company.id === "nets" && "Orion City gün batımı ve köprü geçiş hattının saray surları ile bütünleşen mor neon aydınlatması."}
-                  {company.id === "tencon" && "Tencon kontrolündeki Bangkok Sektör 09. Yoğun nüfus baskısı altındaki cyberpunk sokaklar ve neural klinikler."}
-                  {company.id === "qualty" && "Solaris temiz enerji sokak mimarisi. Dikey binalar üzerindeki dikey bahçeler ve arka planda yükselen enerji spayrları."}
-                  {company.id === "ubless" && "Nexum krom kaplama dikey sokakları ve gökyüzü ulaştırma araçlarının gündüz görünümü."}
+                  {company.id === "nets" && "Orion City sunset and the bridge crossing transit line lit with purple neon integrated with palace walls."}
+                  {company.id === "tencon" && "Tencon-controlled Bangkok Sector 09. Cyberpunk streets and neural clinics under dense population pressure."}
+                  {company.id === "qualty" && "Solaris clean energy street architecture. Vertical gardens on high-rises and towering energy spires in the background."}
+                  {company.id === "ubless" && "Nexum chrome-plated vertical streets and day view of sky transit vehicles."}
                 </div>
               </div>
             )}
@@ -296,9 +296,9 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
                   <span className="text-[#e7c574] block font-semibold mb-0.5">
                     FILE_REF: {company.id === "tencon" ? "TC_SECTOR_08" : company.id === "qualty" ? "SC_NIGHT_STREET_05" : "NC_NIGHT_STREET_05"}
                   </span>
-                  {company.id === "tencon" && "Tencon kontrolündeki Hong Kong Sektör 08. Devasa neon reklam panoları, siber pazar yerleri ve dikey mimari yapıları."}
-                  {company.id === "qualty" && "Solaris yapay ışıklandırma kanalları ve köprülü otoyol hatları ile siber gece görünümü."}
-                  {company.id === "ubless" && "Nexum City veri hatları ve siber otoyolların turkuaz ışık seli altındaki gece görünümü."}
+                  {company.id === "tencon" && "Tencon-controlled Hong Kong Sector 08. Massive neon billboard advertisements, cyber marketplaces, and vertical architectures."}
+                  {company.id === "qualty" && "Solaris cyber night view featuring artificial lighting canals and bridged highway routes."}
+                  {company.id === "ubless" && "Nexum City data channels and siber highways at night under turquoise neon light flows."}
                 </div>
               </div>
             )}
@@ -323,7 +323,7 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
                   <span className="text-[#e7c574] block font-semibold mb-0.5">
                     FILE_REF: TC_ARENA_GATE_06
                   </span>
-                  Tencon Arena ana giriş kapısı ve siber güvenlik kontrol noktası. Dev turnuva için toplanan kalabalık.
+                  Tencon Arena main entrance gate and cyber security checkpoint. Crowds gathering for the grand tournament.
                 </div>
               </div>
             )}
@@ -348,7 +348,7 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
                   <span className="text-[#e7c574] block font-semibold mb-0.5">
                     FILE_REF: TC_ARENA_OCTAGON_07
                   </span>
-                  Tencon Arena siber octagon dövüş alanı. Kırmızı ışıklar ve dev hologram ekranları eşliğinde nihai karşılaşma sahnesi.
+                  Tencon Arena cyber octagon combat ring. The final battle stage under red lights and massive holographic displays.
                 </div>
               </div>
             )}
@@ -428,14 +428,14 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
                           {idx === 2 && (company.id === "agrom" ? "LOG_CORE_GRID_DELETION" : company.id === "social-media" ? "LOG_AULAM_CORE_BREACH" : "LOG_PALACE_GATE_COLLAPSE")}
                           {idx === 3 && (company.id === "agrom" ? "LOG_BINARY_PIXEL_COLLAPSE" : "LOG_SIEGE_SCENE_MATRIX")}
                         </span>
-                        {company.id === "agrom" && "Agrom City yıkım ve System silinme kayıtları. Veri bütünlüğü bozuldu."}
+                        {company.id === "agrom" && "Agrom City destruction and System deletion logs. Data integrity compromised."}
                         {company.id === "social-media" && (
-                          idx === 0 ? "Aulam Core Citadel dış savunma hatlarının Swos mecha ve tank birlikleri tarafından kuşatılması." :
-                          idx === 1 ? "Aulam Core siber kuşatma takip ekranı ve SWOS Forces veri sızıntı/hücum analiz HUD şeması." :
-                          "Aulam Core Citadel veri odasında Swos askeri birliklerinin son güvenlik AI'ını çökertmesi ve veri kaskadı başlatması."
+                          idx === 0 ? "Besieging of Aulam Core Citadel outer defense boundaries by Swos mecha and armored division units." :
+                          idx === 1 ? "Aulam Core siber siege monitoring screen and SWOS Forces data breach/infiltration analysis HUD telemetry." :
+                          "Swos military squads disabling the final security AI inside the Aulam Core Citadel data chamber, initiating a data cascade."
                         )}
-                        {company.id === "miner-henry" && "Miner Henry'nin yeraltı maden sömürüsünden elde ettiği sınırsız kaynakla inşa ettiği Olympus Pocket Dimension sığınağının doğa panoraması."}
-                        {company.id !== "agrom" && company.id !== "social-media" && company.id !== "miner-henry" && "Orion City kuşatma ve savunma üniteleri veri sızıntısı. KOWN robot istilası."}
+                        {company.id === "miner-henry" && "Landscape panorama of the Olympus Pocket Dimension refuge, constructed by Miner Henry using limitless resources extracted from underground mining exploitation."}
+                        {company.id !== "agrom" && company.id !== "social-media" && company.id !== "miner-henry" && "Orion City siege and defensive units data leak. KOWN robotic invasion."}
                       </div>
                     </div>
                   ))}

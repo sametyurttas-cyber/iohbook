@@ -162,3 +162,74 @@
 .logoutButton:hover {
   color: var(--red);
 }
+
+/* Sub navigation dropdown styled like account profile dropdown */
+.navDropdownWrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+}
+
+.navButton {
+  background: none;
+  border: none;
+  color: var(--mut, #8b949e);
+  font-family: var(--font-m), monospace;
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  font-weight: normal;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  line-height: inherit;
+}
+
+.navButton:hover {
+  color: #ffffff;
+}
+
+.navDropdownMenu {
+  position: absolute;
+  top: calc(100% + 0.8rem);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 170px;
+  background: rgba(5, 6, 10, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 0.5rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  text-align: left;
+}
+
+.navDropdownMenu a {
+  font-size: 0.65rem;
+  color: #8b949e;
+  text-decoration: none;
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  font-family: var(--font-mono), monospace;
+  text-align: left;
+}
+
+.navDropdownMenu a:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+}
+
+.navDropdownDivider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 0.25rem 0;
+}
