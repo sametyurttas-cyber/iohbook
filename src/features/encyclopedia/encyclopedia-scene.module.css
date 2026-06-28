@@ -149,11 +149,11 @@
   margin: 0;
 }
 
-/* 3-Column Monitor Grid */
+/* 4-Column Monitor Grid */
 .hudGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
   margin-bottom: 6rem;
 }
 

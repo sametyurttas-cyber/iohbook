@@ -60,6 +60,9 @@ export function EncyclopediaScene({ user }: { user: IohSceneHeaderUser }) {
             <Link href="/encyclopedia/swos" className={styles.subHeaderLink}>
               SWOS AUTHORITY
             </Link>
+            <Link href="/encyclopedia/ai" className={styles.subHeaderLink}>
+              AI SYSTEM
+            </Link>
           </nav>
         </div>
       </div>
@@ -226,6 +229,57 @@ export function EncyclopediaScene({ user }: { user: IohSceneHeaderUser }) {
 
               <Link href="/encyclopedia/swos" className={styles.monitorBtn}>
                 CONNECT TO SWOS [→]
+              </Link>
+            </div>
+          </div>
+
+          {/* Monitor 4: Yapay Zekalar */}
+          <div 
+            className={`${styles.monitorCard} ${hoveredMonitor === 3 ? styles.monitorFocused : ""} ${hoveredMonitor !== null && hoveredMonitor !== 3 ? styles.monitorDimmed : ""}`}
+            onMouseEnter={() => setHoveredMonitor(3)}
+            onMouseLeave={() => setHoveredMonitor(null)}
+            style={{ "--monitor-accent": "#d026f5" } as React.CSSProperties}
+          >
+            <div className={styles.monitorGridBackdrop} />
+            <div className={styles.monitorGlowLine} />
+
+            <div className={styles.monitorHeaderTab}>
+              <span className={styles.monitorDot} style={{ backgroundColor: "#d026f5" }} />
+              <span className={styles.monitorId}>MONITOR // CORE_INTELLIGENCE</span>
+            </div>
+
+            <div className={styles.monitorBody}>
+              <h2 className={styles.monitorTitle}>YAPAY ZEKALAR</h2>
+              <span className={styles.monitorKicker}>SYSTEM CORE INTELLIGENCE</span>
+              <p className={styles.monitorDesc}>
+                System'in varoluş altyapısını, şehir savunmalarını ve quantum veri akışını ayakta tutan yapay zeka katmanları.
+              </p>
+
+              {/* Graphic/Vector Simulation inside card */}
+              <div className={styles.monitorGraphic}>
+                <div className={styles.networkMesh}>
+                  <div className={styles.meshLine} style={{ transform: "rotate(45deg)", borderColor: "rgba(208, 38, 245, 0.3)" }} />
+                  <div className={styles.meshLine} style={{ transform: "rotate(-45deg)", borderColor: "rgba(208, 38, 245, 0.3)" }} />
+                  <div className={styles.meshCircle} style={{ borderColor: "#d026f5", boxShadow: "0 0 10px rgba(208, 38, 245, 0.5)" }} />
+                </div>
+                <div className={styles.graphicOverlayText}>
+                  <span>INTELLIGENCE RATIO: 100%</span>
+                </div>
+              </div>
+
+              <div className={styles.telemetryStats}>
+                <div className={styles.statRow}>
+                  <span>ACTIVE CLASS</span>
+                  <span>4 MATRIX LAYERS</span>
+                </div>
+                <div className={styles.statRow}>
+                  <span>CORE LOGIC</span>
+                  <span>KAI / COREWIT</span>
+                </div>
+              </div>
+
+              <Link href="/encyclopedia/ai" className={styles.monitorBtn}>
+                ACCESS AI INDEX [→]
               </Link>
             </div>
           </div>

@@ -131,12 +131,38 @@ export function EncyclopediaWebGL({ hoveredIndex }: EncyclopediaWebGLProps) {
       return a;
     }
 
-    const FORMS = [formBrain(), formCyberTunnel(), formCorporateSphere(), formStateShield()];
+    function formCube() {
+      const a = new Float32Array(COUNT * 3);
+      for (let i = 0; i < COUNT; i++) {
+        const side = i % 6;
+        const u = Math.random() * 8.0 - 4.0;
+        const v = Math.random() * 8.0 - 4.0;
+        const offset = i * 3;
+        
+        if (side === 0) {
+          a[offset] = 4.0; a[offset+1] = u; a[offset+2] = v;
+        } else if (side === 1) {
+          a[offset] = -4.0; a[offset+1] = u; a[offset+2] = v;
+        } else if (side === 2) {
+          a[offset] = u; a[offset+1] = 4.0; a[offset+2] = v;
+        } else if (side === 3) {
+          a[offset] = u; a[offset+1] = -4.0; a[offset+2] = v;
+        } else if (side === 4) {
+          a[offset] = u; a[offset+1] = v; a[offset+2] = 4.0;
+        } else {
+          a[offset] = u; a[offset+1] = v; a[offset+2] = -4.0;
+        }
+      }
+      return a;
+    }
+
+    const FORMS = [formBrain(), formCyberTunnel(), formCorporateSphere(), formStateShield(), formCube()];
     const COLORS = [
       new THREE.Color("#e9d9ae"), // Neutral (System Grid)
       new THREE.Color("#e7c574"), // Gold (Karakterler)
       new THREE.Color("#ff5b5b"), // Red (Corporations)
-      new THREE.Color("#6f9bff")  // Blue (SWOS)
+      new THREE.Color("#6f9bff"), // Blue (SWOS)
+      new THREE.Color("#d026f5")  // Purple (AI)
     ];
 
     const seeds = new Float32Array(COUNT);
@@ -240,6 +266,7 @@ export function EncyclopediaWebGL({ hoveredIndex }: EncyclopediaWebGLProps) {
       if (hoveredIndex === 0) targetPhase = 1; // Gold (Cyber Tunnel)
       else if (hoveredIndex === 1) targetPhase = 2; // Red (Nested Spheres)
       else if (hoveredIndex === 2) targetPhase = 3; // Blue (Concentric Shield Rings)
+      else if (hoveredIndex === 3) targetPhase = 4; // Purple (Matrix Cube)
 
       // Handle morphology transitions
       if (currentPhase !== targetPhase) {
