@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumb } from "@/components/layout/breadcrumb";
-import { SiteFooter } from "@/components/layout/site-footer";
-import { SiteHeader } from "@/components/layout/site-header";
+import { BooksIndexFooter } from "@/features/catalog/books-index-scene";
+import { IohSceneHeader } from "@/components/layout/ioh-scene-header";
+import { getHeaderUserView } from "@/features/auth/queries";
 import { JsonLd } from "@/components/seo/json-ld";
 import { listPublishedBooks } from "@/features/catalog/queries";
 import { absoluteUrl, buildPageMetadata } from "@/lib/seo";
@@ -38,7 +39,10 @@ function getCollectionSymbol(title: string) {
 }
 
 export default async function CollectionsPage() {
-  const books = await listPublishedBooks();
+  const [books, userView] = await Promise.all([
+    listPublishedBooks(),
+    getHeaderUserView()
+  ]);
   const collections = Array.from(
     new Map(
       books
@@ -51,7 +55,7 @@ export default async function CollectionsPage() {
     <div className={styles.page}>
       <IohIndexStyles />
       <div className={styles.heroGridLines} aria-hidden="true" />
-      <SiteHeader />
+      <IohSceneHeader user={userView} />
       
       <main id="main-content" className={styles.shell}>
         <JsonLd
@@ -179,7 +183,7 @@ export default async function CollectionsPage() {
         </section>
       </main>
 
-      <SiteFooter />
+      <BooksIndexFooter />
     </div>
   );
 }
