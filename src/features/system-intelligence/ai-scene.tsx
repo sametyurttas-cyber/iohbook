@@ -16,6 +16,7 @@ import styles from "./system-intelligence.module.css";
 
 export function AiScene({ user }: { user: IohSceneHeaderUser }) {
   const [hoveredNode, setHoveredNode] = useState<number | null>(null);
+  const [webglIndex, setWebglIndex] = useState<number | null>(null);
 
   // Separate dossiers by class id
   const kai = aiClasses.find(c => c.id === "kai")!;
@@ -27,8 +28,7 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
     <div className={styles.page}>
       <IohIndexStylesPlaceholder />
       
-      {/* 5th WebGL phase trigger is 3 (Purple/magenta matrix cube) */}
-      <EncyclopediaWebGL hoveredIndex={3} />
+      <EncyclopediaWebGL hoveredIndex={webglIndex} pageContext="ai" />
 
       <style
         dangerouslySetInnerHTML={{
@@ -124,8 +124,8 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
               <div 
                 className={styles.topologyNode} 
                 style={{ "--node-color": "#d8f3ff" } as React.CSSProperties}
-                onMouseEnter={() => setHoveredNode(0)}
-                onMouseLeave={() => setHoveredNode(null)}
+                onMouseEnter={() => { setHoveredNode(0); setWebglIndex(0); }}
+                onMouseLeave={() => { setHoveredNode(null); setWebglIndex(null); }}
               >
                 <h3 className={styles.nodeTitle}>KAI</h3>
                 <span className={styles.nodeLabel}>Central Quantum Intelligence</span>
@@ -134,8 +134,8 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
               <div 
                 className={styles.topologyNode} 
                 style={{ "--node-color": "#9be7ff" } as React.CSSProperties}
-                onMouseEnter={() => setHoveredNode(1)}
-                onMouseLeave={() => setHoveredNode(null)}
+                onMouseEnter={() => { setHoveredNode(1); setWebglIndex(1); }}
+                onMouseLeave={() => { setHoveredNode(null); setWebglIndex(null); }}
               >
                 <h3 className={styles.nodeTitle}>COREWITS</h3>
                 <span className={styles.nodeLabel}>Execution / Processing Layer</span>
@@ -144,8 +144,8 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
               <div 
                 className={styles.topologyNode} 
                 style={{ "--node-color": "#ff4d4d" } as React.CSSProperties}
-                onMouseEnter={() => setHoveredNode(2)}
-                onMouseLeave={() => setHoveredNode(null)}
+                onMouseEnter={() => { setHoveredNode(2); setWebglIndex(2); }}
+                onMouseLeave={() => { setHoveredNode(null); setWebglIndex(null); }}
               >
                 <h3 className={styles.nodeTitle}>ANTIVIRUS</h3>
                 <span className={styles.nodeLabel}>Defense / Immune Layer</span>
@@ -154,8 +154,8 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
               <div 
                 className={styles.topologyNode} 
                 style={{ "--node-color": "#b8bcc8" } as React.CSSProperties}
-                onMouseEnter={() => setHoveredNode(3)}
-                onMouseLeave={() => setHoveredNode(null)}
+                onMouseEnter={() => { setHoveredNode(3); setWebglIndex(3); }}
+                onMouseLeave={() => { setHoveredNode(null); setWebglIndex(null); }}
               >
                 <h3 className={styles.nodeTitle}>KOWN</h3>
                 <span className={styles.nodeLabel}>Military / Operational AI</span>
@@ -176,8 +176,13 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
           </div>
         </section>
 
-        {/* 03 KAI SECTION */}
-        <section id="kai" className={styles.layerBlueprintSection} style={{ "--theme-color": kai.color } as React.CSSProperties}>
+        <section 
+          id="kai" 
+          className={styles.layerBlueprintSection} 
+          style={{ "--theme-color": kai.color } as React.CSSProperties}
+          onMouseEnter={() => setWebglIndex(0)}
+          onMouseLeave={() => setWebglIndex(null)}
+        >
           <h2 className={styles.sectionHeadline}>// 03. CENTRAL QUANTUM NODE</h2>
           
           <div className={styles.blueprintContainer}>
@@ -237,8 +242,13 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
           </div>
         </section>
 
-        {/* 04 COREWIT SECTION */}
-        <section id="corewit" className={styles.layerBlueprintSection} style={{ "--theme-color": corewit.color } as React.CSSProperties}>
+        <section 
+          id="corewit" 
+          className={styles.layerBlueprintSection} 
+          style={{ "--theme-color": corewit.color } as React.CSSProperties}
+          onMouseEnter={() => setWebglIndex(1)}
+          onMouseLeave={() => setWebglIndex(null)}
+        >
           <h2 className={styles.sectionHeadline}>// 04. INFRASTRUCTURE PROCESSING</h2>
           
           <div className={styles.blueprintContainer}>
@@ -297,8 +307,13 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
           </div>
         </section>
 
-        {/* 05 ANTIVIRUS SECTION */}
-        <section id="antivirus" className={styles.layerBlueprintSection} style={{ "--theme-color": antivirus.color } as React.CSSProperties}>
+        <section 
+          id="antivirus" 
+          className={styles.layerBlueprintSection} 
+          style={{ "--theme-color": antivirus.color } as React.CSSProperties}
+          onMouseEnter={() => setWebglIndex(2)}
+          onMouseLeave={() => setWebglIndex(null)}
+        >
           <h2 className={styles.sectionHeadline}>// 05. IMMUNE REFLEX CONSOLE</h2>
           
           <div className={styles.blueprintContainer}>
@@ -357,8 +372,13 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
           </div>
         </section>
 
-        {/* 06 KOWN SECTION */}
-        <section id="kown" className={styles.layerBlueprintSection} style={{ "--theme-color": kown.color } as React.CSSProperties}>
+        <section 
+          id="kown" 
+          className={styles.layerBlueprintSection} 
+          style={{ "--theme-color": kown.color } as React.CSSProperties}
+          onMouseEnter={() => setWebglIndex(3)}
+          onMouseLeave={() => setWebglIndex(null)}
+        >
           <h2 className={styles.sectionHeadline}>// 06. MILITARY AI ORDNANCE</h2>
           
           <div className={styles.blueprintContainer}>

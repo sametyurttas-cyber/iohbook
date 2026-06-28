@@ -5,9 +5,10 @@ import * as THREE from "three";
 
 interface EncyclopediaWebGLProps {
   hoveredIndex: number | null;
+  pageContext?: "portal" | "ai";
 }
 
-export function EncyclopediaWebGL({ hoveredIndex }: EncyclopediaWebGLProps) {
+export function EncyclopediaWebGL({ hoveredIndex, pageContext = "portal" }: EncyclopediaWebGLProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -40,7 +41,6 @@ export function EncyclopediaWebGL({ hoveredIndex }: EncyclopediaWebGLProps) {
       for (let i = 0; i < COUNT; i++) {
         const offset = i * 3;
         
-        // 15% of points form the brainstem/cerebellum at the bottom
         if (i < COUNT * 0.15) {
           const theta = Math.random() * Math.PI * 2;
           const r = 0.8 + Math.random() * 0.6;
@@ -50,7 +50,6 @@ export function EncyclopediaWebGL({ hoveredIndex }: EncyclopediaWebGLProps) {
           continue;
         }
 
-        // Main cerebral hemispheres
         const u = Math.random();
         const v = Math.random();
         const theta = u * 2.0 * Math.PI;
@@ -60,7 +59,6 @@ export function EncyclopediaWebGL({ hoveredIndex }: EncyclopediaWebGLProps) {
         const ry = 4.8;
         const rz = 3.6;
 
-        // Gyri & Sulci wrinkles modulation
         const wrinkle = 1.0 + 
           0.16 * Math.sin(6 * theta) * Math.sin(6 * phi) + 
           0.1 * Math.sin(18 * theta) * Math.cos(18 * phi);
@@ -69,7 +67,6 @@ export function EncyclopediaWebGL({ hoveredIndex }: EncyclopediaWebGLProps) {
         let y = ry * Math.sin(phi) * Math.sin(theta) * wrinkle;
         let z = rz * Math.cos(phi) * wrinkle;
 
-        // Separate hemispheres
         const hemisphereGap = 0.35;
         if (x > 0) {
           x += hemisphereGap;
@@ -92,12 +89,13 @@ export function EncyclopediaWebGL({ hoveredIndex }: EncyclopediaWebGLProps) {
         const ang = Math.random() * Math.PI * 2;
         const radius = 3.2 + (Math.random() - 0.5) * 0.3;
         a[i*3] = Math.cos(ang) * radius;
-        a[i*3+1] = (Math.random() - 0.5) * 16; // Rotating cylinder code tunnel
+        a[i*3+1] = (Math.random() - 0.5) * 16;
         a[i*3+2] = Math.sin(ang) * radius;
       }
       return a;
     }
 
+    // Double sphere mesh representation
     function formCorporateSphere() {
       const a = new Float32Array(COUNT * 3);
       for (let i = 0; i < COUNT; i++) {
@@ -105,7 +103,7 @@ export function EncyclopediaWebGL({ hoveredIndex }: EncyclopediaWebGLProps) {
         const v = Math.random();
         const theta = u * 2.0 * Math.PI;
         const phi = Math.acos(2.0 * v - 1.0);
-        const radius = i % 2 === 0 ? 3.0 : 6.0; // Two nested spheres representing central control
+        const radius = i % 2 === 0 ? 3.0 : 6.0;
         
         a[i*3] = radius * Math.sin(phi) * Math.cos(theta);
         a[i*3+1] = radius * Math.sin(phi) * Math.sin(theta);
@@ -117,7 +115,7 @@ export function EncyclopediaWebGL({ hoveredIndex }: EncyclopediaWebGLProps) {
     function formStateShield() {
       const a = new Float32Array(COUNT * 3);
       for (let i = 0; i < COUNT; i++) {
-        const ring = i % 3; // Concentric circles representing authority control
+        const ring = i % 3;
         const ang = Math.random() * Math.PI * 2;
         let radius = 2.0;
         if (ring === 1) radius = 4.5;
@@ -156,13 +154,33 @@ export function EncyclopediaWebGL({ hoveredIndex }: EncyclopediaWebGLProps) {
       return a;
     }
 
-    const FORMS = [formBrain(), formCyberTunnel(), formCorporateSphere(), formStateShield(), formCube()];
-    const COLORS = [
-      new THREE.Color("#e9d9ae"), // Neutral (System Grid)
+    // Dynamic forms & colors registry depending on page context
+    const FORMS = pageContext === "ai" ? [
+      formBrain(),
+      formCorporateSphere(), // KAI (Nested Spheres)
+      formCyberTunnel(),    // CoreWits (Tunnel)
+      formStateShield(),    // Antivirus (Rings)
+      formCube()            // KOWN (Cube)
+    ] : [
+      formBrain(),
+      formCyberTunnel(),
+      formCorporateSphere(),
+      formStateShield(),
+      formBrain()
+    ];
+
+    const COLORS = pageContext === "ai" ? [
+      new THREE.Color("#ffffff"), // Neutral (White Brain)
+      new THREE.Color("#d8f3ff"), // KAI (Light Blue)
+      new THREE.Color("#9be7ff"), // CoreWits (Cyan)
+      new THREE.Color("#ff4d4d"), // Antivirus (Alarm Red)
+      new THREE.Color("#b8bcc8")  // KOWN (Metal Gray)
+    ] : [
+      new THREE.Color("#ffffff"), // Neutral (White Brain)
       new THREE.Color("#e7c574"), // Gold (Karakterler)
       new THREE.Color("#ff5b5b"), // Red (Corporations)
       new THREE.Color("#6f9bff"), // Blue (SWOS)
-      new THREE.Color("#d026f5")  // Purple (AI)
+      new THREE.Color("#d8f3ff")  // Light Blue (AI Monitor)
     ];
 
     const seeds = new Float32Array(COUNT);
@@ -262,15 +280,14 @@ export function EncyclopediaWebGL({ hoveredIndex }: EncyclopediaWebGLProps) {
       material.uniforms.uTime.value = t;
 
       // Determine target state index based on hovered monitor
-      let targetPhase = 0; // Neutral (Planetary Grid)
-      if (hoveredIndex === 0) targetPhase = 1; // Gold (Cyber Tunnel)
-      else if (hoveredIndex === 1) targetPhase = 2; // Red (Nested Spheres)
-      else if (hoveredIndex === 2) targetPhase = 3; // Blue (Concentric Shield Rings)
-      else if (hoveredIndex === 3) targetPhase = 4; // Purple (Matrix Cube)
+      let targetPhase = 0;
+      if (hoveredIndex === 0) targetPhase = 1;
+      else if (hoveredIndex === 1) targetPhase = 2;
+      else if (hoveredIndex === 2) targetPhase = 3;
+      else if (hoveredIndex === 3) targetPhase = 4;
 
       // Handle morphology transitions
       if (currentPhase !== targetPhase) {
-        // Swap shapes
         geometry.attributes.aFrom.array.set(FORMS[currentPhase]);
         geometry.attributes.aTo.array.set(FORMS[targetPhase]);
         geometry.attributes.aFrom.needsUpdate = true;
@@ -281,23 +298,20 @@ export function EncyclopediaWebGL({ hoveredIndex }: EncyclopediaWebGLProps) {
       }
 
       if (transitionMix < 1) {
-        transitionMix += 0.035; // Smooth morphology progress
+        transitionMix += 0.035;
         if (transitionMix > 1) transitionMix = 1;
       }
 
       material.uniforms.uMix.value = transitionMix;
 
-      // Smooth color transitions
       activeColor.lerp(COLORS[targetPhase], 0.04);
       material.uniforms.uColor.value.copy(activeColor);
 
-      // Rotation & camera parallax
       points.rotation.y += 0.001;
       camera.position.x += (camT.x - camera.position.x) * 0.04;
       camera.position.y += (camT.y - camera.position.y) * 0.04;
       camera.lookAt(0, 0, 0);
 
-      // Raycast mouse to world coordinates
       ray.setFromCamera(ndc, camera);
       const tt = -ray.ray.origin.z / (ray.ray.direction.z || 1e-6);
       if (tt > 0) {
@@ -318,7 +332,7 @@ export function EncyclopediaWebGL({ hoveredIndex }: EncyclopediaWebGLProps) {
       material.dispose();
       renderer.dispose();
     };
-  }, [hoveredIndex]);
+  }, [hoveredIndex, pageContext]);
 
   return (
     <canvas
