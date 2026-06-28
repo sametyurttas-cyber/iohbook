@@ -421,14 +421,18 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
                       </div>
                       <div className="font-mono text-[9px] text-red-400/80 px-1 leading-normal">
                         <span className="text-red-500 block font-semibold mb-0.5">
-                          {idx === 0 && (company.id === "agrom" ? "LOG_STREET_CODE_DISSOLUTION" : "LOG_ORION_WALL_BREACH")}
-                          {idx === 1 && (company.id === "agrom" ? "LOG_METEOR_BOMBARDMENT" : "LOG_AI_ROBOTS_ASSAULT")}
-                          {idx === 2 && (company.id === "agrom" ? "LOG_CORE_GRID_DELETION" : "LOG_PALACE_GATE_COLLAPSE")}
+                          {idx === 0 && (company.id === "agrom" ? "LOG_STREET_CODE_DISSOLUTION" : company.id === "social-media" ? "LOG_AULAM_OUTER_SIEGE" : "LOG_ORION_WALL_BREACH")}
+                          {idx === 1 && (company.id === "agrom" ? "LOG_METEOR_BOMBARDMENT" : company.id === "social-media" ? "LOG_QUANTUM_BATTLE_HUD" : "LOG_AI_ROBOTS_ASSAULT")}
+                          {idx === 2 && (company.id === "agrom" ? "LOG_CORE_GRID_DELETION" : company.id === "social-media" ? "LOG_AULAM_CORE_BREACH" : "LOG_PALACE_GATE_COLLAPSE")}
                           {idx === 3 && (company.id === "agrom" ? "LOG_BINARY_PIXEL_COLLAPSE" : "LOG_SIEGE_SCENE_MATRIX")}
                         </span>
-                        {company.id === "agrom" 
-                          ? "Agrom City yıkım ve System silinme kayıtları. Veri bütünlüğü bozuldu." 
-                          : "Orion City kuşatma ve savunma üniteleri veri sızıntısı. KOWN robot istilası."}
+                        {company.id === "agrom" && "Agrom City yıkım ve System silinme kayıtları. Veri bütünlüğü bozuldu."}
+                        {company.id === "social-media" && (
+                          idx === 0 ? "Aulam Core Citadel dış savunma hatlarının Swos mecha ve tank birlikleri tarafından kuşatılması." :
+                          idx === 1 ? "Aulam Core siber kuşatma takip ekranı ve SWOS Forces veri sızıntı/hücum analiz HUD şeması." :
+                          "Aulam Core Citadel veri odasında Swos askeri birliklerinin son güvenlik AI'ını çökertmesi ve veri kaskadı başlatması."
+                        )}
+                        {company.id !== "agrom" && company.id !== "social-media" && "Orion City kuşatma ve savunma üniteleri veri sızıntısı. KOWN robot istilası."}
                       </div>
                     </div>
                   ))}

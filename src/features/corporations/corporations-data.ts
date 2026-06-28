@@ -335,7 +335,12 @@ export const corporations: CompanyProfile[] = [
       magazine: "/media/corporations/social-media/magazine-cover.jpg",
       cityDay: "/media/corporations/social-media/city-courtyard.jpg",
       cityCenter: "/media/corporations/social-media/city-corporate-tower.jpg",
-      cityBrochure: "/media/corporations/social-media/city-canal-walk.jpg"
+      cityBrochure: "/media/corporations/social-media/city-canal-walk.jpg",
+      destruction: [
+        "/media/corporations/social-media/destruction/destruction-outside.jpg",
+        "/media/corporations/social-media/destruction/destruction-hud.jpg",
+        "/media/corporations/social-media/destruction/destruction-stages.jpg"
+      ]
     }
   },
   {
