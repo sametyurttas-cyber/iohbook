@@ -1,0 +1,1118 @@
+.swosContainer {
+  min-height: 100vh;
+  background-color: #0d1117;
+  color: #c9d1d9;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* State Navigation bar */
+.stateNav {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 50px;
+  background-color: #161b22;
+  border-bottom: 1px solid #30363d;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  z-index: 1000;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  color: #8b949e;
+}
+
+.stateLogo {
+  color: #7aa7ff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.stateLinks {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.stateLinks a {
+  color: #8b949e;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+
+.stateLinks a:hover {
+  color: #d8dee9;
+}
+
+.stateStatus {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.statusIndicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #ff3b3b;
+  box-shadow: 0 0 8px #ff3b3b;
+  animation: alarmPulse 1.5s infinite ease-in-out;
+}
+
+@keyframes alarmPulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* State Shell */
+.shell {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Hero Section */
+.hero {
+  padding-top: 8rem;
+  padding-bottom: 5rem;
+  text-align: center;
+  border-bottom: 1px solid rgba(48, 54, 61, 0.5);
+  position: relative;
+}
+
+.heroKicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.7rem;
+  color: #7aa7ff;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.kickerDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #7aa7ff;
+  box-shadow: 0 0 6px #7aa7ff;
+}
+
+.heroTitle {
+  font-size: 6.5rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: #d8dee9;
+  line-height: 0.9;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+}
+
+.heroSubtitle {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.85rem;
+  color: #8b949e;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+}
+
+.heroSlogan {
+  font-size: 1.5rem;
+  font-style: italic;
+  font-weight: 300;
+  color: #7aa7ff;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 3rem;
+}
+
+.heroActions {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.btnState {
+  background-color: transparent;
+  color: #d8dee9;
+  border: 1px solid #30363d;
+  padding: 0.75rem 1.8rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 4px;
+}
+
+.btnState:hover {
+  background-color: #7aa7ff;
+  color: #0d1117;
+  border-color: #7aa7ff;
+  box-shadow: 0 0 15px rgba(122, 167, 255, 0.4);
+}
+
+.btnPrimary {
+  background-color: #1b2433;
+  border-color: #7aa7ff;
+  color: #7aa7ff;
+}
+
+.btnPrimary:hover {
+  background-color: #7aa7ff;
+  color: #0d1117;
+}
+
+/* State Identity Panel */
+.stateIdentity {
+  padding: 5rem 0;
+  border-bottom: 1px solid rgba(48, 54, 61, 0.5);
+}
+
+.panelGrid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.sectionTitle {
+  font-size: 2.2rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #d8dee9;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+
+.stateText {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #8b949e;
+  margin-bottom: 2rem;
+}
+
+.leakedBox {
+  border-left: 3px solid #ff3b3b;
+  background-color: rgba(255, 59, 59, 0.02);
+  padding: 1.25rem 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.leakedBox h4 {
+  font-family: var(--font-mono), monospace;
+  color: #ff3b3b;
+  font-size: 0.75rem;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.leakedBox p {
+  font-size: 0.95rem;
+  color: #c9d1d9;
+  line-height: 1.5;
+}
+
+.officialBox {
+  border-left: 3px solid #7aa7ff;
+  background-color: rgba(122, 167, 255, 0.02);
+  padding: 1.25rem 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.officialBox h4 {
+  font-family: var(--font-mono), monospace;
+  color: #7aa7ff;
+  font-size: 0.75rem;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.officialBox p {
+  font-size: 0.95rem;
+  color: #c9d1d9;
+  line-height: 1.5;
+}
+
+.sealContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 3rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.sealImageWrapper {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  opacity: 0.85;
+  transition: opacity 0.3s;
+}
+
+.sealContainer:hover .sealImageWrapper {
+  opacity: 1;
+}
+
+.stateProfileList {
+  width: 100%;
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.75rem;
+}
+
+.profileItem {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px dashed rgba(48, 54, 61, 0.8);
+  padding-bottom: 0.4rem;
+}
+
+.profileLabel {
+  color: #8b949e;
+}
+
+.profileValue {
+  color: #7aa7ff;
+  font-weight: 600;
+}
+
+/* Centrium Atlas Section */
+.centriumSection {
+  padding: 5rem 0;
+  border-bottom: 1px solid rgba(48, 54, 61, 0.5);
+}
+
+.sectionHeader {
+  text-align: center;
+  margin-bottom: 3.5rem;
+}
+
+.sectionKicker {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.7rem;
+  color: #7aa7ff;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.sectionSlogan {
+  font-size: 1.05rem;
+  font-style: italic;
+  color: #8b949e;
+  font-weight: 300;
+  margin-top: -0.5rem;
+}
+
+.atlasGrid {
+  display: grid;
+  grid-template-columns: 1.3fr 0.7fr;
+  gap: 3.5rem;
+  align-items: start;
+}
+
+.atlasMapContainer {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1.5 / 1;
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.atlasOverlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, transparent 30%, rgba(13, 17, 23, 0.8) 100%);
+  pointer-events: none;
+}
+
+.atlasTargetNode {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: #7aa7ff;
+  border: 2px solid #d8dee9;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px #7aa7ff;
+}
+
+.atlasTargetNode:hover,
+.atlasTargetNodeActive {
+  background-color: #ff3b3b;
+  border-color: #d8dee9;
+  box-shadow: 0 0 15px #ff3b3b;
+  transform: translate(-50%, -50%) scale(1.3);
+}
+
+.atlasInfoPanel {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 2rem;
+  min-height: 380px;
+  display: flex;
+  flex-direction: column;
+}
+
+.atlasNodeTitle {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #d8dee9;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid #30363d;
+  padding-bottom: 0.75rem;
+}
+
+.atlasNodeRef {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.75rem;
+  color: #7aa7ff;
+  display: block;
+  margin-bottom: 1.25rem;
+}
+
+.atlasNodeDesc {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #8b949e;
+  flex-grow: 1;
+}
+
+/* Federal Command Structure */
+.structureSection {
+  padding: 5rem 0;
+  border-bottom: 1px solid rgba(48, 54, 61, 0.5);
+}
+
+.structureDiagram {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.diagramRow {
+  display: flex;
+  justify-content: center;
+  gap: 2.5rem;
+  width: 100%;
+  margin-bottom: 3.5rem;
+  position: relative;
+}
+
+.diagramRow:last-child {
+  margin-bottom: 0;
+}
+
+.diagramNode {
+  background-color: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 1.25rem 2rem;
+  text-align: center;
+  min-width: 190px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.diagramNode:hover {
+  border-color: #7aa7ff;
+  box-shadow: 0 0 12px rgba(122, 167, 255, 0.2);
+}
+
+.nodeTitle {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.8rem;
+  color: #7aa7ff;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.nodeValue {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #d8dee9;
+}
+
+.nodeLeader {
+  font-size: 0.75rem;
+  color: #8b949e;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+.diagramLineVertical {
+  width: 1px;
+  height: 3.5rem;
+  background-color: #30363d;
+  position: absolute;
+  bottom: -3.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+/* Presidential section */
+.presidentSection {
+  padding: 5rem 0;
+  border-bottom: 1px solid rgba(48, 54, 61, 0.5);
+}
+
+.presidentProfileCard {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.presidentBody {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 3rem;
+  padding: 3rem;
+  align-items: center;
+}
+
+.presidentPortraitWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1.35;
+  border: 1px solid rgba(122, 167, 255, 0.2);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.presidentTextContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.presidentTitle {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #d8dee9;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.presidentSub {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.75rem;
+  color: #7aa7ff;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-top: -0.75rem;
+  display: block;
+}
+
+.presidentDesc {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #8b949e;
+}
+
+/* Swos Headquarters Section */
+.hqSection {
+  padding: 5rem 0;
+  border-bottom: 1px solid rgba(48, 54, 61, 0.5);
+}
+
+.hqGrid {
+  display: grid;
+  grid-template-columns: 0.85fr 1.15fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.hqImageWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1.2 / 1;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Currency & Core Authority */
+.currencySection {
+  padding: 5rem 0;
+  border-bottom: 1px solid rgba(48, 54, 61, 0.5);
+}
+
+.currencyGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+}
+
+.currencyCoreCard {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.coreHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(48, 54, 61, 0.6);
+  padding-bottom: 1rem;
+}
+
+.coreTitle {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #d8dee9;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.coreRef {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.7rem;
+  color: #7aa7ff;
+  letter-spacing: 0.1em;
+}
+
+.coreDesc {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #8b949e;
+}
+
+/* Security State Section */
+.securitySection {
+  padding: 5rem 0;
+  border-bottom: 1px solid rgba(48, 54, 61, 0.5);
+}
+
+.securityGrid {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.securityList {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.securityItem {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.securityItem:hover {
+  border-color: #ff3b3b;
+  box-shadow: 0 0 10px rgba(255, 59, 59, 0.1);
+}
+
+.securityItemName {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #d8dee9;
+  text-transform: uppercase;
+}
+
+.securityItemDesc {
+  font-size: 0.75rem;
+  color: #8b949e;
+  line-height: 1.4;
+}
+
+.securityTelemetry {
+  background-color: #0d1117;
+  border: 2px solid #ff3b3b;
+  border-radius: 12px;
+  padding: 2rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.75rem;
+  color: #ff3b3b;
+  box-shadow: 0 0 20px rgba(255, 59, 59, 0.08);
+}
+
+.telemetryHeader {
+  border-bottom: 1px solid #ff3b3b;
+  padding-bottom: 0.75rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+}
+
+.telemetryBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.telemetryRow {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 59, 59, 0.15);
+  padding-bottom: 0.4rem;
+}
+
+.telemetryLabel {
+  color: rgba(255, 59, 59, 0.7);
+}
+
+.telemetryValue {
+  font-weight: 600;
+}
+
+/* Citizenship Flow */
+.citizenshipSection {
+  padding: 5rem 0;
+  border-bottom: 1px solid rgba(48, 54, 61, 0.5);
+}
+
+.flowContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 3rem 2rem;
+  margin-top: 2rem;
+  position: relative;
+  overflow-x: auto;
+  gap: 2rem;
+}
+
+.flowStep {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-width: 140px;
+  position: relative;
+  z-index: 2;
+}
+
+.flowStepCircle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #0d1117;
+  border: 2px solid #30363d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono), monospace;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #7aa7ff;
+  margin-bottom: 1rem;
+  transition: all 0.3s;
+}
+
+.flowStep:hover .flowStepCircle {
+  border-color: #7aa7ff;
+  box-shadow: 0 0 12px rgba(122, 167, 255, 0.3);
+  color: #d8dee9;
+}
+
+.flowStepName {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #d8dee9;
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+
+.flowStepDesc {
+  font-size: 0.7rem;
+  color: #8b949e;
+  line-height: 1.4;
+  max-width: 130px;
+}
+
+.flowConnector {
+  font-size: 1.25rem;
+  color: #30363d;
+  font-weight: 700;
+  user-select: none;
+}
+
+/* Public Order Broadcast */
+.broadcastSection {
+  padding: 5rem 0;
+  border-bottom: 1px solid rgba(48, 54, 61, 0.5);
+}
+
+.tickerContainer {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 0.85rem 1.5rem;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+.tickerLabel {
+  background-color: #ff3b3b;
+  color: #0d1117;
+  font-family: var(--font-mono), monospace;
+  font-weight: 700;
+  font-size: 0.7rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 3px;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.tickerTrack {
+  display: flex;
+  white-space: nowrap;
+  animation: tickerScroll 25s linear infinite;
+  gap: 3rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.75rem;
+  color: #ff3b3b;
+  width: 100%;
+}
+
+@keyframes tickerScroll {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+.broadcastGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+}
+
+.broadcastMonitor {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.monitorHeader {
+  border-bottom: 1px solid #30363d;
+  padding-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.monitorDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #7aa7ff;
+  box-shadow: 0 0 6px #7aa7ff;
+}
+
+.monitorTitle {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #d8dee9;
+  text-transform: uppercase;
+}
+
+.monitorContent {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #8b949e;
+}
+
+.monitorHighlight {
+  color: #7aa7ff;
+  font-weight: 600;
+}
+
+/* Divided World */
+.dividedSection {
+  padding: 5rem 0;
+  border-bottom: 1px solid rgba(48, 54, 61, 0.5);
+}
+
+.dividedGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  position: relative;
+}
+
+.dividedSplitter {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  background-color: rgba(48, 54, 61, 0.5);
+  transform: translateX(-50%);
+}
+
+.dividedCol {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem;
+  border-radius: 8px;
+  background-color: rgba(22, 27, 34, 0.3);
+  border: 1px solid rgba(48, 54, 61, 0.3);
+}
+
+.dividedColRight {
+  border-color: rgba(227, 197, 116, 0.15);
+  background-color: rgba(22, 27, 34, 0.15);
+}
+
+.dividedTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #7aa7ff;
+}
+
+.dividedTitleRight {
+  color: #e3c574;
+}
+
+.dividedDesc {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #8b949e;
+}
+
+/* Crisis Archive */
+.crisisSection {
+  padding: 5rem 0;
+  border-bottom: 1px solid rgba(48, 54, 61, 0.5);
+}
+
+.crisisList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.crisisItem {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+
+.crisisItemSummary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 2rem;
+  cursor: pointer;
+  user-select: none;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.85rem;
+}
+
+.crisisMeta {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.crisisId {
+  color: #8b949e;
+}
+
+.crisisTitleText {
+  font-weight: 600;
+  color: #d8dee9;
+  text-transform: uppercase;
+}
+
+.crisisSeverityBadge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 3px;
+  text-transform: uppercase;
+}
+
+.severityCritical {
+  background-color: rgba(255, 59, 59, 0.1);
+  color: #ff3b3b;
+  border: 1px solid rgba(255, 59, 59, 0.3);
+}
+
+.severityHigh {
+  background-color: rgba(243, 156, 18, 0.1);
+  color: #f39c12;
+  border: 1px solid rgba(243, 156, 18, 0.3);
+}
+
+.crisisItemContent {
+  padding: 2rem;
+  background-color: #0d1117;
+  border-top: 1px solid #30363d;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem;
+}
+
+.crisisColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.crisisColumn h5 {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.crisisColumn p {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Final Section - Manifesto */
+.finalSection {
+  padding: 6rem 0;
+  text-align: center;
+  background: radial-gradient(circle at center, rgba(27, 36, 51, 0.2) 0%, transparent 70%);
+}
+
+.finalContent {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.finalTitle {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #d8dee9;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+}
+
+.finalParagraph {
+  font-size: 1.15rem;
+  line-height: 1.8;
+  color: #8b949e;
+  font-weight: 300;
+}
+
+.finalHighlight {
+  font-size: 1.3rem;
+  font-style: italic;
+  color: #7aa7ff;
+  margin: 1.5rem 0;
+}
+
+.finalSlogan {
+  font-family: var(--font-mono), monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ff3b3b;
+  letter-spacing: 0.1em;
+  margin-top: 2rem;
+}
+
+@media (max-width: 1024px) {
+  .panelGrid,
+  .atlasGrid,
+  .presidentBody,
+  .hqGrid,
+  .currencyGrid,
+  .securityGrid,
+  .broadcastGrid,
+  .dividedGrid {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+  
+  .dividedSplitter {
+    display: none;
+  }
+  
+  .flowContainer {
+    justify-content: flex-start;
+  }
+  
+  .heroTitle {
+    font-size: 4.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .heroTitle {
+    font-size: 3rem;
+  }
+  .stateNav {
+    padding: 0 1rem;
+    font-size: 0.65rem;
+  }
+  .stateLinks {
+    display: none;
+  }
+}
