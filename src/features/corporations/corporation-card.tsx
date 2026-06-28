@@ -22,15 +22,15 @@ export function CorporationCard({ company, index }: CorporationCardProps) {
 
       {/* Card Header */}
       <header className={styles.cardHeader}>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-5">
           {company.images.logo && (
-            <div className="relative w-12 h-12 border border-border/10 bg-black/40 rounded flex items-center justify-center p-1.5 overflow-hidden">
+            <div className="relative w-20 h-20 border border-border/10 bg-black/50 rounded flex items-center justify-center p-2.5 overflow-hidden shadow-[0_0_15px_rgba(231,197,116,0.05)]">
               <Image
                 src={company.images.logo}
                 alt={`${company.displayName} Logo`}
                 fill
-                className="object-contain p-1"
-                sizes="48px"
+                className="object-contain p-0.5"
+                sizes="80px"
               />
             </div>
           )}
