@@ -18,6 +18,44 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
   const [hoveredNode, setHoveredNode] = useState<number | null>(null);
   const [webglIndex, setWebglIndex] = useState<number | null>(null);
 
+  // KAI Consciousness Stability Matrix Simulator state
+  const [calcName, setCalcName] = useState("");
+  const [isCalculating, setIsCalculating] = useState(false);
+  const [calcStep, setCalcStep] = useState(0);
+  const [calcResult, setCalcResult] = useState<{ coherence: number; syncRate: number; consumption: number; idToken: string } | null>(null);
+
+  const runCoherenceTest = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!calcName.trim()) return;
+    setIsCalculating(true);
+    setCalcStep(0);
+    setCalcResult(null);
+
+    const timer = setInterval(() => {
+      setCalcStep(prev => {
+        if (prev >= 3) {
+          clearInterval(timer);
+          
+          // Deterministic hash calculation
+          let hash = 0;
+          for (let i = 0; i < calcName.length; i++) {
+            hash = calcName.charCodeAt(i) + ((hash << 5) - hash);
+          }
+          const absHash = Math.abs(hash);
+          const coherence = +(90 + (absHash % 100) / 10).toFixed(2);
+          const syncRate = +(92 + (absHash % 80) / 10).toFixed(2);
+          const consumption = +(0.8 + (absHash % 150) / 100).toFixed(2);
+          const idToken = `IOH-${(absHash % 9999).toString(16).toUpperCase().padStart(4, "0")}`;
+          
+          setCalcResult({ coherence, syncRate, consumption, idToken });
+          setIsCalculating(false);
+          return 0;
+        }
+        return prev + 1;
+      });
+    }, 600);
+  };
+
   // Separate dossiers by class id
   const kai = aiClasses.find(c => c.id === "kai")!;
   const corewit = aiClasses.find(c => c.id === "corewit")!;
@@ -239,6 +277,144 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
                 </div>
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* KAI CONSCIOUSNESS COHERENCE ANALYZER SIMULATOR */}
+        <section className={styles.simulatorSection}>
+          <h2 className={styles.sectionHeadline}>// KAI COGNITIVE STABILITY CALCULATOR</h2>
+          <div className={styles.simGrid}>
+            
+            {/* Input Side */}
+            <div className={styles.simConsole}>
+              <p className={styles.simInstructions}>
+                Bilinç Kararlılık Analizörü: System içindeki varlığınızı ayakta tutan quantum eşevrililik oranlarını,
+                hafıza sapmalarını ve KAI çekirdek tüketim katsayısını hesaplamak için kimlik anahtarınızı girin.
+              </p>
+              <form onSubmit={runCoherenceTest} className={styles.simForm}>
+                <div className={styles.simInputGroup}>
+                  <label className={styles.simInputLabel}>Kullanıcı Adı / Kimlik Sinyali</label>
+                  <input
+                    type="text"
+                    value={calcName}
+                    onChange={(e) => setCalcName(e.target.value)}
+                    placeholder="E.g., Algus, Kevin, Mina..."
+                    className={styles.simInput}
+                    disabled={isCalculating}
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className={styles.simButton}
+                  disabled={isCalculating || !calcName.trim()}
+                >
+                  {isCalculating ? "HESAPLANIYOR..." : "STABİLİTEYİ ÖLÇ [→]"}
+                </button>
+              </form>
+
+              {/* Live calculations log console */}
+              <div className={styles.simLog}>
+                {isCalculating && (
+                  <>
+                    {calcStep >= 0 && (
+                      <span className={styles.simLogLine}>
+                        <span className={styles.simLogTime}>[0.0s]</span>
+                        IOH // Hashing identity nodes: "{calcName}"
+                      </span>
+                    )}
+                    {calcStep >= 1 && (
+                      <span className={styles.simLogLine}>
+                        <span className={styles.simLogTime}>[0.6s]</span>
+                        CORE // Querying KAI Quantum Core registries...
+                      </span>
+                    )}
+                    {calcStep >= 2 && (
+                      <span className={styles.simLogLine}>
+                        <span className={styles.simLogTime}>[1.2s]</span>
+                        VERIFY // Stabilizing ego data block alignment...
+                      </span>
+                    )}
+                  </>
+                )}
+                {!isCalculating && !calcResult && (
+                  <span className={styles.simLogLine}>[STANDBY] Awaiting authorization key submission...</span>
+                )}
+                {calcResult && (
+                  <span className={styles.simLogLine} style={{ color: "#d8f3ff" }}>
+                    [SUCCESS] Verification complete. Coherence rates resolved.
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Results Side */}
+            <div className={styles.simResults}>
+              {calcResult ? (
+                <div className={styles.simStatGroup}>
+                  <div className={styles.simStatRow}>
+                    <div className={styles.statHeader}>
+                      <span className={styles.statLabel}>Identity Node Hash</span>
+                      <span className={styles.statVal}>{calcResult.idToken}</span>
+                    </div>
+                  </div>
+
+                  <div className={styles.simStatRow}>
+                    <div className={styles.statHeader}>
+                      <span className={styles.statLabel}>Hafıza Bütünlüğü (Memory Coherence)</span>
+                      <span className={styles.statVal}>{calcResult.coherence}%</span>
+                    </div>
+                    <div className={styles.simProgressBar}>
+                      <div 
+                        className={styles.simProgressFill} 
+                        style={{ width: `${calcResult.coherence}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className={styles.simStatRow}>
+                    <div className={styles.statHeader}>
+                      <span className={styles.statLabel}>Kuantum Senkronizasyon Oranı</span>
+                      <span className={styles.statVal}>{calcResult.syncRate}%</span>
+                    </div>
+                    <div className={styles.simProgressBar}>
+                      <div 
+                        className={styles.simProgressFill} 
+                        style={{ width: `${calcResult.syncRate}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className={styles.simStatRow}>
+                    <div className={styles.statHeader}>
+                      <span className={styles.statLabel}>Core Tüketim Katsayısı</span>
+                      <span className={styles.statVal}>{calcResult.consumption}x</span>
+                    </div>
+                    <div className={styles.simProgressBar}>
+                      <div 
+                        className={styles.simProgressFill} 
+                        style={{ 
+                          width: `${Math.min(100, (calcResult.consumption / 2.5) * 100)}%`,
+                          backgroundColor: calcResult.consumption > 1.8 ? "#ff3131" : "#d8f3ff"
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className={`${styles.simStatusBlock} ${calcResult.coherence > 92 ? styles.simStatusBlockSecure : styles.simStatusBlockDivergent}`}>
+                    {calcResult.coherence > 92 
+                      ? "SECURED // EGO BACKUP COMMITTED TO CORE" 
+                      : "WARNING // IDENTITY DIVERGENCE DETECTED"}
+                  </div>
+                </div>
+              ) : (
+                <div className={styles.simInstructions} style={{ textAlign: "center", opacity: 0.5 }}>
+                  // NO DIRECTIVE LOADED //
+                  <br />
+                  STABILITY RATIOS WILL RENDER UPON SUCCESSFUL ANALYSIS
+                </div>
+              )}
+            </div>
+
           </div>
         </section>
 
