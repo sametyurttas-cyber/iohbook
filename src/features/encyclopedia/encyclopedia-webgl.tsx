@@ -99,7 +99,7 @@ export function EncyclopediaWebGL({ hoveredIndex }: EncyclopediaWebGLProps) {
 
     const FORMS = [formSystemGrid(), formCyberTunnel(), formCorporateSphere(), formStateShield()];
     const COLORS = [
-      new THREE.Color("#21262d"), // Neutral (System Grid)
+      new THREE.Color("#e9d9ae"), // Neutral (System Grid)
       new THREE.Color("#e7c574"), // Gold (Karakterler)
       new THREE.Color("#ff5b5b"), // Red (Corporations)
       new THREE.Color("#6f9bff")  // Blue (SWOS)
