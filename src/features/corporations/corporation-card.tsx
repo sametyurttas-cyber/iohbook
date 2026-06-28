@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import { type CompanyProfile } from "./corporations-data";
 import styles from "./corporations.module.css";
@@ -10,6 +11,7 @@ type CorporationCardProps = {
 };
 
 export function CorporationCard({ company, index }: CorporationCardProps) {
+  const [activeLightbox, setActiveLightbox] = useState<string | null>(null);
   const indexStr = String(index + 1).padStart(3, "0");
 
   return (
@@ -47,7 +49,10 @@ export function CorporationCard({ company, index }: CorporationCardProps) {
           <span className={`${styles.notch} ${styles.notchTR}`} />
           <span className={`${styles.notch} ${styles.notchBL}`} />
           <span className={`${styles.notch} ${styles.notchBR}`} />
-          <div className="relative w-full h-full">
+          <div 
+            className="relative w-full h-full cursor-zoom-in"
+            onClick={() => setActiveLightbox(company.images.portrait)}
+          >
             <Image
               src={company.images.portrait}
               alt={company.leader}
@@ -155,7 +160,10 @@ export function CorporationCard({ company, index }: CorporationCardProps) {
             
             {/* Day city viewport */}
             <div className="relative border border-border/10 bg-black/40 rounded-lg overflow-hidden p-2 flex flex-col gap-2">
-              <div className="relative w-full aspect-[4/3] rounded-md overflow-hidden bg-black/60">
+              <div 
+                className="relative w-full aspect-[4/3] rounded-md overflow-hidden bg-black/60 cursor-zoom-in"
+                onClick={() => setActiveLightbox(company.images.cityDay)}
+              >
                 <Image
                   src={company.images.cityDay}
                   alt="Agrom City street day view"
@@ -172,7 +180,10 @@ export function CorporationCard({ company, index }: CorporationCardProps) {
 
             {/* Aerial city viewport */}
             <div className="relative border border-border/10 bg-black/40 rounded-lg overflow-hidden p-2 flex flex-col gap-2">
-              <div className="relative w-full aspect-[4/3] rounded-md overflow-hidden bg-black/60">
+              <div 
+                className="relative w-full aspect-[4/3] rounded-md overflow-hidden bg-black/60 cursor-zoom-in"
+                onClick={() => setActiveLightbox(company.images.cityCenter)}
+              >
                 <Image
                   src={company.images.cityCenter}
                   alt="Agrom City aerial view"
@@ -189,7 +200,10 @@ export function CorporationCard({ company, index }: CorporationCardProps) {
 
             {/* Brochure advertisement */}
             <div className="relative border border-border/10 bg-black/40 rounded-lg overflow-hidden p-2 flex flex-col gap-2 sm:col-span-2 lg:col-span-1">
-              <div className="relative w-full aspect-[4/3] rounded-md overflow-hidden bg-black/60">
+              <div 
+                className="relative w-full aspect-[4/3] rounded-md overflow-hidden bg-black/60 cursor-zoom-in"
+                onClick={() => setActiveLightbox(company.images.cityBrochure)}
+              >
                 <Image
                   src={company.images.cityBrochure}
                   alt="Agrom City brochure"
@@ -219,7 +233,10 @@ export function CorporationCard({ company, index }: CorporationCardProps) {
             <span className="font-mono text-xs group-open:rotate-180 transition-transform">▼</span>
           </summary>
           <div className="mt-4 flex justify-center bg-black/30 p-4 rounded-lg border border-border/5">
-            <div className="relative w-full max-w-[480px] aspect-[1/1.5] rounded-md overflow-hidden border border-border/10 bg-black">
+            <div 
+              className="relative w-full max-w-[480px] aspect-[1/1.5] rounded-md overflow-hidden border border-border/10 bg-black cursor-zoom-in"
+              onClick={() => setActiveLightbox(company.images.magazine)}
+            >
               <Image
                 src={company.images.magazine}
                 alt="System Magazine Cover"
@@ -253,7 +270,10 @@ export function CorporationCard({ company, index }: CorporationCardProps) {
                 <div className="grid gap-4 sm:grid-cols-2">
                   {company.images.destruction.map((img, idx) => (
                     <div key={idx} className="relative border border-red-500/20 bg-black/60 rounded p-2 flex flex-col gap-2">
-                      <div className="relative w-full aspect-[4/3] rounded bg-black/80 overflow-hidden">
+                      <div 
+                        className="relative w-full aspect-[4/3] rounded bg-black/80 overflow-hidden cursor-zoom-in"
+                        onClick={() => setActiveLightbox(img)}
+                      >
                         <Image
                           src={img}
                           alt={`Agrom City Destruction Stage ${idx + 1}`}
@@ -278,6 +298,27 @@ export function CorporationCard({ company, index }: CorporationCardProps) {
             )}
           </div>
         </details>
+      )}
+
+      {/* 4. Lightbox Modal Viewport Overlay */}
+      {activeLightbox && (
+        <div
+          className="fixed inset-0 bg-black/90 backdrop-blur-md z-[9999] flex items-center justify-center p-4 cursor-zoom-out select-none animate-fadeIn"
+          onClick={() => setActiveLightbox(null)}
+        >
+          <div className="absolute top-4 right-4 text-paper/70 hover:text-paper font-mono text-xl cursor-pointer">
+            ✕ CLOSE
+          </div>
+          <div className="relative w-[90vw] h-[90vh] max-w-[1200px]">
+            <Image
+              src={activeLightbox}
+              alt="Telemetry Viewport Zoomed"
+              fill
+              className="object-contain"
+              sizes="90vw"
+            />
+          </div>
+        </div>
       )}
     </article>
   );
