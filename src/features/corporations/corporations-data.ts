@@ -90,7 +90,6 @@ export const corporations: CompanyProfile[] = [
     classifiedNote: "Agrom City'nin yıkılışı ve Steve Agrom'un itibar kaybı, Matt'in manipülasyonları sonucu gerçekleşmiştir. Agrom City, zihinlerin ve yapay ölümsüzlüğün merkezidir.",
     images: {
       portrait: "/media/corporations/agrom/steve-portrait.jpg",
-      logo: "/media/corporations/agrom/logo.png",
       magazine: "/media/corporations/agrom/magazine-cover.jpg",
       cityDay: "/media/corporations/agrom/city-day.jpg",
       cityCenter: "/media/corporations/agrom/city-center.jpg",
