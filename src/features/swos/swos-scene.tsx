@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { IohSceneHeader } from "@/components/layout/ioh-scene-header";
@@ -73,6 +73,47 @@ export default function SwosScene({ user }: SwosSceneProps) {
       }, (index + 1) * 450);
     });
   };
+
+  const [liveLogs, setLiveLogs] = useState<string[]>([
+    "> SYSTEM ONLINE // SECURE NODE INITIALIZED",
+    "> RUNNING GLOBAL INTEGRITY CHECKS...",
+    "> NO COGNITIVE THREAT DETECTED IN SECTOR 7"
+  ]);
+
+  useEffect(() => {
+    const logTemplates = [
+      "> MONITORING QUANTUM PACKETS...",
+      "> BIOMETRIC HASH VERIFIED // ID: #8291",
+      "> SECURING CORPID GATEWAY [CENTRIUM]",
+      "> ROUTING DATA THROUGH ORBITAL SHIELD",
+      "> ACTIVE THREAT RESOLVED IN SECTOR 4",
+      "> SYNCING STATE RECORD REGISTRY...",
+      "> SYSTEM LATENCY: 0.12ms // CLEAR",
+      "> COMPLIANCE INDEX: 94.2% // LEVEL D-9",
+      "> DETECTING PORTAL DRIFT... CALIBRATING",
+      "> MEMORY INGEST PROTOCOL ACTIVE",
+      "> COMPILING CITIZEN ACTIVITY LOGS...",
+      "> NO TRACE OF DEVIANT BEHAVIOR DETECTED",
+      "> ENCRYPTING TRANSMISSION VIA SECURE SUBSCENE"
+    ];
+
+    const interval = setInterval(() => {
+      const randomLine = logTemplates[Math.floor(Math.random() * logTemplates.length)];
+      const now = new Date();
+      const timeStr = now.toTimeString().split(" ")[0]; // "HH:MM:SS"
+      const formattedLog = `[${timeStr}] ${randomLine}`;
+      
+      setLiveLogs(prev => {
+        const updated = [...prev, formattedLog];
+        if (updated.length > 5) {
+          return updated.slice(1);
+        }
+        return updated;
+      });
+    }, 2400);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const centriumNodes = [
     { name: "Tax Cores", ref: "HC_TAX_01", x: "32%", y: "45%", desc: "Tüm bağlı dünyalardan vergi ve kaynak kesintisi yapan veri çekirdeği.", leak: "Bağımsız madencilerin kazandığı tokenların %34'üne otomatik olarak el koyan gizli kod parçacıkları barındırır." },
@@ -808,7 +849,20 @@ export default function SwosScene({ user }: SwosSceneProps) {
             />
           </div>
         </div>
-      )}
+      {/* Floating Live Quantum System Logs */}
+      <div className={styles.liveLogsHud}>
+        <div className={styles.hudHeader}>
+          <span className={styles.hudStatusDot} />
+          <span>LIVE QUANTUM TELEMETRY</span>
+        </div>
+        <div className={styles.hudBody}>
+          {liveLogs.map((log, idx) => (
+            <div key={idx} className={styles.hudLogLine}>
+              {log}
+            </div>
+          ))}
+        </div>
+      </div>
 
     </div>
   );

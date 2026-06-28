@@ -1439,3 +1439,63 @@
   color: #ffffff;
   font-family: var(--font-mono), monospace;
 }
+
+/* Floating Live Logs HUD */
+.liveLogsHud {
+  position: fixed;
+  bottom: 2rem;
+  left: 2rem;
+  width: 330px;
+  background-color: rgba(13, 17, 23, 0.8);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(122, 167, 255, 0.2);
+  border-radius: 8px;
+  padding: 0.8rem 1.2rem;
+  z-index: 100;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.65rem;
+  color: rgba(122, 167, 255, 0.8);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+  user-select: none;
+}
+
+.hudHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  border-bottom: 1px solid rgba(122, 167, 255, 0.15);
+  padding-bottom: 0.4rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.05em;
+  font-size: 0.7rem;
+}
+
+.hudStatusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #27c93f;
+  box-shadow: 0 0 6px #27c93f;
+  animation: hudPulse 1.5s infinite ease-in-out;
+}
+
+@keyframes hudPulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+.hudLogLine {
+  line-height: 1.6;
+  opacity: 0.85;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  animation: slideFadeIn 0.3s ease-out;
+}
+
+@keyframes slideFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 0.85; transform: translateY(0); }
+}
