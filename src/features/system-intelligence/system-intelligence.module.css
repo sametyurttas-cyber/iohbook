@@ -278,77 +278,134 @@
   align-items: center;
 }
 
-.verticalTopology {
-  position: relative;
+.radarContainer {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  gap: 3.5rem;
-  padding: 2rem 0;
-}
-
-.topologyLine {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background: linear-gradient(180deg, rgba(111, 143, 191, 0.05), #6f8fbf 20%, #6f8fbf 80%, rgba(111, 143, 191, 0.05));
-  z-index: 1;
-}
-
-.topologyNode {
   position: relative;
-  z-index: 5;
-  width: 320px;
-  background: #05070c;
-  border: 1px solid rgba(111, 143, 191, 0.4);
-  border-radius: 10px;
-  padding: 1.2rem;
-  text-align: center;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-  transition: all 0.4s ease;
+  width: 100%;
+  aspect-ratio: 1;
+  max-width: 420px;
+  margin: 0 auto;
 }
 
-.topologyNode:hover {
-  border-color: var(--node-color);
-  box-shadow: 0 0 20px rgba(111, 143, 191, 0.15);
-  transform: translateY(-2px);
+.concentricSvg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
 }
 
-.nodeTitle {
-  font-size: 1.25rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  margin: 0 0 0.3rem;
-  color: #ffffff;
+/* Base HUD lines */
+.hudGrid {
+  stroke: rgba(111, 143, 191, 0.08);
+  stroke-width: 1;
+  stroke-dasharray: 2 4;
 }
 
-.nodeLabel {
-  font-family: var(--font-mono), monospace;
-  font-size: 0.62rem;
-  letter-spacing: 0.12em;
-  color: #8b949e;
-  text-transform: uppercase;
+.hudCrosshair {
+  stroke: rgba(111, 143, 191, 0.15);
+  stroke-width: 0.5;
 }
 
+/* Concentric Rings styling */
+.hudRing {
+  fill: none;
+  stroke: rgba(111, 143, 191, 0.15);
+  stroke-width: 1;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.hudRingDashed {
+  stroke-dasharray: 4 6;
+}
+
+/* Orbiting Nodes */
+.orbitNode {
+  fill: var(--theme-color);
+  opacity: 0.45;
+  transition: all 0.3s ease;
+}
+
+.orbitNodeAnim {
+  animation: orbitMotion 12s infinite linear;
+  transform-origin: 200px 200px;
+}
+
+@keyframes orbitMotion {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Center Pulse */
+.coreNodePulse {
+  fill: #d8f3ff;
+  opacity: 0.2;
+  animation: corePulseAnim 2.4s infinite ease-in-out;
+}
+
+@keyframes corePulseAnim {
+  0%, 100% { transform: scale(1); opacity: 0.2; }
+  50% { transform: scale(1.15); opacity: 0.35; }
+}
+
+/* Active / Hover highlights */
+.hudRingActive {
+  stroke: var(--theme-color);
+  stroke-width: 2.2;
+  filter: drop-shadow(0 0 10px var(--theme-color));
+}
+
+.hudTextActive {
+  fill: var(--theme-color) !important;
+  font-weight: bold;
+}
+
+/* HUD Panel info card on the right */
 .hierarchyDescription {
+  background: rgba(5, 7, 12, 0.85);
+  border: 1px solid rgba(111, 143, 191, 0.15);
+  border-radius: 12px;
+  padding: 2.2rem;
+  min-height: 380px;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  justify-content: center;
+  transition: all 0.4s ease;
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5);
 }
 
-.hierarchyLead {
-  font-size: 1.15rem;
-  line-height: 1.75;
-  color: rgba(242, 239, 232, 0.9);
-  font-weight: 300;
+.hudPanelCode {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  color: var(--theme-color, #6f8fbf);
+  margin-bottom: 0.4rem;
+  display: block;
 }
 
-.hierarchyDetail {
+.hudPanelTitle {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 0.8rem;
+  letter-spacing: 0.05em;
+}
+
+.hudPanelSlogan {
   font-size: 0.95rem;
-  line-height: 1.8;
-  color: #8b949e;
+  font-style: italic;
+  color: #e9d9ae;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.hudPanelBody {
+  font-size: 0.92rem;
+  line-height: 1.7;
+  color: #c9d1d9;
   font-weight: 300;
+  margin: 0;
 }
 
 /* Blueprint Layer Section (KAI, CoreWit, Antivirus, KOWN) */

@@ -238,61 +238,148 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
           <h2 className={styles.sectionHeadline}>// 02. SYSTEM AI ARCHITECTURE</h2>
           
           <div className={styles.hierarchyContainer}>
-            {/* Vertical Flow Topology */}
-            <div className={styles.verticalTopology}>
-              <div className={styles.topologyLine} />
+            {/* High-Tech Concentric SVG Radar HUD */}
+            <div className={styles.radarContainer}>
+              <svg viewBox="0 0 400 400" className={styles.concentricSvg}>
+                {/* HUD Crosshairs */}
+                <line x1="200" y1="0" x2="200" y2="400" className={styles.hudCrosshair} />
+                <line x1="0" y1="200" x2="400" y2="200" className={styles.hudCrosshair} />
+                
+                {/* Grid guidelines */}
+                <circle cx="200" cy="200" r="190" className={styles.hudGrid} />
+                <circle cx="200" cy="200" r="145" className={styles.hudGrid} />
+                <circle cx="200" cy="200" r="100" className={styles.hudGrid} />
+                <circle cx="200" cy="200" r="50" className={styles.hudGrid} />
 
-              <div 
-                className={styles.topologyNode} 
-                style={{ "--node-color": "#d8f3ff" } as React.CSSProperties}
-                onMouseEnter={() => { setHoveredNode(0); setWebglIndex(0); }}
-                onMouseLeave={() => { setHoveredNode(null); setWebglIndex(null); }}
-              >
-                <h3 className={styles.nodeTitle}>KAI</h3>
-                <span className={styles.nodeLabel}>Central Quantum Intelligence</span>
-              </div>
+                {/* Outer Ring: KOWN */}
+                <circle 
+                  cx="200" 
+                  cy="200" 
+                  r="165" 
+                  className={`${styles.hudRing} ${styles.hudRingDashed} ${hoveredNode === 3 ? styles.hudRingActive : ""}`} 
+                  onMouseEnter={() => { setHoveredNode(3); setWebglIndex(3); }} 
+                  onMouseLeave={() => { setHoveredNode(null); setWebglIndex(null); }} 
+                  style={{ "--theme-color": kown.color } as React.CSSProperties}
+                />
+                
+                {/* Antivirus Ring */}
+                <circle 
+                  cx="200" 
+                  cy="200" 
+                  r="125" 
+                  className={`${styles.hudRing} ${hoveredNode === 2 ? styles.hudRingActive : ""}`} 
+                  onMouseEnter={() => { setHoveredNode(2); setWebglIndex(2); }} 
+                  onMouseLeave={() => { setHoveredNode(null); setWebglIndex(null); }} 
+                  style={{ "--theme-color": antivirus.color } as React.CSSProperties}
+                />
 
-              <div 
-                className={styles.topologyNode} 
-                style={{ "--node-color": "#9be7ff" } as React.CSSProperties}
-                onMouseEnter={() => { setHoveredNode(1); setWebglIndex(1); }}
-                onMouseLeave={() => { setHoveredNode(null); setWebglIndex(null); }}
-              >
-                <h3 className={styles.nodeTitle}>COREWITS</h3>
-                <span className={styles.nodeLabel}>Execution / Processing Layer</span>
-              </div>
+                {/* CoreWit Ring */}
+                <circle 
+                  cx="200" 
+                  cy="200" 
+                  r="85" 
+                  className={`${styles.hudRing} ${styles.hudRingDashed} ${hoveredNode === 1 ? styles.hudRingActive : ""}`} 
+                  onMouseEnter={() => { setHoveredNode(1); setWebglIndex(1); }} 
+                  onMouseLeave={() => { setHoveredNode(null); setWebglIndex(null); }} 
+                  style={{ "--theme-color": corewit.color } as React.CSSProperties}
+                />
 
-              <div 
-                className={styles.topologyNode} 
-                style={{ "--node-color": "#ff4d4d" } as React.CSSProperties}
-                onMouseEnter={() => { setHoveredNode(2); setWebglIndex(2); }}
-                onMouseLeave={() => { setHoveredNode(null); setWebglIndex(null); }}
-              >
-                <h3 className={styles.nodeTitle}>ANTIVIRUS</h3>
-                <span className={styles.nodeLabel}>Defense / Immune Layer</span>
-              </div>
+                {/* Center Core Node: KAI */}
+                <circle 
+                  cx="200" 
+                  cy="200" 
+                  r="25" 
+                  className={`${styles.hudRing} ${hoveredNode === 0 ? styles.hudRingActive : ""}`} 
+                  onMouseEnter={() => { setHoveredNode(0); setWebglIndex(0); }} 
+                  onMouseLeave={() => { setHoveredNode(null); setWebglIndex(null); }} 
+                  style={{ "--theme-color": kai.color } as React.CSSProperties}
+                />
 
-              <div 
-                className={styles.topologyNode} 
-                style={{ "--node-color": "#b8bcc8" } as React.CSSProperties}
-                onMouseEnter={() => { setHoveredNode(3); setWebglIndex(3); }}
-                onMouseLeave={() => { setHoveredNode(null); setWebglIndex(null); }}
-              >
-                <h3 className={styles.nodeTitle}>KOWN</h3>
-                <span className={styles.nodeLabel}>Military / Operational AI</span>
-              </div>
+                {/* Orbiting nodes representing background processes */}
+                <g className={styles.orbitNodeAnim} style={{ animationDuration: "20s" } as React.CSSProperties}>
+                  <circle cx="200" cy="35" r="4.5" className={styles.orbitNode} style={{ "--theme-color": kown.color } as React.CSSProperties} />
+                </g>
+                <g className={styles.orbitNodeAnim} style={{ animationDuration: "14s" } as React.CSSProperties}>
+                  <circle cx="200" cy="75" r="4" className={styles.orbitNode} style={{ "--theme-color": antivirus.color } as React.CSSProperties} />
+                </g>
+                <g className={styles.orbitNodeAnim} style={{ animationDuration: "9s" } as React.CSSProperties}>
+                  <circle cx="200" cy="115" r="3.5" className={styles.orbitNode} style={{ "--theme-color": corewit.color } as React.CSSProperties} />
+                </g>
+
+                {/* Core pulse glow */}
+                <circle cx="200" cy="200" r="12" className={styles.coreNodePulse} />
+
+                {/* Grid HUD Labels */}
+                <text x="205" y="32" fill="rgba(184,188,200,0.4)" fontFamily="monospace" fontSize="6.5" letterSpacing="0.05em" className={hoveredNode === 3 ? styles.hudTextActive : ""}>[KOWN SYSTEM ARMY GRID]</text>
+                <text x="205" y="72" fill="rgba(255,77,77,0.4)" fontFamily="monospace" fontSize="6.5" letterSpacing="0.05em" className={hoveredNode === 2 ? styles.hudTextActive : ""}>[ANTIVIRUS DEFENSE SHIELD]</text>
+                <text x="205" y="112" fill="rgba(155,231,255,0.4)" fontFamily="monospace" fontSize="6.5" letterSpacing="0.05em" className={hoveredNode === 1 ? styles.hudTextActive : ""}>[COREWIT RUNTIME NET]</text>
+                <text x="205" y="195" fill="rgba(216,243,255,0.4)" fontFamily="monospace" fontSize="6.5" letterSpacing="0.05em" className={hoveredNode === 0 ? styles.hudTextActive : ""}>[KAI CENTRAL CORE]</text>
+              </svg>
             </div>
 
-            {/* Explanatory text side */}
-            <div className={styles.hierarchyDescription}>
-              <p className={styles.hierarchyLead}>
-                The AI architecture of the System is not a single entity. Each layer assumes a distinct functional directive.
-              </p>
-              <p className={styles.hierarchyDetail}>
-                KAI calculates existence. CoreWits process those calculations, rendering them real inside the deep infrastructure.
-                Antiviruses guard the core and trigger critical defensive immune reflexes. KOWNs fight, obey, 
-                and log their own destruction as tactical success criteria.
-              </p>
+            {/* Explanatory text side - HUD Panel */}
+            <div 
+              className={styles.hierarchyDescription}
+              style={{
+                "--theme-color": hoveredNode === 0 ? kai.color : hoveredNode === 1 ? corewit.color : hoveredNode === 2 ? antivirus.color : hoveredNode === 3 ? kown.color : "#6f8fbf"
+              } as React.CSSProperties}
+            >
+              {hoveredNode === null ? (
+                <>
+                  <span className={styles.hudPanelCode}>SYSTEM DIRECTIVE // INFRASTRUCTURE</span>
+                  <h3 className={styles.hudPanelTitle}>System AI Topology</h3>
+                  <p className={styles.hudPanelSlogan}>
+                    "KAI calculates. CoreWits execute. Antiviruses defend. KOWNs obey."
+                  </p>
+                  <p className={styles.hudPanelBody}>
+                    Hover over the concentric rings to analyze the System's machine layers. The System operates on nested structural zones: KAI sits at the absolute core center calculating human existence, CoreWits act as the processing web, Antiviruses guard the core and firewall rings, and KOWN tactical units coordinate deployments on the outermost layer.
+                  </p>
+                </>
+              ) : hoveredNode === 0 ? (
+                <>
+                  <span className={styles.hudPanelCode}>CORE NODE // 03</span>
+                  <h3 className={styles.hudPanelTitle}>{kai.name}</h3>
+                  <p className={styles.hudPanelSlogan}>
+                    "{kai.slogan}"
+                  </p>
+                  <p className={styles.hudPanelBody}>
+                    The central quantum intelligence layer of the System. It calculates, processes, reconstructs, and records all human consciousness matrices, maintaining memory continuity across all orbital sectors.
+                  </p>
+                </>
+              ) : hoveredNode === 1 ? (
+                <>
+                  <span className={styles.hudPanelCode}>EXECUTION PATH // 04</span>
+                  <h3 className={styles.hudPanelTitle}>{corewit.name}</h3>
+                  <p className={styles.hudPanelSlogan}>
+                    "{corewit.slogan}"
+                  </p>
+                  <p className={styles.hudPanelBody}>
+                    KAI's execution units. They build, organize, erase, and reconstruct all environments, body codes, and processing registries. CoreWits represent the silent processing workers in the deep background.
+                  </p>
+                </>
+              ) : hoveredNode === 2 ? (
+                <>
+                  <span className={styles.hudPanelCode}>IMMUNE REFLEX // 05</span>
+                  <h3 className={styles.hudPanelTitle}>{antivirus.name}</h3>
+                  <p className={styles.hudPanelSlogan}>
+                    "{antivirus.slogan}"
+                  </p>
+                  <p className={styles.hudPanelBody}>
+                    The immune defense units of the System. They guard security boundaries, firewalls, and core zones against unauthorized anomalies. Highly adaptive and persistent interceptors.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <span className={styles.hudPanelCode}>TACTICAL ORDNANCE // 06</span>
+                  <h3 className={styles.hudPanelTitle}>{kown.name}</h3>
+                  <p className={styles.hudPanelSlogan}>
+                    "{kown.slogan}"
+                  </p>
+                  <p className={styles.hudPanelBody}>
+                    Military AI ordnance deployed for battlefield defense, diversion campaigns, and firewall pressure. They act as mass-coordinated, highly expendable tactical forces.
+                  </p>
+                </>
+              )}
             </div>
           </div>
         </section>
