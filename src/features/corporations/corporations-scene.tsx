@@ -80,6 +80,73 @@ export function CorporationsScene({ user }: CorporationsSceneProps) {
           ))}
         </section>
 
+        {/* Outro - What is the Corporate Union? */}
+        <section className={styles.unionExplainerSection}>
+          <div className={styles.explainerGrid}>
+            <div className={styles.explainerTextContainer}>
+              <div className={styles.explainerKicker}>
+                <span className={styles.kickerDotRed} />
+                <span>EXECUTIVE ANALYSIS / CLASSIFIED OVERVIEW</span>
+              </div>
+              <h2 className={styles.explainerTitle}>Şirketler Birliği Nedir?</h2>
+              
+              <p className={styles.explainerParagraph}>
+                Şirketler Birliği, devletlerin zayıfladığı, ekonomilerin çöktüğü ve insanlığın güvenlik arayışı içinde kendi özgürlüğünden vazgeçmeye başladığı dönemde ortaya çıkan yeni güç düzenidir.
+              </p>
+              
+              <p className={styles.explainerParagraph}>
+                Bu yapı, yalnızca şirketlerin bir araya gelmesi değildir. Şirketler Birliği; şehirleri yöneten, enerji akışını kontrol eden, medyayı şekillendiren, dijital para sistemlerini işleten, lojistik ağları yöneten ve System’in teknolojik omurgasını elinde tutan kurumsal bir iktidar biçimidir.
+              </p>
+              
+              <div className={styles.explainerQuotes}>
+                <p><strong>Agrom Technology</strong> geleceği inşa eder.</p>
+                <p><strong>Nets</strong> insanların ne gördüğünü ve neye inandığını şekillendirir.</p>
+                <p><strong>Tencon</strong> savaşı oyuna, oyunu savaşa dönüştürür.</p>
+                <p><strong>Qualty Energy</strong> şehirlerin ışığını kimin alacağına karar verir.</p>
+                <p><strong>Ubless</strong> dünyanın hareket etmesini sağlar.</p>
+                <p><strong>Social Media</strong> hakikatin değil, inancın hızını yönetir.</p>
+                <p><strong>Miner Henry</strong> ise dijital ekonominin derinlerinde, altının ve verinin karanlık damarlarını işletir.</p>
+              </div>
+
+              <div className={styles.explainerHighlightBox}>
+                <p className="font-mono text-xs text-[#ff1e27] mb-1">// SYSTEM COGNITIVE PROTOCOL</p>
+                <p className="text-sm italic">
+                  "Şirketler Birliği’nin vaadi düzendir. Bedeli ise kontroldür."
+                </p>
+              </div>
+
+              <p className={styles.explainerParagraph}>
+                Bu evrende şirketler artık yalnızca ürün satmaz. Sınır çizer, şehir kurar, hafıza saklar, para üretir, savaş yönetir ve insanlığın geleceğine yön verir.
+              </p>
+
+              <p className={styles.explainerParagraph}>
+                Devletlerin çöktüğü yerde şirketler yükselmiştir. Ve yükseldikleri yerde hiçbir şey artık masum değildir.
+              </p>
+            </div>
+            
+            <div className={styles.explainerImageWrapper}>
+              <div 
+                className={`${styles.explainerImageContainer} cursor-zoom-in`}
+                onClick={() => setActiveLightbox("/media/corporations/corporate-union-board.png")}
+              >
+                <Image
+                  src="/media/corporations/corporate-union-board.png"
+                  alt="Corporate Union Board Room meeting of the oligarchy"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 500px"
+                  unoptimized
+                />
+                <div className={styles.imageOverlay} />
+              </div>
+              <div className="font-mono text-[10px] text-muted-foreground mt-3 flex justify-between px-1">
+                <span>SEC_FILE // CLASSIFIED_MEETING_2303</span>
+                <span>STATUS: ACTIVE DIRECTIVE</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
       </main>
 
       {/* Footer */}

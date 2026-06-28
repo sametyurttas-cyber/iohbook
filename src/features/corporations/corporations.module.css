@@ -578,3 +578,117 @@
     grid-column: span 1;
   }
 }
+
+.unionExplainerSection {
+  margin-top: 8rem;
+  margin-bottom: 8rem;
+  border-top: 1px solid rgba(242, 239, 232, 0.05);
+  padding-top: 6rem;
+}
+
+.explainerGrid {
+  display: grid;
+  grid-template-columns: 1.25fr 0.75fr;
+  gap: 5rem;
+  align-items: flex-start;
+}
+
+.explainerTextContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.explainerKicker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: #ff1e27;
+  letter-spacing: 0.25em;
+}
+
+.kickerDotRed {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ff1e27;
+  box-shadow: 0 0 8px #ff1e27;
+  animation: kickerPulse 2s infinite ease-in-out;
+}
+
+.explainerTitle {
+  font-size: 2.8rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+  color: var(--ch-paper);
+}
+
+.explainerParagraph {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: rgba(242, 239, 232, 0.75);
+  font-weight: 300;
+}
+
+.explainerQuotes {
+  border-left: 2px solid rgba(242, 239, 232, 0.1);
+  padding-left: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  font-size: 0.95rem;
+  color: var(--ch-muted);
+  line-height: 1.5;
+  margin: 0.5rem 0;
+}
+
+.explainerQuotes strong {
+  color: var(--ch-paper);
+}
+
+.explainerHighlightBox {
+  background: rgba(255, 30, 39, 0.03);
+  border-left: 3px solid #ff1e27;
+  padding: 1.5rem;
+  border-radius: 0 8px 8px 0;
+  margin: 1rem 0;
+}
+
+.explainerImageWrapper {
+  position: sticky;
+  top: 100px;
+}
+
+.explainerImageContainer {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1.5;
+  border: 1px solid rgba(242, 239, 232, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+}
+
+.imageOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+@media (max-width: 1024px) {
+  .explainerGrid {
+    grid-template-columns: 1fr;
+    gap: 4rem;
+  }
+  .explainerImageWrapper {
+    position: static;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+}
+
