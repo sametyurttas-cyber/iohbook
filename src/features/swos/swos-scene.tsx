@@ -26,6 +26,32 @@ export default function SwosScene({ user }: SwosSceneProps) {
   const [auditProgress, setAuditProgress] = useState<string[]>([]);
   const [auditResult, setAuditResult] = useState<any>(null);
 
+  // SWOS Tax Calculator States
+  const [iohAmount, setIohAmount] = useState<string>("");
+  const [taxResult, setTaxResult] = useState<any>(null);
+
+  const handleCalculateTax = (e: React.FormEvent) => {
+    e.preventDefault();
+    const amount = parseFloat(iohAmount);
+    if (isNaN(amount) || amount <= 0) return;
+
+    const stateTax = amount * 0.34;
+    const militaryFund = amount * 0.10;
+    const leaderShare = amount * 0.05;
+    const maintenanceFee = amount * 0.03;
+    const totalDeductions = stateTax + militaryFund + leaderShare + maintenanceFee;
+    const netBakiye = amount - totalDeductions;
+
+    setTaxResult({
+      stateTax: stateTax.toFixed(2),
+      militaryFund: militaryFund.toFixed(2),
+      leaderShare: leaderShare.toFixed(2),
+      maintenanceFee: maintenanceFee.toFixed(2),
+      total: totalDeductions.toFixed(2),
+      net: netBakiye.toFixed(2)
+    });
+  };
+
   const handleAudit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!citizenName.trim()) return;
@@ -469,6 +495,81 @@ export default function SwosScene({ user }: SwosSceneProps) {
               <p className={styles.coreDesc}>
                 Hâlâ eski dünyada yaşayan insanların para kayıtları ve kuantum dolanıklık yardımıyla yapılan siber aktarımları.
               </p>
+          </div>
+
+          {/* SWOS Tax Simulator Panel */}
+          <div className={styles.taxSimulator}>
+            <div className={styles.simulatorHeader}>
+              <span className={styles.simulatorTitle}>// SWOS STATE TREASURY // TAX RESOLUTION WIDGET</span>
+              <span className={styles.simulatorCode}>SYS_TAX_82A</span>
+            </div>
+
+            <div className={styles.simulatorBody}>
+              <div className={styles.simulatorLayout}>
+                <div className={styles.simulatorFormCol}>
+                  <p className={styles.simulatorDesc}>
+                    Devlet maliye politikası gereğince, madencilik faaliyetlerinden veya siber aktarımlardan elde ettiğiniz gelirden kesilecek federal vergiyi hesaplayın.
+                  </p>
+                  <form onSubmit={handleCalculateTax} className={styles.simulatorForm}>
+                    <div className={styles.inputWrapper}>
+                      <span className={styles.inputPrefix}>IOH</span>
+                      <input
+                        type="number"
+                        placeholder="ENTER IOHCOIN AMOUNT..."
+                        value={iohAmount}
+                        onChange={(e) => setIohAmount(e.target.value)}
+                        className={styles.simulatorInput}
+                        min="1"
+                        step="any"
+                        required
+                      />
+                    </div>
+                    <button type="submit" className={styles.simulatorButton}>
+                      CALCULATE DEDUCTIONS
+                    </button>
+                  </form>
+                </div>
+
+                <div className={styles.simulatorResultCol}>
+                  {taxResult ? (
+                    <div className={styles.taxDetails}>
+                      <div className={styles.taxRow}>
+                        <span>State Core Tax (Devlet Payı %34):</span>
+                        <span className="text-[#ff3b3b] font-mono">-{taxResult.stateTax} IOH</span>
+                      </div>
+                      <div className={styles.taxRow}>
+                        <span>Military Defense Fund (Savaş Katkısı %10):</span>
+                        <span className="text-[#ff3b3b] font-mono">-{taxResult.militaryFund} IOH</span>
+                      </div>
+                      <div className={styles.taxRow}>
+                        <span>Presidential Directive Commission (Başkanlık Payı %5):</span>
+                        <span className="text-[#ff3b3b] font-mono">-{taxResult.leaderShare} IOH</span>
+                      </div>
+                      <div className={styles.taxRow}>
+                        <span>Vessel Ego Backup Fee (Yedekleme Bedeli %3):</span>
+                        <span className="text-[#ff3b3b] font-mono">-{taxResult.maintenanceFee} IOH</span>
+                      </div>
+                      
+                      <div className={styles.taxDivider} />
+
+                      <div className={styles.taxRow}>
+                        <span className="font-semibold text-muted-foreground">Total Deductions (Toplam Kesinti %52):</span>
+                        <span className="text-[#ff3b3b] font-mono font-bold">-{taxResult.total} IOH</span>
+                      </div>
+
+                      <div className={styles.netBakiyeRow}>
+                        <span className="text-white font-bold">NET APPROVED BALANCE (İzin Verilen):</span>
+                        <span className="text-[#7aa7ff] font-mono font-bold text-lg">+{taxResult.net} IOH</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className={styles.emptyResults}>
+                      <div className={styles.emptyScannerLine} />
+                      <span>AWAITING TRANSACTION VALUATION DATA...</span>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </section>

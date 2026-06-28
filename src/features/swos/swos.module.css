@@ -1499,3 +1499,187 @@
   from { opacity: 0; transform: translateY(4px); }
   to { opacity: 0.85; transform: translateY(0); }
 }
+
+/* SWOS Tax Simulator Panel */
+.taxSimulator {
+  margin-top: 4rem;
+  background-color: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.simulatorHeader {
+  background-color: #161b22;
+  border-bottom: 1px solid #30363d;
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.7rem;
+  color: #8b949e;
+  letter-spacing: 0.05em;
+}
+
+.simulatorTitle {
+  font-weight: 600;
+}
+
+.simulatorCode {
+  color: #7aa7ff;
+  font-weight: 700;
+}
+
+.simulatorBody {
+  padding: 2.5rem;
+}
+
+.simulatorLayout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: flex-start;
+}
+
+.simulatorFormCol {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.simulatorDesc {
+  font-size: 0.85rem;
+  color: #8b949e;
+  line-height: 1.6;
+}
+
+.simulatorForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.inputWrapper {
+  display: flex;
+  align-items: center;
+  background-color: #090d13;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.inputPrefix {
+  background-color: #161b22;
+  color: #7aa7ff;
+  padding: 0.75rem 1.25rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-right: 1px solid #30363d;
+  user-select: none;
+}
+
+.simulatorInput {
+  flex: 1;
+  background-color: transparent;
+  border: none;
+  padding: 0.75rem 1.25rem;
+  color: #ffffff;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.8rem;
+  outline: none;
+}
+
+.simulatorButton {
+  background-color: transparent;
+  color: #7aa7ff;
+  border: 1px solid #7aa7ff;
+  border-radius: 6px;
+  padding: 0.75rem 1.5rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.simulatorButton:hover {
+  background-color: rgba(122, 167, 255, 0.1);
+  box-shadow: 0 0 12px rgba(122, 167, 255, 0.2);
+}
+
+.simulatorResultCol {
+  background-color: #090d13;
+  border: 1px solid #21262d;
+  border-radius: 8px;
+  padding: 1.5rem;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.taxDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.taxRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  color: #8b949e;
+}
+
+.taxDivider {
+  height: 1px;
+  background-color: #30363d;
+  margin: 0.5rem 0;
+}
+
+.netBakiyeRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(122, 167, 255, 0.2);
+  padding-top: 1rem;
+  margin-top: 0.5rem;
+}
+
+.emptyResults {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: #8b949e;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.7rem;
+  text-align: center;
+  height: 100%;
+}
+
+.emptyScannerLine {
+  width: 40px;
+  height: 2px;
+  background-color: #30363d;
+  animation: scanLine 2s infinite ease-in-out;
+}
+
+@keyframes scanLine {
+  0%, 100% { opacity: 0.3; transform: scaleX(1); }
+  50% { opacity: 1; transform: scaleX(2); background-color: #7aa7ff; }
+}
+
+@media (max-width: 768px) {
+  .simulatorLayout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
