@@ -89,7 +89,7 @@ export function EncyclopediaScene({ user }: { user: IohSceneHeaderUser }) {
                 <span>SECTOR 01 // RESISTANCE</span>
                 <span className={styles.securityBadge} style={{ color: "#e7c574", borderColor: "#e7c574" }}>CODE GOD</span>
               </div>
-              <h2 className={styles.columnTitle}>THE TEAM</h2>
+              <h2 className={styles.columnTitle}>KARAKTERLER (THE TEAM)</h2>
               <p className={styles.columnDesc}>
                 Godcode programcıları, siber aktivistler ve fiziksel gerçeklik anılarını korumaya çalışan isyankar bilinçler.
               </p>
@@ -127,7 +127,7 @@ export function EncyclopediaScene({ user }: { user: IohSceneHeaderUser }) {
                 <span>SECTOR 02 // CAPITALISM</span>
                 <span className={styles.securityBadge} style={{ color: "#ff5533", borderColor: "#ff5533" }}>CODE WAR</span>
               </div>
-              <h2 className={styles.columnTitle}>THE CONGLOMERATE</h2>
+              <h2 className={styles.columnTitle}>ŞİRKETLER (CORPORATIONS)</h2>
               <p className={styles.columnDesc}>
                 Centrium kaynaklarını, siber sunucuları ve zihin aktarım portallarını yöneten acımasız şirketler koalisyonu.
               </p>
@@ -165,7 +165,7 @@ export function EncyclopediaScene({ user }: { user: IohSceneHeaderUser }) {
                 <span>SECTOR 03 // JURISDICTION</span>
                 <span className={styles.securityBadge} style={{ color: "#7aa7ff", borderColor: "#7aa7ff" }}>SYS GOD</span>
               </div>
-              <h2 className={styles.columnTitle}>THE AUTHORITY</h2>
+              <h2 className={styles.columnTitle}>SWOS (STATE AUTHORITY)</h2>
               <p className={styles.columnDesc}>
                 Ölüm sonrası vatandaşlık yasalarını uygulayan, dijital bilinç kalkanları ve merkezi vergi çekirdekleriyle yöneten devlet mekanizması.
               </p>
