@@ -35,19 +35,53 @@ export function EncyclopediaWebGL({ hoveredIndex }: EncyclopediaWebGLProps) {
     camera.position.set(0, 0, 17);
 
     // Concept-specific custom shapes
-    function formSystemGrid() {
+    function formBrain() {
       const a = new Float32Array(COUNT * 3);
       for (let i = 0; i < COUNT; i++) {
-        const ang = Math.random() * Math.PI * 2;
-        let r: number;
-        if (i < COUNT * 0.4) {
-          r = Math.pow(Math.random(), 2) * 2; // Dense center core
-        } else {
-          r = 4.5 + Math.random() * 3.5; // Flat planetary rings
+        const offset = i * 3;
+        
+        // 15% of points form the brainstem/cerebellum at the bottom
+        if (i < COUNT * 0.15) {
+          const theta = Math.random() * Math.PI * 2;
+          const r = 0.8 + Math.random() * 0.6;
+          a[offset] = Math.cos(theta) * r;
+          a[offset + 1] = -3.2 - Math.random() * 2.5;
+          a[offset + 2] = -0.5 + Math.random() * 0.5;
+          continue;
         }
-        a[i*3] = Math.cos(ang) * r;
-        a[i*3+1] = (Math.random() - 0.5) * 0.6;
-        a[i*3+2] = Math.sin(ang) * r;
+
+        // Main cerebral hemispheres
+        const u = Math.random();
+        const v = Math.random();
+        const theta = u * 2.0 * Math.PI;
+        const phi = Math.acos(2.0 * v - 1.0);
+
+        const rx = 3.8;
+        const ry = 4.8;
+        const rz = 3.6;
+
+        // Gyri & Sulci wrinkles modulation
+        const wrinkle = 1.0 + 
+          0.16 * Math.sin(6 * theta) * Math.sin(6 * phi) + 
+          0.1 * Math.sin(18 * theta) * Math.cos(18 * phi);
+
+        let x = rx * Math.sin(phi) * Math.cos(theta) * wrinkle;
+        let y = ry * Math.sin(phi) * Math.sin(theta) * wrinkle;
+        let z = rz * Math.cos(phi) * wrinkle;
+
+        // Separate hemispheres
+        const hemisphereGap = 0.35;
+        if (x > 0) {
+          x += hemisphereGap;
+        } else {
+          x -= hemisphereGap;
+        }
+
+        x *= 0.95;
+
+        a[offset] = x;
+        a[offset + 1] = y + 0.8;
+        a[offset + 2] = z;
       }
       return a;
     }
@@ -97,7 +131,7 @@ export function EncyclopediaWebGL({ hoveredIndex }: EncyclopediaWebGLProps) {
       return a;
     }
 
-    const FORMS = [formSystemGrid(), formCyberTunnel(), formCorporateSphere(), formStateShield()];
+    const FORMS = [formBrain(), formCyberTunnel(), formCorporateSphere(), formStateShield()];
     const COLORS = [
       new THREE.Color("#e9d9ae"), // Neutral (System Grid)
       new THREE.Color("#e7c574"), // Gold (Karakterler)
