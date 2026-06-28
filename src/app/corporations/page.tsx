@@ -1,5 +1,5 @@
 import { type Metadata } from "next";
-import { getHeaderUserView } from "@/features/auth/auth-session";
+import { getHeaderUserView } from "@/features/auth/queries";
 import { buildPageMetadata } from "@/features/seo/metadata";
 import { CorporationsScene } from "@/features/corporations/corporations-scene";
 
