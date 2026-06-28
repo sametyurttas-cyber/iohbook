@@ -170,7 +170,7 @@ export function EncyclopediaWebGL({ hoveredIndex, pageContext = "portal" }: Ency
         uSize: { value: 1.55 },
         uPx: { value: Math.min(window.devicePixelRatio || 1, 2) },
         uMouse: { value: new THREE.Vector3(999, 999, 0) },
-        uForce: { value: 1 },
+        uForce: { value: pageContext === "ai" ? 0 : 1 },
         uColor: { value: COLORS[0].clone() }
       },
       vertexShader: `
@@ -278,8 +278,10 @@ export function EncyclopediaWebGL({ hoveredIndex, pageContext = "portal" }: Ency
       material.uniforms.uColor.value.copy(activeColor);
 
       points.rotation.y += 0.001;
-      camera.position.x += (camT.x - camera.position.x) * 0.04;
-      camera.position.y += (camT.y - camera.position.y) * 0.04;
+      if (pageContext !== "ai") {
+        camera.position.x += (camT.x - camera.position.x) * 0.04;
+        camera.position.y += (camT.y - camera.position.y) * 0.04;
+      }
       camera.lookAt(0, 0, 0);
 
       ray.setFromCamera(ndc, camera);

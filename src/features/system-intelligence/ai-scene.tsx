@@ -28,7 +28,7 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
     <div className={styles.page}>
       <IohIndexStylesPlaceholder />
       
-      <EncyclopediaWebGL hoveredIndex={webglIndex} pageContext="ai" />
+      <EncyclopediaWebGL hoveredIndex={null} pageContext="ai" />
 
       <style
         dangerouslySetInnerHTML={{
