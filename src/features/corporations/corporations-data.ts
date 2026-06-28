@@ -140,7 +140,8 @@ export const corporations: CompanyProfile[] = [
     },
     classifiedNote: "Mina'nın geliştirdiği devrimsel görsel filtre ve zaman kilitleme uygulaması, Nets marketine girmek zorunda bırakılmış ve Nets tarafından asimile edilmiştir.",
     images: {
-      portrait: "/media/characters/mina-portrait.jpg" // Fallback portrait
+      portrait: "/media/corporations/nets/anne-portrait.jpg",
+      magazine: "/media/corporations/nets/magazine-cover.jpg"
     }
   },
   {

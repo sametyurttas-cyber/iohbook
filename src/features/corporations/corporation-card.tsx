@@ -221,8 +221,8 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
         </div>
       )}
 
-      {/* Expandable magazine cover layout for Agrom */}
-      {company.id === "agrom" && company.images.magazine && (
+      {/* Expandable magazine cover layout */}
+      {company.images.magazine && (
         <details className="mt-6 border-t border-border/10 pt-6 group">
           <summary className={styles.classifiedSummary}>
             <div className={styles.classifiedLabel}>
