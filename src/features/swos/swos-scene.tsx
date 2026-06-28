@@ -302,17 +302,15 @@ export default function SwosScene({ user }: SwosSceneProps) {
             </div>
 
             <div 
-              className={`${styles.hqImageWrapper} cursor-zoom-in`}
+              className={`${styles.hqImageWrapper} cursor-zoom-in relative`}
               onClick={() => setActiveLightbox("/media/corporations/centrium-street.jpg")}
             >
-              <Image
+              <img
                 src="/media/corporations/centrium-street.jpg"
                 alt="Centrium rainy siber-street view"
-                fill
-                className="object-cover"
-                unoptimized
+                className="w-full h-auto rounded-xl border border-[#30363d]"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent pointer-events-none rounded-xl" />
             </div>
           </div>
         </section>

@@ -590,10 +590,6 @@
 .hqImageWrapper {
   position: relative;
   width: 100%;
-  aspect-ratio: 3 / 4;
-  border: 1px solid #30363d;
-  border-radius: 12px;
-  overflow: hidden;
 }
 
 /* Currency & Core Authority */
