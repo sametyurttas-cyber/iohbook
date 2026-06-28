@@ -98,22 +98,31 @@
 .card::before {
   content: '';
   position: absolute;
-  inset: -15%;
-  background: radial-gradient(circle at center, var(--char-accent) 0%, transparent 75%);
+  inset: -10%;
+  background: radial-gradient(circle at center, var(--char-accent) 0%, transparent 68%);
   opacity: 0;
-  transition: opacity 0.5s ease;
-  z-index: -1;
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1;
   pointer-events: none;
 }
 
 .card:hover::before {
-  opacity: 0.08;
+  opacity: 0.16;
 }
 
 .card:hover {
   border-color: var(--char-accent);
   box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(242, 239, 232, 0.01);
   transform: translateY(-4px);
+}
+
+/* Stacking context to keep text layers above absolute glow */
+.cardBorderTop,
+.cardHeader,
+.cardBodyGrid,
+.lowerGrid {
+  position: relative;
+  z-index: 2;
 }
 
 /* Custom border-top based on accent */
