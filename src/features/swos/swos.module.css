@@ -53,21 +53,12 @@
   font-size: 0.75rem;
   letter-spacing: 0.05em;
   color: #8b949e;
-  line-height: 1;
-}
-
-.stateNav * {
-  line-height: 1;
-  display: inline-flex;
-  align-items: center;
 }
 
 .stateLogo {
   color: #7aa7ff;
   font-weight: 700;
   text-decoration: none;
-  display: inline-flex;
-  align-items: center;
 }
 
 .stateLinks {

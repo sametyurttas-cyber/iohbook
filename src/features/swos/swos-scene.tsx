@@ -54,25 +54,7 @@ export default function SwosScene({ user }: SwosSceneProps) {
             <a href="#crisis">CRISIS ARCHIVE</a>
           </div>
         </div>
-
         <div className="flex items-center gap-6">
-          {/* Official vs Leaked Toggle */}
-          <div className="flex items-center gap-2 border border-border/20 rounded px-2 py-1 bg-black/40 font-mono text-[10px] select-none">
-            <span 
-              onClick={() => setIsLeaked(false)}
-              className={`cursor-pointer px-1.5 py-0.5 rounded transition-all ${!isLeaked ? "bg-[#7aa7ff] text-black font-semibold" : "text-muted-foreground"}`}
-            >
-              OFFICIAL
-            </span>
-            <span className="text-muted-foreground/40">|</span>
-            <span 
-              onClick={() => setIsLeaked(true)}
-              className={`cursor-pointer px-1.5 py-0.5 rounded transition-all ${isLeaked ? "bg-[#ff3b3b] text-black font-semibold" : "text-muted-foreground"}`}
-            >
-              LEAKED
-            </span>
-          </div>
-
           <div className={styles.stateStatus}>
             <span className="text-[#8b949e] font-mono text-[10px] uppercase">
               PRESIDENT: MATT // STATUS: EMERGENCY
