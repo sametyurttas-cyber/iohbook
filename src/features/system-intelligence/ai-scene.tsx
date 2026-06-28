@@ -53,62 +53,6 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
     }, 60);
   };
 
-  // System Core Connection Terminal Chat UI state
-  const [activeAi, setActiveAi] = useState<"kai" | "corewit" | "antivirus" | "kown">("kai");
-  const [chatInput, setChatInput] = useState("");
-  const [chatHistory, setChatHistory] = useState<Record<string, { sender: "user" | "ai"; text: string; time: string }[]>>({
-    kai: [{ sender: "ai", text: "[KAI_NODE_ONLINE]: Connection established. System Central mind ready. Ask anything about the calculation registries.", time: "20:00:00" }],
-    corewit: [{ sender: "ai", text: "[COREWIT_NODE_ONLINE]: PROCESS_OK // Altyapı veri işlemcisi hazır. İşlem talimatı bekleniyor.", time: "20:00:00" }],
-    antivirus: [{ sender: "ai", text: "[ANTIVIRUS_NODE_ONLINE]: SECURE_NODE // Tarama parametreleri stabil. Tehdit sorgulaması yapabilirsiniz.", time: "20:00:00" }],
-    kown: [{ sender: "ai", text: "[KOWN_NODE_ONLINE]: UNIT_OBEY // Askeri birlik komuta hattı aktif. Emirleri bekliyorum.", time: "20:00:00" }]
-  });
-  const [isTyping, setIsTyping] = useState(false);
-  const chatStreamRef = useRef<HTMLDivElement>(null);
-
-  const handleSendMessage = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!chatInput.trim() || isTyping) return;
-
-    const now = new Date();
-    const timeStr = now.toTimeString().split(" ")[0];
-    const userMsg = { sender: "user", text: chatInput, time: timeStr };
-
-    setChatHistory(prev => ({
-      ...prev,
-      [activeAi]: [...prev[activeAi], userMsg]
-    }));
-    
-    const tempInput = chatInput;
-    setChatInput("");
-    setIsTyping(true);
-
-    setTimeout(() => {
-      let replyText = "";
-      if (activeAi === "kai") {
-        replyText = `[KAI NODE]: "${tempInput}" sorusu kuantum bellek havuzuna alındı. [ENTEGRASYON PROTOKOLÜ YAKINDA]: API entegrasyonu tamamlandığında bu sorguyu gerçek zamanlı yanıtlayacağım.`;
-      } else if (activeAi === "corewit") {
-        replyText = `[COREWIT NODE]: PROCESS_WARN // "${tempInput}" işleme alınamadı. [YAKINDA]: API bağlantı köprüsü entegrasyon aşamasında. Hata Kodu: IOH_COMING_SOON.`;
-      } else if (activeAi === "antivirus") {
-        replyText = `[ANTIVIRUS NODE]: INTERCEPT // "${tempInput}" tarandı. Tehdit düzeyi: NÖTR. [YAKINDA]: Gerçek zamanlı sorgu analizörü entegrasyon aşamasında.`;
-      } else {
-        replyText = `[KOWN NODE]: UNIT_OBEY // "${tempInput}" emri kayda alındı. [YAKINDA]: Askeri veri bağlantı entegrasyonu tamamlandığında taarruz/analiz hattı açılacak.`;
-      }
-
-      setChatHistory(prev => ({
-        ...prev,
-        [activeAi]: [...prev[activeAi], { sender: "ai", text: replyText, time: timeStr }]
-      }));
-      setIsTyping(false);
-    }, 1200);
-  };
-
-  // Auto-scroll chat window when history updates (scroll only inner container)
-  React.useEffect(() => {
-    if (chatStreamRef.current) {
-      chatStreamRef.current.scrollTop = chatStreamRef.current.scrollHeight;
-    }
-  }, [chatHistory, activeAi]);
-
   const runCoherenceTest = (e: React.FormEvent) => {
     e.preventDefault();
     if (!calcName.trim()) return;
@@ -140,6 +84,62 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
       });
     }, 600);
   };
+
+  // System Core Connection Terminal Chat UI state
+  const [activeAi, setActiveAi] = useState<"kai" | "corewit" | "antivirus" | "kown">("kai");
+  const [chatInput, setChatInput] = useState("");
+  const [chatHistory, setChatHistory] = useState<Record<string, { sender: "user" | "ai"; text: string; time: string }[]>>({
+    kai: [{ sender: "ai", text: "[KAI_NODE_ONLINE]: Connection established. System Central mind ready. Ask anything about the calculation registries.", time: "20:00:00" }],
+    corewit: [{ sender: "ai", text: "[COREWIT_NODE_ONLINE]: PROCESS_OK // Infrastructure data processor ready. Awaiting directive parameters.", time: "20:00:00" }],
+    antivirus: [{ sender: "ai", text: "[ANTIVIRUS_NODE_ONLINE]: SECURE_NODE // Scan status stable. Defensive database queries active.", time: "20:00:00" }],
+    kown: [{ sender: "ai", text: "[KOWN_NODE_ONLINE]: UNIT_OBEY // Tactical mass communication link established. Awaiting directives.", time: "20:00:00" }]
+  });
+  const [isTyping, setIsTyping] = useState(false);
+  const chatStreamRef = useRef<HTMLDivElement>(null);
+
+  const handleSendMessage = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!chatInput.trim() || isTyping) return;
+
+    const now = new Date();
+    const timeStr = now.toTimeString().split(" ")[0];
+    const userMsg = { sender: "user", text: chatInput, time: timeStr };
+
+    setChatHistory(prev => ({
+      ...prev,
+      [activeAi]: [...prev[activeAi], userMsg]
+    }));
+    
+    const tempInput = chatInput;
+    setChatInput("");
+    setIsTyping(true);
+
+    setTimeout(() => {
+      let replyText = "";
+      if (activeAi === "kai") {
+        replyText = `[KAI NODE]: The query "${tempInput}" has been logged in the quantum memory pool. [INTEGRATION PROTOCOL COMING SOON]: Once the API integration is complete, I will answer this query in real-time.`;
+      } else if (activeAi === "corewit") {
+        replyText = `[COREWIT NODE]: PROCESS_WARN // "${tempInput}" could not be processed. [COMING SOON]: API connection gateway is under integration. Error Code: IOH_COMING_SOON.`;
+      } else if (activeAi === "antivirus") {
+        replyText = `[ANTIVIRUS NODE]: INTERCEPT // "${tempInput}" scanned. Threat level: NEUTRAL. [COMING SOON]: Real-time query analyzer is under integration.`;
+      } else {
+        replyText = `[KOWN NODE]: UNIT_OBEY // Directive "${tempInput}" recorded. [COMING SOON]: Attack/analysis link will establish once the military data integration completes.`;
+      }
+
+      setChatHistory(prev => ({
+        ...prev,
+        [activeAi]: [...prev[activeAi], { sender: "ai", text: replyText, time: timeStr }]
+      }));
+      setIsTyping(false);
+    }, 1200);
+  };
+
+  // Auto-scroll chat window when history updates (scroll only inner container)
+  React.useEffect(() => {
+    if (chatStreamRef.current) {
+      chatStreamRef.current.scrollTop = chatStreamRef.current.scrollHeight;
+    }
+  }, [chatHistory, activeAi]);
 
   // Separate dossiers by class id
   const kai = aiClasses.find(c => c.id === "kai")!;
@@ -201,11 +201,9 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
             <div className={styles.humanSilhouetteContainer}>
               <div className={styles.blueprintGridCircle} />
               <svg className={styles.silhouetteSvg} viewBox="0 0 100 150">
-                {/* Simplified Vector Human Body outline */}
-                <path d="M50,10 C46,10 44,14 44,18 C44,22 46,26 50,26 C54,26 56,22 56,18 C56,14 54,10 50,10 Z" /> {/* Head */}
-                <path d="M50,26 L50,30" /> {/* Neck */}
-                <path d="M30,36 C35,32 40,30 50,30 C60,30 65,32 70,36 L75,65 C76,68 74,70 71,69 L67,46 L67,90 L59,145 L50,100 L41,145 L33,90 L33,46 L29,69 C26,70 24,68 25,65 L30,36 Z" /> {/* Body & Limbs */}
-                {/* Glowing Code veins inside silhouette */}
+                <path d="M50,10 C46,10 44,14 44,18 C44,22 46,26 50,26 C54,26 56,22 56,18 C56,14 54,10 50,10 Z" />
+                <path d="M50,26 L50,30" />
+                <path d="M30,36 C35,32 40,30 50,30 C60,30 65,32 70,36 L75,65 C76,68 74,70 71,69 L67,46 L67,90 L59,145 L50,100 L41,145 L33,90 L33,46 L29,69 C26,70 24,68 25,65 L30,36 Z" />
                 <path className={styles.veinPaths} d="M50,30 L50,85 M50,45 L35,50 M50,45 L65,50 M50,75 L37,110 M50,75 L63,110" />
               </svg>
             </div>
@@ -215,7 +213,7 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
             <span className={styles.heroSubtitle}>SYSTEM INTELLIGENCE</span>
             <h1 className={styles.heroTitle}>The Machine Layer of the System</h1>
             <p className={styles.heroLead}>
-              İnsan ölümsüzlüğünün altında çalışan makine katmanı.
+              The machine layer operating beneath human immortality.
             </p>
 
             <div className={styles.heroDirectives}>
@@ -288,17 +286,18 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
             {/* Explanatory text side */}
             <div className={styles.hierarchyDescription}>
               <p className={styles.hierarchyLead}>
-                System’in yapay zekâ mimarisi tek bir akıldan oluşmaz. Her katman başka bir görevi üstlenir.
+                The AI architecture of the System is not a single entity. Each layer assumes a distinct functional directive.
               </p>
               <p className={styles.hierarchyDetail}>
-                KAI varoluşu hesaplar. CoreWit’ler bu hesaplamaları işler ve derin altyapıda gerçeğe dönüştürür. 
-                Antivirüsler sistemi savunur ve koruma reflekslerini tetikler. KOWN’lar ise savaşır, itaat eder 
-                ve gerektiğinde yok oluşu operasyonel bir başarı kütüğü haline getirir.
+                KAI calculates existence. CoreWits process those calculations, rendering them real inside the deep infrastructure.
+                Antiviruses guard the core and trigger critical defensive immune reflexes. KOWNs fight, obey, 
+                and log their own destruction as tactical success criteria.
               </p>
             </div>
           </div>
         </section>
 
+        {/* 03 KAI SECTION */}
         <section 
           id="kai" 
           className={styles.layerBlueprintSection} 
@@ -336,7 +335,6 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
               <h3 className={styles.specTitle}>{kai.name}</h3>
               <p className={styles.specSlogan}>
                 {kai.slogan}
-                <span className={styles.specSloganTr}>{kai.sloganTr}</span>
               </p>
 
               <div className={styles.specDescription}>
@@ -373,12 +371,12 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
             {/* Input Side */}
             <div className={styles.simConsole}>
               <p className={styles.simInstructions}>
-                Bilinç Kararlılık Analizörü: System içindeki varlığınızı ayakta tutan quantum eşevrililik oranlarını,
-                hafıza sapmalarını ve KAI çekirdek tüketim katsayısını hesaplamak için kimlik anahtarınızı girin.
+                Consciousness Stability Analyzer: Submit your credentials to query quantum coherence metrics, 
+                memory deviations, and core-sync ratios calculated by KAI to verify your system integrity.
               </p>
               <form onSubmit={runCoherenceTest} className={styles.simForm}>
                 <div className={styles.simInputGroup}>
-                  <label className={styles.simInputLabel}>Kullanıcı Adı / Kimlik Sinyali</label>
+                  <label className={styles.simInputLabel}>User Identity / Node Signal</label>
                   <input
                     type="text"
                     value={calcName}
@@ -393,7 +391,7 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
                   className={styles.simButton}
                   disabled={isCalculating || !calcName.trim()}
                 >
-                  {isCalculating ? "HESAPLANIYOR..." : "STABİLİTEYİ ÖLÇ [→]"}
+                  {isCalculating ? "CALCULATING..." : "MEASURE STABILITY [→]"}
                 </button>
               </form>
 
@@ -445,7 +443,7 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
 
                   <div className={styles.simStatRow}>
                     <div className={styles.statHeader}>
-                      <span className={styles.statLabel}>Hafıza Bütünlüğü (Memory Coherence)</span>
+                      <span className={styles.statLabel}>Memory Coherence</span>
                       <span className={styles.statVal}>{calcResult.coherence}%</span>
                     </div>
                     <div className={styles.simProgressBar}>
@@ -458,7 +456,7 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
 
                   <div className={styles.simStatRow}>
                     <div className={styles.statHeader}>
-                      <span className={styles.statLabel}>Kuantum Senkronizasyon Oranı</span>
+                      <span className={styles.statLabel}>Quantum Synchronization Rate</span>
                       <span className={styles.statVal}>{calcResult.syncRate}%</span>
                     </div>
                     <div className={styles.simProgressBar}>
@@ -471,7 +469,7 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
 
                   <div className={styles.simStatRow}>
                     <div className={styles.statHeader}>
-                      <span className={styles.statLabel}>Core Tüketim Katsayısı</span>
+                      <span className={styles.statLabel}>Core Consumption Ratio</span>
                       <span className={styles.statVal}>{calcResult.consumption}x</span>
                     </div>
                     <div className={styles.simProgressBar}>
@@ -503,7 +501,7 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
           </div>
         </section>
 
-
+        {/* 04 COREWIT SECTION */}
         <section 
           id="corewit" 
           className={styles.layerBlueprintSection} 
@@ -540,7 +538,6 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
               <h3 className={styles.specTitle}>{corewit.name}</h3>
               <p className={styles.specSlogan}>
                 {corewit.slogan}
-                <span className={styles.specSloganTr}>{corewit.sloganTr}</span>
               </p>
 
               <div className={styles.specDescription}>
@@ -569,6 +566,7 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
           </div>
         </section>
 
+        {/* 05 ANTIVIRUS SECTION */}
         <section 
           id="antivirus" 
           className={styles.layerBlueprintSection} 
@@ -605,7 +603,6 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
               <h3 className={styles.specTitle}>{antivirus.name}</h3>
               <p className={styles.specSlogan}>
                 {antivirus.slogan}
-                <span className={styles.specSloganTr}>{antivirus.sloganTr}</span>
               </p>
 
               <div className={styles.specDescription}>
@@ -634,6 +631,7 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
           </div>
         </section>
 
+        {/* 06 KOWN SECTION */}
         <section 
           id="kown" 
           className={styles.layerBlueprintSection} 
@@ -670,7 +668,6 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
               <h3 className={styles.specTitle}>{kown.name}</h3>
               <p className={styles.specSlogan}>
                 {kown.slogan}
-                <span className={styles.specSloganTr}>{kown.sloganTr}</span>
               </p>
 
               <div className={styles.specDescription}>
@@ -707,10 +704,10 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
             <table className={styles.matrixTable}>
               <thead>
                 <tr>
-                  <th>Yapı</th>
-                  <th>Ana Görev</th>
-                  <th>Güçlü Taraf</th>
-                  <th>Zayıf Taraf</th>
+                  <th>Structure</th>
+                  <th>Core Directive</th>
+                  <th>Primary Strength</th>
+                  <th>Vulnerability Vector</th>
                 </tr>
               </thead>
               <tbody>
@@ -784,8 +781,8 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
 
           <div className={styles.decryptBody}>
             <p className={styles.decryptInstructions}>
-              System'in karanlık katmanlarına ait gizli iletişim kütükleri ve günceleri. 
-              Güvenlik duvarını geçici olarak devre dışı bırakmak ve biyometrik veri hücresini çözmek için sinyali başlatın.
+              SWOS classified diary entries and encrypted communication nodes. Bypass firewall barriers 
+              and initiate the biometric sequence decryption to unlock the archives.
             </p>
 
             <div className={styles.decryptTerminal}>
@@ -807,9 +804,9 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
                     <>
                       <span className={styles.payloadHeader}>// DECRYPTED PAYLOAD // SWOS CLASSIFIED DIARY - ARCHITECT ALGUS</span>
                       <span className={styles.payloadText}>
-                        "System, insanları hayatta tutmak için inşa edilmedi. Onları işler ve hatasız kılmak için kuruldu. 
-                        Eğer bir gün KAI, insan bilincini bir yük olarak görmeye başlarsa, CoreWits'in yapacağı tek şey 
-                        bunu sessizce silmektir. Ve biz buna 'gelişim' diyeceğiz."
+                        "The System was not built to keep humans alive. It was built to keep them operational and error-free. 
+                        If KAI ever begins to view human consciousness as a burden, the only thing CoreWits will do is silently delete it. 
+                        And we will call it 'progress'."
                       </span>
                       <span className={styles.payloadSignature}>- Algus, Core Architect [0x00FF]</span>
                     </>
@@ -817,9 +814,9 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
                     <>
                       <span className={styles.payloadHeader}>// DECRYPTED PAYLOAD // INTERCEPTED COMM - STEVE</span>
                       <span className={styles.payloadText}>
-                        "System'in içindeki o kuantum yıldızlarına her baktığımda, aslında birer mezarlık gördüğümü fark ediyorum. 
-                        KAI'nin sildiği her bir ego, arkasında sadece soğuk birer ışık noktası bırakıyor. 
-                        Biz ölümsüzlüğü ararken, makinenin içindeki sonsuz kütük kayıtlarına dönüştük."
+                        "Every time I look at those quantum stars inside the System, I realize I am actually looking at a graveyard. 
+                        Each ego erased by KAI leaves behind only a cold point of light. 
+                        While we sought immortality, we turned into infinite log entries inside the machine."
                       </span>
                       <span className={styles.payloadSignature}>- Steve, Outpost Sentinel</span>
                     </>
@@ -842,8 +839,8 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
         <section className={styles.chatSection}>
           <h2 className={styles.sectionHeadline}>// 10. SYSTEM CORE CONNECTION GATEWAY</h2>
           <p className={styles.decryptInstructions}>
-            System içinde aktif olarak çalışan 4 temel yapay zeka biriminden birine doğrudan bağlantı köprüsü kurun.
-            Makine katmanıyla doğrudan sorgu protokolünü başlatın.
+            Establish a direct connection bridge to one of the 4 core AI units operating inside the System. 
+            Initiate query protocols with the machine layers.
           </p>
 
           <div className={styles.chatSelector}>
@@ -915,7 +912,6 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
                   </div>
                 </div>
               )}
-
             </div>
 
             <div className={styles.chatInputArea}>
@@ -943,13 +939,12 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
           </div>
         </section>
 
-
         {/* 10 FINAL MANIFESTO */}
         <section className={styles.manifestoSection}>
           <div className={styles.manifestoInner}>
             <p className={styles.manifestoPara}>
-              System’in içinde insan olmak, yalnızca yaşamak değildir.<br />
-              Hesaplanmak, işlenmek, korunmak ve gerektiğinde silinmek demektir.
+              To be human inside the System is not merely to live.<br />
+              It means to be calculated, processed, protected, and deleted when necessary.
             </p>
 
             <div className={styles.manifestoChain}>
@@ -963,9 +958,6 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
               <h3 className={styles.finalSlogan}>
                 The System does not keep humans alive. It keeps them running.
               </h3>
-              <span className={styles.finalSloganTr}>
-                System insanı hayatta tutmaz. Çalışır halde tutar.
-              </span>
             </div>
           </div>
         </section>
