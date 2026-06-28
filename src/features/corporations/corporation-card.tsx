@@ -22,11 +22,24 @@ export function CorporationCard({ company, index }: CorporationCardProps) {
 
       {/* Card Header */}
       <header className={styles.cardHeader}>
-        <div className={styles.headerMain}>
-          <h2 className={styles.corpName}>{company.displayName}</h2>
-          <span className={styles.corpLeader}>
-            LEADER: {company.leader} ({company.leaderTitle})
-          </span>
+        <div className="flex items-center gap-4">
+          {company.images.logo && (
+            <div className="relative w-12 h-12 border border-border/10 bg-black/40 rounded flex items-center justify-center p-1.5 overflow-hidden">
+              <Image
+                src={company.images.logo}
+                alt={`${company.displayName} Logo`}
+                fill
+                className="object-contain p-1"
+                sizes="48px"
+              />
+            </div>
+          )}
+          <div className={styles.headerMain}>
+            <h2 className={styles.corpName}>{company.displayName}</h2>
+            <span className={styles.corpLeader}>
+              LEADER: {company.leader} ({company.leaderTitle})
+            </span>
+          </div>
         </div>
         <div className={styles.headerMeta}>
           <div className={styles.statusIndicator}>
