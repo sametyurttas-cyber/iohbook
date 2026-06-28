@@ -382,7 +382,10 @@ export const corporations: CompanyProfile[] = [
       portrait: "/media/corporations/henry/henry-portrait.jpg",
       magazine: "/media/corporations/henry/magazine-cover.jpg",
       cityDay: "/media/corporations/henry/city-deep-street.jpg",
-      cityCenter: "/media/corporations/henry/city-hexagonal-layout.jpg"
+      cityCenter: "/media/corporations/henry/city-hexagonal-layout.jpg",
+      destruction: [
+        "/media/corporations/henry/destruction/olympus-dimension.jpg"
+      ]
     }
   }
 ];

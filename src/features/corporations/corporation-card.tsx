@@ -423,7 +423,7 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
                       </div>
                       <div className="font-mono text-[9px] text-red-400/80 px-1 leading-normal">
                         <span className="text-red-500 block font-semibold mb-0.5">
-                          {idx === 0 && (company.id === "agrom" ? "LOG_STREET_CODE_DISSOLUTION" : company.id === "social-media" ? "LOG_AULAM_OUTER_SIEGE" : "LOG_ORION_WALL_BREACH")}
+                          {idx === 0 && (company.id === "agrom" ? "LOG_STREET_CODE_DISSOLUTION" : company.id === "social-media" ? "LOG_AULAM_OUTER_SIEGE" : company.id === "miner-henry" ? "LOG_OLYMPUS_DIMENSION" : "LOG_ORION_WALL_BREACH")}
                           {idx === 1 && (company.id === "agrom" ? "LOG_METEOR_BOMBARDMENT" : company.id === "social-media" ? "LOG_QUANTUM_BATTLE_HUD" : "LOG_AI_ROBOTS_ASSAULT")}
                           {idx === 2 && (company.id === "agrom" ? "LOG_CORE_GRID_DELETION" : company.id === "social-media" ? "LOG_AULAM_CORE_BREACH" : "LOG_PALACE_GATE_COLLAPSE")}
                           {idx === 3 && (company.id === "agrom" ? "LOG_BINARY_PIXEL_COLLAPSE" : "LOG_SIEGE_SCENE_MATRIX")}
@@ -434,7 +434,8 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
                           idx === 1 ? "Aulam Core siber kuşatma takip ekranı ve SWOS Forces veri sızıntı/hücum analiz HUD şeması." :
                           "Aulam Core Citadel veri odasında Swos askeri birliklerinin son güvenlik AI'ını çökertmesi ve veri kaskadı başlatması."
                         )}
-                        {company.id !== "agrom" && company.id !== "social-media" && "Orion City kuşatma ve savunma üniteleri veri sızıntısı. KOWN robot istilası."}
+                        {company.id === "miner-henry" && "Miner Henry'nin yeraltı maden sömürüsünden elde ettiği sınırsız kaynakla inşa ettiği Olympus Pocket Dimension sığınağının doğa panoraması."}
+                        {company.id !== "agrom" && company.id !== "social-media" && company.id !== "miner-henry" && "Orion City kuşatma ve savunma üniteleri veri sızıntısı. KOWN robot istilası."}
                       </div>
                     </div>
                   ))}
