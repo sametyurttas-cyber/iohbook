@@ -356,9 +356,19 @@
   filter: drop-shadow(0 0 10px var(--theme-color));
 }
 
+.hudLabelText {
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  transition: all 0.3s ease;
+  user-select: none;
+}
+
 .hudTextActive {
   fill: var(--theme-color) !important;
-  font-weight: bold;
+  font-weight: 700;
+  filter: drop-shadow(0 0 5px var(--theme-color));
 }
 
 /* HUD Panel info card on the right */

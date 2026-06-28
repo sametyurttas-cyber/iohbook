@@ -310,10 +310,10 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
                 <circle cx="200" cy="200" r="12" className={styles.coreNodePulse} />
 
                 {/* Grid HUD Labels */}
-                <text x="205" y="32" fill="rgba(184,188,200,0.4)" fontFamily="monospace" fontSize="6.5" letterSpacing="0.05em" className={hoveredNode === 3 ? styles.hudTextActive : ""}>[KOWN SYSTEM ARMY GRID]</text>
-                <text x="205" y="72" fill="rgba(255,77,77,0.4)" fontFamily="monospace" fontSize="6.5" letterSpacing="0.05em" className={hoveredNode === 2 ? styles.hudTextActive : ""}>[ANTIVIRUS DEFENSE SHIELD]</text>
-                <text x="205" y="112" fill="rgba(155,231,255,0.4)" fontFamily="monospace" fontSize="6.5" letterSpacing="0.05em" className={hoveredNode === 1 ? styles.hudTextActive : ""}>[COREWIT RUNTIME NET]</text>
-                <text x="205" y="195" fill="rgba(216,243,255,0.4)" fontFamily="monospace" fontSize="6.5" letterSpacing="0.05em" className={hoveredNode === 0 ? styles.hudTextActive : ""}>[KAI CENTRAL CORE]</text>
+                <text x="210" y="32" fill="rgba(184,188,200,0.8)" className={`${styles.hudLabelText} ${hoveredNode === 3 ? styles.hudTextActive : ""}`}>[KOWN SYSTEM ARMY GRID]</text>
+                <text x="210" y="72" fill="rgba(255,77,77,0.8)" className={`${styles.hudLabelText} ${hoveredNode === 2 ? styles.hudTextActive : ""}`}>[ANTIVIRUS DEFENSE SHIELD]</text>
+                <text x="210" y="112" fill="rgba(155,231,255,0.8)" className={`${styles.hudLabelText} ${hoveredNode === 1 ? styles.hudTextActive : ""}`}>[COREWIT RUNTIME NET]</text>
+                <text x="210" y="195" fill="rgba(216,243,255,0.8)" className={`${styles.hudLabelText} ${hoveredNode === 0 ? styles.hudTextActive : ""}`}>[KAI CENTRAL CORE]</text>
               </svg>
             </div>
 
