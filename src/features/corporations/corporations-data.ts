@@ -113,7 +113,7 @@ export const corporations: CompanyProfile[] = [
     displayName: "Nets",
     leader: "Madam Anne",
     leaderTitle: "Perception Empress",
-    accent: "#ff5bdf", // Magenta/Pink
+    accent: "#a200ff", // Cyber Purple
     cityName: "Orion City",
     tagline: "They do not control what people see. They control what people want to see.",
     overview: "Medya, reklam ve görsel gerçeklik pazarlarını yöneten algı imparatorluğu. System'in rüyalar ve eğlence üreten yüzü.",
@@ -139,7 +139,7 @@ export const corporations: CompanyProfile[] = [
     ],
     tags: ["Media Empire", "Perception Control", "Orion City", "Visual Reality"],
     visualIdentity: {
-      colors: ["#ff5bdf", "#8a2be2", "#08040d"],
+      colors: ["#a200ff", "#6b00b3", "#08040d"],
       architecture: "Yatay mimariye sahip saraylar, neon pembe ve mor ışık selleriyle kaplı sonsuz sokak partileri ve gökyüzü hologramları."
     },
     classifiedNote: "Mina'nın geliştirdiği devrimsel görsel filtre ve zaman kilitleme uygulaması, Nets marketine girmek zorunda bırakılmış ve Nets tarafından asimile edilmiştir.",
