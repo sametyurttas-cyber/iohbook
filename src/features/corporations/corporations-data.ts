@@ -146,7 +146,13 @@ export const corporations: CompanyProfile[] = [
       cityDay: "/media/corporations/nets/city-day-canal.jpg",
       cityCenter: "/media/corporations/nets/city-night-canal.jpg",
       cityBrochure: "/media/corporations/nets/city-day-palace.jpg",
-      citySunset: "/media/corporations/nets/city-sunset-palace.jpg"
+      citySunset: "/media/corporations/nets/city-sunset-palace.jpg",
+      destruction: [
+        "/media/corporations/nets/destruction/destroy-stage-01.jpg",
+        "/media/corporations/nets/destruction/destroy-stage-02.jpg",
+        "/media/corporations/nets/destruction/destroy-stage-03.jpg",
+        "/media/corporations/nets/destruction/destroy-collage.jpg"
+      ]
     }
   },
   {

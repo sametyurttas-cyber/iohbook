@@ -93,6 +93,7 @@ export function CorporationsScene({ user }: CorporationsSceneProps) {
               className="object-contain"
               sizes="90vw"
               priority
+              unoptimized
             />
           </div>
         </div>

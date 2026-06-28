@@ -59,6 +59,7 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
               className={styles.portraitImage}
               sizes="280px"
               priority={index < 2}
+              unoptimized
             />
           </div>
         </div>
@@ -169,6 +170,7 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
                   fill
                   className="object-contain p-1"
                   sizes="(max-width: 768px) 100vw, 320px"
+                  unoptimized
                 />
               </div>
               <div className="font-mono text-[10px] text-muted-foreground mt-1 px-1">
@@ -194,6 +196,7 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
                     fill
                     className="object-contain p-1"
                     sizes="(max-width: 768px) 100vw, 320px"
+                    unoptimized
                   />
                 </div>
                 <div className="font-mono text-[10px] text-muted-foreground mt-1 px-1">
@@ -220,6 +223,7 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
                     fill
                     className="object-contain p-1"
                     sizes="(max-width: 768px) 100vw, 320px"
+                    unoptimized
                   />
                 </div>
                 <div className="font-mono text-[10px] text-muted-foreground mt-1 px-1">
@@ -246,6 +250,7 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
                     fill
                     className="object-contain p-1"
                     sizes="(max-width: 768px) 100vw, 320px"
+                    unoptimized
                   />
                 </div>
                 <div className="font-mono text-[10px] text-muted-foreground mt-1 px-1">
@@ -274,7 +279,7 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
           <div className="mt-4 flex justify-center bg-black/30 p-4 rounded-lg border border-border/5">
             <div 
               className="relative w-full max-w-[480px] aspect-[1/1.5] rounded-md overflow-hidden border border-border/10 bg-black cursor-zoom-in"
-              onClick={() => onZoom(company.images.magazine)}
+              onClick={() => onZoom(company.images.magazine!)}
             >
               <Image
                 src={company.images.magazine}
@@ -282,6 +287,7 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
                 fill
                 className="object-contain p-2"
                 sizes="(max-width: 768px) 100vw, 480px"
+                unoptimized
               />
             </div>
           </div>
@@ -305,7 +311,9 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
             <p className="mb-4">{company.classifiedNote}</p>
             {company.images.destruction && company.images.destruction.length > 0 && (
               <div className="mt-6 border-t border-red-500/10 pt-4">
-                <span className="text-red-500 font-mono text-[10px] block mb-3 uppercase">// DESTRUCTION ARCHIVE: AGROM CITY DELETION LOG</span>
+                <span className="text-red-500 font-mono text-[10px] block mb-3 uppercase">
+                  // DESTRUCTION ARCHIVE: {company.cityName.toUpperCase()} DELETION LOG
+                </span>
                 <div className="grid gap-4 sm:grid-cols-2">
                   {company.images.destruction.map((img, idx) => (
                     <div key={idx} className="relative border border-red-500/20 bg-black/60 rounded p-2 flex flex-col gap-2">
@@ -315,20 +323,23 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
                       >
                         <Image
                           src={img}
-                          alt={`Agrom City Destruction Stage ${idx + 1}`}
+                          alt={`${company.cityName} Destruction Stage ${idx + 1}`}
                           fill
                           className="object-contain p-1"
                           sizes="(max-width: 768px) 100vw, 350px"
+                          unoptimized
                         />
                       </div>
                       <div className="font-mono text-[9px] text-red-400/80 px-1 leading-normal">
                         <span className="text-red-500 block font-semibold mb-0.5">
-                          {idx === 0 && "LOG_STREET_CODE_DISSOLUTION"}
-                          {idx === 1 && "LOG_METEOR_BOMBARDMENT"}
-                          {idx === 2 && "LOG_CORE_GRID_DELETION"}
-                          {idx === 3 && "LOG_BINARY_PIXEL_COLLAPSE"}
+                          {idx === 0 && (company.id === "agrom" ? "LOG_STREET_CODE_DISSOLUTION" : "LOG_ORION_WALL_BREACH")}
+                          {idx === 1 && (company.id === "agrom" ? "LOG_METEOR_BOMBARDMENT" : "LOG_AI_ROBOTS_ASSAULT")}
+                          {idx === 2 && (company.id === "agrom" ? "LOG_CORE_GRID_DELETION" : "LOG_PALACE_GATE_COLLAPSE")}
+                          {idx === 3 && (company.id === "agrom" ? "LOG_BINARY_PIXEL_COLLAPSE" : "LOG_SIEGE_SCENE_MATRIX")}
                         </span>
-                        Agrom City yıkım ve System silinme kayıtları. Veri bütünlüğü bozuldu.
+                        {company.id === "agrom" 
+                          ? "Agrom City yıkım ve System silinme kayıtları. Veri bütünlüğü bozuldu." 
+                          : "Orion City kuşatma ve savunma üniteleri veri sızıntısı. KOWN robot istilası."}
                       </div>
                     </div>
                   ))}
