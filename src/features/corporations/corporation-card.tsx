@@ -175,7 +175,7 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
               </div>
               <div className="font-mono text-[10px] text-muted-foreground mt-1 px-1">
                 <span className="text-[#e7c574] block font-semibold mb-0.5">
-                  FILE_REF: {company.id === "agrom" ? "AC_DAY_01" : company.id === "nets" ? "OC_DAY_CANAL_01" : company.id === "tencon" ? "TC_AERIAL_01" : company.id === "qualty" ? "SC_CAPITAL_01" : company.id === "ubless" ? "NC_CENTER_01" : "SM_COURTYARD_01"}
+                  FILE_REF: {company.id === "agrom" ? "AC_DAY_01" : company.id === "nets" ? "OC_DAY_CANAL_01" : company.id === "tencon" ? "TC_AERIAL_01" : company.id === "qualty" ? "SC_CAPITAL_01" : company.id === "ubless" ? "NC_CENTER_01" : company.id === "social-media" ? "SM_COURTYARD_01" : "HC_STREET_01"}
                 </span>
                 {company.id === "agrom" && "Agrom City dikey mimari ve sokak panoraması. Altın işlemeli spayrlar ve siber sancaklar görünür durumdadır."}
                 {company.id === "nets" && "Orion City kanal mimarisi ve şehir merkezi. Beyaz mermer saraylar ve parlayan siber sancaklar."}
@@ -183,6 +183,7 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
                 {company.id === "qualty" && "Solaris A başkent bölgesi ve Qualty Energy merkez reaktör kulelerinin gün batımı altındaki görkemli panoraması."}
                 {company.id === "ubless" && "Nexum City gümüş kuleleri ve merkez ulaşım kanallarının bulutlu gün ışığı altındaki görkemli panoraması."}
                 {company.id === "social-media" && "Aulam City siber veri sunucuları avlusu ve yönetim binalarının alacakaranlık görünümü."}
+                {company.id === "miner-henry" && "Hexcity derin yeraltı sokakları. Yüz binlerce dikey altıgen metal yaşam hücreleri ve kömür-altın parıltısı."}
               </div>
             </div>
 
@@ -204,7 +205,7 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
                 </div>
                 <div className="font-mono text-[10px] text-muted-foreground mt-1 px-1">
                   <span className="text-[#e7c574] block font-semibold mb-0.5">
-                    FILE_REF: {company.id === "agrom" ? "AC_AERIAL_02" : company.id === "nets" ? "OC_NIGHT_CANAL_02" : company.id === "tencon" ? "TC_ARENA_02" : company.id === "qualty" ? "SC_MINING_HUB_02" : company.id === "ubless" ? "NC_AERIAL_02" : "SM_TOWER_02"}
+                    FILE_REF: {company.id === "agrom" ? "AC_AERIAL_02" : company.id === "nets" ? "OC_NIGHT_CANAL_02" : company.id === "tencon" ? "TC_ARENA_02" : company.id === "qualty" ? "SC_MINING_HUB_02" : company.id === "ubless" ? "NC_AERIAL_02" : company.id === "social-media" ? "SM_TOWER_02" : "HC_HEXAGONAL_02"}
                   </span>
                   {company.id === "agrom" && "Merkez quantum sunucu kulesinin yörüngesel kalkan halkasıyla uydu kanallarından çekilmiş genel planı."}
                   {company.id === "nets" && "Orion City kanalları ve devasa holografik reklam panolarının mor ışık seli altındaki gece görünümü."}
@@ -212,6 +213,7 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
                   {company.id === "qualty" && "Asteroid kuşağındaki uzay madenciliği merkezi Extraction Hub T9. Kuantum reaktör plazma yakıtı sevkiyatı."}
                   {company.id === "ubless" && "Nexum City siber veri yolları ve merkez şebeke kulesinin gece çekilmiş genel planı."}
                   {company.id === "social-media" && "Aulam City göl kıyısındaki devasa siber kule ve veri dağıtım antenleri."}
+                  {company.id === "miner-henry" && "Hexcity merkez şebeke kulesi ve altıgen maden peteklerinin genel plan görünüşü."}
                 </div>
               </div>
             )}

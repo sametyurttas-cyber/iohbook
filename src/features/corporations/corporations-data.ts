@@ -380,7 +380,9 @@ export const corporations: CompanyProfile[] = [
     classifiedNote: "Hexcity hücrelerinin altında yatan aşırı sömürü ve insanlık dışı çalışma koşulları, System içindeki en büyük işçi isyanlarının doğuş noktasıdır.",
     images: {
       portrait: "/media/corporations/henry/henry-portrait.jpg",
-      magazine: "/media/corporations/henry/magazine-cover.jpg"
+      magazine: "/media/corporations/henry/magazine-cover.jpg",
+      cityDay: "/media/corporations/henry/city-deep-street.jpg",
+      cityCenter: "/media/corporations/henry/city-hexagonal-layout.jpg"
     }
   }
 ];
