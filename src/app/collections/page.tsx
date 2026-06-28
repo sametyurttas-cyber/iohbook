@@ -1,15 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Breadcrumb } from "@/components/layout/breadcrumb";
-import { Container } from "@/components/layout/container";
-import { Section } from "@/components/layout/section";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { JsonLd } from "@/components/seo/json-ld";
 import { listPublishedBooks } from "@/features/catalog/queries";
 import { absoluteUrl, buildPageMetadata } from "@/lib/seo";
+import { IohIndexStyles } from "@/features/home/ioh-index-landing";
+import styles from "./collections.module.css";
 
 export const metadata: Metadata = buildPageMetadata({
   description:
@@ -17,6 +15,27 @@ export const metadata: Metadata = buildPageMetadata({
   path: "/collections",
   title: "Koleksiyonlar"
 });
+
+function getCollectionAccent(title: string) {
+  const norm = title.toLowerCase();
+  if (norm.includes("sys") || norm.includes("system")) return styles.accentBlue;
+  if (norm.includes("war") || norm.includes("conflict")) return styles.accentRed;
+  return styles.accentGold;
+}
+
+function getCollectionTag(title: string) {
+  const norm = title.toLowerCase();
+  if (norm.includes("sys") || norm.includes("system")) return "SYS NETWORK";
+  if (norm.includes("war") || norm.includes("conflict")) return "WAR MATRIX";
+  return "GENESIS CORE";
+}
+
+function getCollectionSymbol(title: string) {
+  const norm = title.toLowerCase();
+  if (norm.includes("sys") || norm.includes("system")) return "SYS";
+  if (norm.includes("war") || norm.includes("conflict")) return "WAR";
+  return "IOH";
+}
 
 export default async function CollectionsPage() {
   const books = await listPublishedBooks();
@@ -29,9 +48,12 @@ export default async function CollectionsPage() {
   );
 
   return (
-    <>
+    <div className={styles.page}>
+      <IohIndexStyles />
+      <div className={styles.heroGridLines} aria-hidden="true" />
       <SiteHeader />
-      <main id="main-content">
+      
+      <main id="main-content" className={styles.shell}>
         <JsonLd
           data={[
             {
@@ -64,9 +86,6 @@ export default async function CollectionsPage() {
                   },
                   position: index + 1
                 }))
-              },
-              name: "IOH Koleksiyonlar",
-              url: absoluteUrl("/collections")
             },
             {
               "@context": "https://schema.org",
@@ -88,59 +107,79 @@ export default async function CollectionsPage() {
             }
           ]}
         />
-        <Section className="pb-10 pt-10">
-          <Container>
-            <Breadcrumb items={[{ href: "/", label: "Ana Sayfa" }, { label: "Koleksiyonlar" }]} />
-            <div className="mt-10 max-w-3xl">
-              <Badge variant="gold">Collections</Badge>
-              <h1 className="mt-5 font-display text-display-sm text-paper md:text-display-md">
-                Koleksiyonlar
-              </h1>
-              <p className="mt-4 text-body text-muted-foreground">
-                IOH kitaplari tema, evren ve baski hissine gore gruplanir. MVP
-                fazinda koleksiyonlar katalog deneyimini sade tutan editoryal bir
-                kesif yuzeyidir.
-              </p>
-            </div>
-          </Container>
-        </Section>
 
-        <Section tone="muted">
-          <Container className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <section style={{ paddingTop: "8rem", paddingBottom: "2rem" }}>
+          <Breadcrumb items={[{ href: "/", label: "Ana Sayfa" }, { label: "Koleksiyonlar" }]} />
+          
+          <div style={{ marginTop: "3rem" }}>
+            <div className={styles.kickerWrapper}>
+              <span className={styles.statusDot} />
+              <span className={styles.kicker}>COLLECTIONS / DATA ARCHIVE</span>
+            </div>
+            
+            <h1 className={styles.pageTitle}>Koleksiyonlar</h1>
+            
+            <p className={styles.pageDescription}>
+              IOH kitapları tema, evren ve baskı hissine göre gruplanır. 
+              Koleksiyonlar katalog deneyimini sade tutan editoryal bir keşif yüzeyidir.
+            </p>
+          </div>
+        </section>
+
+        <section style={{ paddingBottom: "8rem" }}>
+          <div className={styles.collectionsGrid}>
             {collections.length === 0 ? (
-              <article className="rounded-lg border border-border bg-card p-6 shadow-panel">
-                <h2 className="font-display text-title-lg text-paper">IOH Universe</h2>
-                <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                  GODCODE, SYSGOD ve CODEWAR cizgisini ayni evren altinda
-                  toparlayan ana koleksiyon.
+              <Link href="/books" className={`${styles.collectionCard} ${styles.accentGold}`}>
+                <div className={styles.cardHeader}>
+                  <span className={styles.platformSymbol}>IOH</span>
+                  <span className={styles.nodeTag}>GENESIS CORE</span>
+                </div>
+                <h2 className={styles.cardTitle}>IOH Universe</h2>
+                <p className={styles.cardDesc}>
+                  GODCODE, SYSGOD ve CODEWAR çizgisini aynı evren altında toparlayan ana koleksiyon.
                 </p>
-                <Button asChild className="mt-5" variant="secondary">
-                  <Link href="/books">Kitaplari incele</Link>
-                </Button>
-              </article>
+                <div className={styles.cardAction}>
+                  <span className={styles.btnCmd}>CMD: /view_catalog</span>
+                  <span className={styles.btnDivider} />
+                  <span className={styles.btnLabel}>EXPLORE CATALOG</span>
+                  <span className={styles.btnArrow}>→</span>
+                </div>
+              </Link>
             ) : (
-              collections.map((collection) => (
-                <article
-                  className="rounded-lg border border-border bg-card p-6 shadow-panel"
-                  key={collection.id}
-                >
-                  <p className="text-eyebrow uppercase text-gold">Collection</p>
-                  <h2 className="mt-3 font-display text-title-lg text-paper">
-                    {collection.title}
-                  </h2>
-                  <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                    Bu koleksiyona bagli kitaplari katalogda kesfedin.
-                  </p>
-                  <Button asChild className="mt-5" variant="secondary">
-                    <Link href="/books">Katalog</Link>
-                  </Button>
-                </article>
-              ))
+              collections.map((collection) => {
+                const accent = getCollectionAccent(collection.title);
+                const tag = getCollectionTag(collection.title);
+                const symbol = getCollectionSymbol(collection.title);
+
+                return (
+                  <Link
+                    href="/books"
+                    key={collection.id}
+                    className={`${styles.collectionCard} ${accent}`}
+                  >
+                    <div className={styles.cardHeader}>
+                      <span className={styles.platformSymbol}>{symbol}</span>
+                      <span className={styles.nodeTag}>{tag}</span>
+                    </div>
+                    <h2 className={styles.cardTitle}>{collection.title}</h2>
+                    <p className={styles.cardDesc}>
+                      Bu koleksiyona bağlı kitapları katalogda keşfedin.
+                    </p>
+                    <div className={styles.cardAction}>
+                      <span className={styles.btnCmd}>CMD: /view_catalog</span>
+                      <span className={styles.btnDivider} />
+                      <span className={styles.btnLabel}>EXPLORE CATALOG</span>
+                      <span className={styles.btnArrow}>→</span>
+                    </div>
+                  </Link>
+                );
+              })
             )}
-          </Container>
-        </Section>
+          </div>
+        </section>
       </main>
+
       <SiteFooter />
-    </>
+    </div>
   );
 }

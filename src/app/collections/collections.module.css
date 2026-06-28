@@ -1,0 +1,269 @@
+.page {
+  --col-bg: #05060a;
+  --col-paper: #f2efe8;
+  --col-muted: #9297a6;
+  --col-line: rgba(242, 239, 232, 0.08);
+  --col-gold: #e7c574;
+  --col-blue: #00d2ff;
+  --col-red: #ff5b5b;
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background: var(--col-bg);
+  color: var(--col-paper);
+  font-family: var(--font-display);
+}
+
+.heroGridLines {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(242, 239, 232, 0.012) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(242, 239, 232, 0.012) 1px, transparent 1px);
+  background-size: 60px 60px;
+  background-position: center;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.shell {
+  position: relative;
+  z-index: 5;
+  width: min(1180px, calc(100% - 3rem));
+  margin-inline: auto;
+}
+
+.kickerWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.statusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--col-gold);
+  box-shadow: 0 0 8px var(--col-gold);
+  animation: pulse 1.8s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+.kicker {
+  color: var(--col-muted);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.pageTitle {
+  margin: 1.5rem 0 0;
+  font-size: 5rem;
+  font-weight: 500;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+}
+
+.pageDescription {
+  max-width: 580px;
+  margin: 1.5rem 0 0;
+  color: rgba(242, 239, 232, 0.7);
+  font-size: 1.15rem;
+  line-height: 1.7;
+  font-weight: 300;
+}
+
+/* Grid layout */
+.collectionsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-top: 5rem;
+  margin-bottom: 8rem;
+}
+
+.collectionCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 2.2rem 2rem;
+  border: 1px solid var(--col-line);
+  border-radius: 12px;
+  background: rgba(5, 6, 10, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: var(--col-paper);
+  text-decoration: none;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Card Header */
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  border-bottom: 1px solid rgba(242, 239, 232, 0.08);
+  padding-bottom: 1rem;
+  margin-bottom: 1.2rem;
+}
+
+.platformSymbol {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: var(--col-gold);
+}
+
+.nodeTag {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.15em;
+  color: var(--col-muted);
+  border: 1px solid rgba(242, 239, 232, 0.1);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.cardTitle {
+  font-size: 1.8rem;
+  font-weight: 550;
+  margin: 0;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  color: var(--col-paper);
+}
+
+.cardDesc {
+  color: var(--col-muted);
+  font-size: 0.92rem;
+  line-height: 1.6;
+  margin: 1rem 0 2.5rem;
+  font-weight: 300;
+  flex: 1;
+}
+
+/* Action button at bottom */
+.cardAction {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  background: rgba(242, 239, 232, 0.03);
+  border: 1px solid var(--col-line);
+  border-radius: 6px;
+  padding: 0.6rem 1rem;
+  color: var(--col-paper);
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  transition: all 0.3s ease;
+  width: fit-content;
+}
+
+.btnCmd {
+  color: var(--col-muted);
+  font-size: 0.62rem;
+  margin-right: 0.75rem;
+}
+
+.btnDivider {
+  width: 1px;
+  height: 12px;
+  background: var(--col-line);
+  margin-right: 0.75rem;
+}
+
+.btnLabel {
+  color: var(--col-gold);
+  font-weight: 600;
+}
+
+.btnArrow {
+  margin-left: 0.5rem;
+  transition: transform 0.3s ease;
+}
+
+/* Hover effects */
+.collectionCard:hover {
+  border-color: var(--col-gold);
+  background: rgba(231, 197, 116, 0.04);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(231, 197, 116, 0.03);
+  transform: translateY(-5px);
+}
+
+.collectionCard:hover .cardAction {
+  border-color: var(--col-gold);
+  background: rgba(231, 197, 116, 0.05);
+}
+
+.collectionCard:hover .btnArrow {
+  transform: translateX(4px);
+}
+
+/* Accents mapping based on title details */
+.accentBlue {
+  border-top: 3px solid var(--col-blue);
+}
+.accentBlue .platformSymbol,
+.accentBlue .btnLabel {
+  color: var(--col-blue);
+}
+.accentBlue:hover {
+  border-color: var(--col-blue);
+  background: rgba(0, 210, 255, 0.04);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 210, 255, 0.03);
+}
+.accentBlue:hover .cardAction {
+  border-color: var(--col-blue);
+  background: rgba(0, 210, 255, 0.05);
+}
+
+.accentRed {
+  border-top: 3px solid var(--col-red);
+}
+.accentRed .platformSymbol,
+.accentRed .btnLabel {
+  color: var(--col-red);
+}
+.accentRed:hover {
+  border-color: var(--col-red);
+  background: rgba(255, 91, 91, 0.04);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 91, 91, 0.03);
+}
+.accentRed:hover .cardAction {
+  border-color: var(--col-red);
+  background: rgba(255, 91, 91, 0.05);
+}
+
+.accentGold {
+  border-top: 3px solid var(--col-gold);
+}
+
+/* Responsive queries */
+@media (max-width: 1024px) {
+  .collectionsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .pageTitle {
+    font-size: 3.2rem;
+  }
+  .collectionsGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-top: 3rem;
+  }
+  .collectionCard {
+    padding: 1.8rem 1.5rem;
+  }
+}
