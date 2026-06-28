@@ -1379,36 +1379,39 @@
 
 .chatInputWrapper {
   flex-grow: 1;
-  position: relative;
   display: flex;
   align-items: center;
-}
-
-.chatInputPrefix {
-  position: absolute;
-  left: 1.2rem;
-  font-family: var(--font-mono), monospace;
-  font-size: 0.8rem;
-  color: var(--theme-color, #6f8fbf);
-}
-
-.chatInput {
-  width: 100%;
   background: rgba(3, 4, 6, 0.9);
   border: 1px solid rgba(111, 143, 191, 0.2);
   border-color: var(--theme-color, rgba(111, 143, 191, 0.2));
   border-radius: 6px;
-  padding: 0.8rem 1.2rem 0.8rem 6.5rem;
+  padding: 0 1.2rem;
+  transition: all 0.3s ease;
+}
+
+.chatInputWrapper:focus-within {
+  border-color: var(--theme-color, #d8f3ff);
+  box-shadow: 0 0 10px rgba(216, 243, 255, 0.1);
+}
+
+.chatInputPrefix {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.8rem;
+  color: var(--theme-color, #6f8fbf);
+  margin-right: 0.6rem;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.chatInput {
+  flex-grow: 1;
+  background: transparent;
+  border: none;
+  padding: 0.8rem 0;
   color: #ffffff;
   font-family: var(--font-mono), monospace;
   font-size: 0.85rem;
   outline: none;
-  transition: all 0.3s ease;
-}
-
-.chatInput:focus {
-  border-color: var(--theme-color, #d8f3ff);
-  box-shadow: 0 0 10px rgba(216, 243, 255, 0.1);
 }
 
 .chatSendBtn {
