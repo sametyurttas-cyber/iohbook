@@ -77,8 +77,8 @@ const cityPoints: CityPoint[] = [
     description: "Sosyal medya ana çekirdek sunucusu. Swos kuvvetleri tarafından kuşatılmış zayıf halka."
   },
   {
-    id: "helion-city",
-    name: "Helion City",
+    id: "solaris-a",
+    name: "Solaris A",
     corp: "Quality Energy",
     x: 58,
     y: 65,
@@ -86,7 +86,19 @@ const cityPoints: CityPoint[] = [
     powerUsage: "14.5 GW / Reactor Output",
     defenseStatus: "REACTOR_FORCE_SHIELD",
     threatLevel: "MODERATE (ENERGY STRIKE)",
-    description: "Uzay maden gemilerinin ve plazma reaktörlerinin enerjisini tüm şehirlere dağıtan santral."
+    description: "Uzay maden gemilerinin ve plazma reaktörlerinin enerjisini tüm şehirlere dağıtan birinci ana istasyon."
+  },
+  {
+    id: "solaris-b",
+    name: "Solaris B",
+    corp: "Quality Energy",
+    x: 64,
+    y: 50,
+    population: "28.5 Million",
+    powerUsage: "8.2 GW / Sub-Reactor Output",
+    defenseStatus: "SUB_REACTOR_STABLE",
+    threatLevel: "LOW (SECURE)",
+    description: "Solaris A ile koordineli çalışan, System yörüngesel enerji kalkanını besleyen yedek reaktör şehri."
   },
   {
     id: "nexum-city",

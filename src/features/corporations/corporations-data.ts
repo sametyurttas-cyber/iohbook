@@ -181,7 +181,7 @@ export const corporations: CompanyProfile[] = [
     leader: "James",
     leaderTitle: "Reactor General",
     accent: "#ff9f43", // Plasma Orange
-    cityName: "Helion City",
+    cityName: "Solaris A & Solaris B",
     tagline: "Every city needs light. James decides who receives it.",
     overview: "System'in ve megacity'lerin hayatta kalmasını sağlayan reaktör zinciri ve space mining operasyonlarını yöneten enerji omurgası.",
     coreBusiness: "Uzay Madenciliği, Nükleer/Plazma Reaktörleri, Güç Dağıtımı",
