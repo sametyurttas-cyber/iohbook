@@ -30,6 +30,9 @@ export default function SwosScene({ user }: SwosSceneProps) {
   const [iohAmount, setIohAmount] = useState<string>("");
   const [taxResult, setTaxResult] = useState<any>(null);
 
+  // Interactive Orbital Conflict Map State
+  const [activeHotspot, setActiveHotspot] = useState<number | null>(null);
+
   const handleCalculateTax = (e: React.FormEvent) => {
     e.preventDefault();
     const amount = parseFloat(iohAmount);
@@ -148,6 +151,49 @@ export default function SwosScene({ user }: SwosSceneProps) {
     { name: "Technology Hub", ref: "HC_TECH_04", x: "25%", y: "65%", desc: "System'in teknolojik sürekliliğini ve kalkan yapısını koruyan geliştirme merkezleri.", leak: "Vatandaşların zihinsel loglarını ve dijital hareket geçmişlerini analiz eden yapay zeka takip algoritmaları geliştirilir." },
     { name: "Iohcoin Core", ref: "HC_IOH_05", x: "50%", y: "60%", desc: "System içi para damarı ve kuantum veri tabanı.", leak: "SWOS'un ekonomiyi kontrol etmek ve vatandaşları borç döngüsünde tutmak için kullandığı ana enstrüman." },
     { name: "World Currency Core", ref: "HC_WCC_06", x: "78%", y: "35%", desc: "Eski dünyada yaşayan insanların para kayıtları ve siber aktarımları.", leak: "Quantum entanglement kullanarak her satın alma hareketini izler ve loglar." }
+  ];
+
+  const conflictHotspots = [
+    {
+      id: 1,
+      name: "CENTRIUM RADICAL DISTRICT // SECTOR 4",
+      x: "42%",
+      y: "35%",
+      status: "RIOT ACTIVE",
+      threat: "CRITICAL",
+      details: "Sivil direnişçiler tarafından portal sunucularına sızma girişimi saptandı. Siber asayiş ekipleri sevk edildi. Sıkıyönetim Protokolü S-12 aktif.",
+      color: "#ff3b3b"
+    },
+    {
+      id: 2,
+      name: "ORBITAL DEFENSE PLATFORM // SWOS-SAT-09",
+      x: "72%",
+      y: "15%",
+      status: "DEPLOYED",
+      threat: "LOW",
+      details: "Yörüngesel iyon topları aktif durumda. Dünya atmosferine giren yabancı veri paketleri taranıyor. Bütünlük %99.8.",
+      color: "#27c93f"
+    },
+    {
+      id: 3,
+      name: "TAX VAULT DATA CENTER // SECTOR 9",
+      x: "20%",
+      y: "65%",
+      status: "SABOTAGE DETECTED",
+      threat: "HIGH",
+      details: "Madencilik vergi havuzuna yönlendirilen hatlarda siber saldırı uyarısı. Antivirüs ekipleri veri çekirdeği çevresine siber kalkan kurdu.",
+      color: "#ffbd2e"
+    },
+    {
+      id: 4,
+      name: "EAST GATEWAY TRANSIT STATION",
+      x: "85%",
+      y: "75%",
+      status: "RESTRICTED ACCESS",
+      threat: "MEDIUM",
+      details: "Eski dünyadan Centrium'a gerçekleşen ego transferlerinde tutarsızlık saptandı. Karantina protokolü aktif. Geçişler askıya alındı.",
+      color: "#ffbd2e"
+    }
   ];
 
   const handleToggle = () => {
@@ -636,6 +682,85 @@ export default function SwosScene({ user }: SwosSceneProps) {
                     <span className={styles.telemetryLabel}>CORE INTEGRITY</span>
                     <span className={styles.telemetryValue} style={{ color: "#ff3b3b" }}>34.2% (UNDER ATTACK)</span>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Orbital Conflict Radar Map */}
+          <div className={styles.radarMapSection}>
+            <div className={styles.radarHeader}>
+              <span className={styles.radarTitle}>// SWOS ORBITAL COMMAND // SECTOR CONFLICT MONITOR</span>
+              <span className={styles.radarCode}>SEC_RADAR_90X</span>
+            </div>
+
+            <div className={styles.radarBody}>
+              <div className={styles.radarLayout}>
+                {/* Vektörel Radar Haritası */}
+                <div className={styles.radarViewport}>
+                  {/* Grid background lines */}
+                  <div className={styles.radarGridBackground} />
+                  {/* Radar sweep line */}
+                  <div className={styles.radarSweep} />
+                  
+                  {/* Radar Hotspots */}
+                  {conflictHotspots.map((spot) => (
+                    <button
+                      key={spot.id}
+                      onClick={() => setActiveHotspot(activeHotspot === spot.id ? null : spot.id)}
+                      className={`${styles.radarHotspot} ${activeHotspot === spot.id ? styles.activeHotspot : ""}`}
+                      style={{ 
+                        left: spot.x, 
+                        top: spot.y,
+                        backgroundColor: spot.color,
+                        boxShadow: `0 0 10px ${spot.color}`
+                      }}
+                    >
+                      <span className={styles.hotspotPing} style={{ borderColor: spot.color }} />
+                    </button>
+                  ))}
+                  
+                  <div className={styles.radarTargetOverlay}>
+                    <div className={styles.targetReticle} />
+                    <span className="font-mono text-[9px] text-[#7aa7ff] opacity-40 absolute top-2 right-3">SYS_ALT_REF: 829.1</span>
+                  </div>
+                </div>
+
+                {/* İstihbarat Rapor Paneli */}
+                <div className={styles.radarDossier}>
+                  {activeHotspot !== null ? (
+                    (() => {
+                      const spot = conflictHotspots.find(s => s.id === activeHotspot);
+                      if (!spot) return null;
+                      return (
+                        <div className={styles.dossierContent}>
+                          <div className={styles.dossierHeader}>
+                            <span className={styles.dossierAlertTitle} style={{ color: spot.color }}>
+                              ✦ ALERT: {spot.status}
+                            </span>
+                            <span className={styles.dossierThreatBadge} style={{ borderColor: spot.color, color: spot.color }}>
+                              THREAT: {spot.threat}
+                            </span>
+                          </div>
+                          
+                          <h4 className={styles.dossierName}>{spot.name}</h4>
+                          <div className={styles.dossierDivider} />
+                          
+                          <p className={styles.dossierDetails}>{spot.details}</p>
+
+                          <div className={styles.dossierFooter}>
+                            <span className="font-mono text-[9px] text-muted-foreground">COORDINATES: {spot.x} / {spot.y}</span>
+                            <span className="font-mono text-[9px] text-[#ff3b3b] font-bold blink">MARTIAL LAW ACTIVE</span>
+                          </div>
+                        </div>
+                      );
+                    })()
+                  ) : (
+                    <div className={styles.emptyDossier}>
+                      <span className={styles.emptyScannerLine} />
+                      <span className="font-mono text-[10px]">SELECT ACTIVE PING COORDINATES FOR DECISION DIRECTIVES...</span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
