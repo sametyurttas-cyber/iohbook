@@ -495,6 +495,7 @@ export default function SwosScene({ user }: SwosSceneProps) {
               <p className={styles.coreDesc}>
                 Hâlâ eski dünyada yaşayan insanların para kayıtları ve kuantum dolanıklık yardımıyla yapılan siber aktarımları.
               </p>
+            </div>
           </div>
 
           {/* SWOS Tax Simulator Panel */}
