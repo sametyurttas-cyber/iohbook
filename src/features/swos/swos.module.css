@@ -1,3 +1,7 @@
+:global(body), :global(html) {
+  cursor: auto !important;
+}
+
 .swosContainer {
   min-height: 100vh;
   background-color: #0b0d13;

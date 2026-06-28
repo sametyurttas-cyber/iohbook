@@ -7,6 +7,7 @@ import { IohSceneHeader } from "@/components/layout/ioh-scene-header";
 import { BooksIndexFooter } from "@/features/catalog/books-index-scene";
 import { IohIndexStyles } from "@/features/home/ioh-index-landing";
 import { swosData } from "./swos-data";
+import { SwosWebGL } from "./swos-webgl";
 import styles from "./swos.module.css";
 
 interface SwosSceneProps {
@@ -36,6 +37,7 @@ export default function SwosScene({ user }: SwosSceneProps) {
     <div className={styles.swosContainer}>
       <IohIndexStyles />
       <IohSceneHeader user={user} />
+      <SwosWebGL />
       
       {/* 02. Resmî Üst Navigasyon */}
       <header className={styles.stateNav}>
