@@ -331,8 +331,11 @@ export const corporations: CompanyProfile[] = [
     },
     classifiedNote: "Social Media Oligarchy, Swos kuvvetleri tarafından 'en zayıf halka' olarak tespit edilmiş ve Aulam'daki iki büyük veri çekirdeği (Main ve Backup Core) ele geçirilmiştir.",
     images: {
-      portrait: "/media/corporations/social-media/brett-portrait.jpg",
-      magazine: "/media/corporations/social-media/magazine-cover.png"
+      portrait: "/media/corporations/social-media/brett-portrait.png",
+      magazine: "/media/corporations/social-media/magazine-cover.jpg",
+      cityDay: "/media/corporations/social-media/city-courtyard.jpg",
+      cityCenter: "/media/corporations/social-media/city-corporate-tower.jpg",
+      cityBrochure: "/media/corporations/social-media/city-canal-walk.jpg"
     }
   },
   {
