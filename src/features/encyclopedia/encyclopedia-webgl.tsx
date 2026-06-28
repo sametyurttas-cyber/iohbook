@@ -34,82 +34,72 @@ export function EncyclopediaWebGL({ hoveredIndex }: EncyclopediaWebGLProps) {
     const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
     camera.position.set(0, 0, 17);
 
-    // Formations exactly matching index page
-    function formGalaxy() {
+    // Concept-specific custom shapes
+    function formSystemGrid() {
       const a = new Float32Array(COUNT * 3);
       for (let i = 0; i < COUNT; i++) {
-        const arm = i % 3;
-        const r = Math.pow(Math.random(), 0.62) * 10 + 0.3;
-        const ang = arm * (Math.PI * 2 / 3) + r * 0.52 + (Math.random() - 0.5) * 0.7;
-        a[i*3]   = Math.cos(ang) * r;
-        a[i*3+1] = Math.sin(ang) * r * 0.55;
-        a[i*3+2] = (Math.random() - 0.5) * Math.max(0.4, 2.4 - r * 0.18);
-      }
-      return a;
-    }
-
-    function formHelix() {
-      const a = new Float32Array(COUNT * 3);
-      for (let i = 0; i < COUNT; i++) {
-        if (Math.random() < 0.14) {
-          const r = 5.5 * Math.sqrt(Math.random());
-          const th = Math.random() * Math.PI * 2;
-          a[i*3] = Math.cos(th) * r; a[i*3+1] = (Math.random() - 0.5) * 19; a[i*3+2] = Math.sin(th) * r;
-          continue;
+        const ang = Math.random() * Math.PI * 2;
+        let r: number;
+        if (i < COUNT * 0.4) {
+          r = Math.pow(Math.random(), 2) * 2; // Dense center core
+        } else {
+          r = 4.5 + Math.random() * 3.5; // Flat planetary rings
         }
-        const t = Math.random() * 19 - 9.5;
-        const strand = i % 2;
-        const ang = t * 0.72 + strand * Math.PI;
-        const r = 3.1 + (Math.random() - 0.5) * 0.5;
-        a[i*3]   = Math.cos(ang) * r;
-        a[i*3+1] = t;
+        a[i*3] = Math.cos(ang) * r;
+        a[i*3+1] = (Math.random() - 0.5) * 0.6;
         a[i*3+2] = Math.sin(ang) * r;
       }
       return a;
     }
 
-    function formLattice() {
+    function formCyberTunnel() {
       const a = new Float32Array(COUNT * 3);
-      const STEPS = 12, HALF = 6.4;
-      const snap = () => (Math.floor(Math.random() * STEPS) / (STEPS - 1) - 0.5) * HALF * 2;
       for (let i = 0; i < COUNT; i++) {
-        const f = Math.floor(Math.random() * 6);
-        const u = snap(), v = snap(), j = () => (Math.random() - 0.5) * 0.22;
-        let x, y, z;
-        if (f === 0) { x =  HALF; y = u; z = v; }
-        else if (f === 1) { x = -HALF; y = u; z = v; }
-        else if (f === 2) { y =  HALF; x = u; z = v; }
-        else if (f === 3) { y = -HALF; x = u; z = v; }
-        else if (f === 4) { z =  HALF; x = u; y = v; }
-        else { z = -HALF; x = u; y = v; }
-        a[i*3] = x + j(); a[i*3+1] = y + j(); a[i*3+2] = z + j();
+        const ang = Math.random() * Math.PI * 2;
+        const radius = 3.2 + (Math.random() - 0.5) * 0.3;
+        a[i*3] = Math.cos(ang) * radius;
+        a[i*3+1] = (Math.random() - 0.5) * 16; // Rotating cylinder code tunnel
+        a[i*3+2] = Math.sin(ang) * radius;
       }
       return a;
     }
 
-    function formShards() {
+    function formCorporateSphere() {
       const a = new Float32Array(COUNT * 3);
-      const K = 64, centers: THREE.Vector3[] = [], axes: THREE.Vector3[] = [];
-      for (let k = 0; k < K; k++) {
-        const d = new THREE.Vector3().randomDirection();
-        centers.push(d.clone().multiplyScalar(Math.cbrt(Math.random()) * 8.6));
-        axes.push(new THREE.Vector3().randomDirection());
-      }
       for (let i = 0; i < COUNT; i++) {
-        const k = i % K;
-        const c = centers[k], ax = axes[k];
-        const sp = new THREE.Vector3().randomDirection().multiplyScalar(Math.pow(Math.random(), 2) * 1.5);
-        const mt = (Math.random() - 0.5) * 3.4;
-        a[i*3]   = c.x + sp.x + ax.x * mt;
-        a[i*3+1] = c.y + sp.y + ax.y * mt;
-        a[i*3+2] = c.z + sp.z + ax.z * mt;
+        const u = Math.random();
+        const v = Math.random();
+        const theta = u * 2.0 * Math.PI;
+        const phi = Math.acos(2.0 * v - 1.0);
+        const radius = i % 2 === 0 ? 3.0 : 6.0; // Two nested spheres representing central control
+        
+        a[i*3] = radius * Math.sin(phi) * Math.cos(theta);
+        a[i*3+1] = radius * Math.sin(phi) * Math.sin(theta);
+        a[i*3+2] = radius * Math.cos(phi);
       }
       return a;
     }
 
-    const FORMS = [formGalaxy(), formHelix(), formShards(), formLattice()];
+    function formStateShield() {
+      const a = new Float32Array(COUNT * 3);
+      for (let i = 0; i < COUNT; i++) {
+        const ring = i % 3; // Concentric circles representing authority control
+        const ang = Math.random() * Math.PI * 2;
+        let radius = 2.0;
+        if (ring === 1) radius = 4.5;
+        else if (ring === 2) radius = 7.0;
+        
+        const r = radius + (Math.random() - 0.5) * 0.25;
+        a[i*3] = Math.cos(ang) * r;
+        a[i*3+1] = (Math.random() - 0.5) * 0.2;
+        a[i*3+2] = Math.sin(ang) * r;
+      }
+      return a;
+    }
+
+    const FORMS = [formSystemGrid(), formCyberTunnel(), formCorporateSphere(), formStateShield()];
     const COLORS = [
-      new THREE.Color("#e9d9ae"), // Neutral (Galaxy)
+      new THREE.Color("#21262d"), // Neutral (System Grid)
       new THREE.Color("#e7c574"), // Gold (Karakterler)
       new THREE.Color("#ff5b5b"), // Red (Corporations)
       new THREE.Color("#6f9bff")  // Blue (SWOS)
@@ -178,7 +168,6 @@ export function EncyclopediaWebGL({ hoveredIndex }: EncyclopediaWebGLProps) {
     let currentPhase = 0;
     let transitionMix = 0;
     let activeColor = COLORS[0].clone();
-    let spinSpeed = 0.05;
 
     // Handle mouse interactivity
     const ndc = new THREE.Vector2(99, 99);
@@ -213,10 +202,10 @@ export function EncyclopediaWebGL({ hoveredIndex }: EncyclopediaWebGLProps) {
       material.uniforms.uTime.value = t;
 
       // Determine target state index based on hovered monitor
-      let targetPhase = 0; // Neutral (Galaxy)
-      if (hoveredIndex === 0) targetPhase = 1; // Gold (Helix)
-      else if (hoveredIndex === 1) targetPhase = 2; // Red (Shards)
-      else if (hoveredIndex === 2) targetPhase = 3; // Blue (Lattice)
+      let targetPhase = 0; // Neutral (Planetary Grid)
+      if (hoveredIndex === 0) targetPhase = 1; // Gold (Cyber Tunnel)
+      else if (hoveredIndex === 1) targetPhase = 2; // Red (Nested Spheres)
+      else if (hoveredIndex === 2) targetPhase = 3; // Blue (Concentric Shield Rings)
 
       // Handle morphology transitions
       if (currentPhase !== targetPhase) {
@@ -231,7 +220,7 @@ export function EncyclopediaWebGL({ hoveredIndex }: EncyclopediaWebGLProps) {
       }
 
       if (transitionMix < 1) {
-        transitionMix += 0.03; // Smooth morphology progress
+        transitionMix += 0.035; // Smooth morphology progress
         if (transitionMix > 1) transitionMix = 1;
       }
 
@@ -278,7 +267,7 @@ export function EncyclopediaWebGL({ hoveredIndex }: EncyclopediaWebGLProps) {
         inset: 0,
         width: "100%",
         height: "100%",
-        zIndex: 0, // Behind all relative containers, exactly like index page
+        zIndex: 0,
         pointerEvents: "none"
       }}
       aria-hidden="true"
