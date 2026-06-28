@@ -178,8 +178,13 @@ export default function SwosScene({ user }: SwosSceneProps) {
 
           <div className={styles.atlasGrid}>
             <div className={styles.atlasMapContainer}>
-              {/* Fallback pattern of abstract grid */}
-              <div className="absolute inset-0 bg-[radial-gradient(#1b2433_1px,transparent_1px)] [background-size:16px_16px] opacity-40" />
+              <Image
+                src="/media/corporations/centrium-plaza.jpg"
+                alt="Centrium Plaza overview"
+                fill
+                className="object-cover opacity-70"
+                unoptimized
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
               
               <div className={styles.atlasOverlay} />
@@ -330,11 +335,18 @@ export default function SwosScene({ user }: SwosSceneProps) {
               </p>
             </div>
 
-            <div className={styles.hqImageWrapper}>
-              <div className="absolute inset-0 bg-[radial-gradient(#30363d_1px,transparent_1px)] [background-size:24px_24px] opacity-35" />
-              <div className="absolute inset-0 flex items-center justify-center font-mono text-xs text-red-500/60">
-                [HQ_GRID_TELEMETRY_DISABLED]
-              </div>
+            <div 
+              className={`${styles.hqImageWrapper} cursor-zoom-in`}
+              onClick={() => setActiveLightbox("/media/corporations/centrium-street.jpg")}
+            >
+              <Image
+                src="/media/corporations/centrium-street.jpg"
+                alt="Centrium rainy siber-street view"
+                fill
+                className="object-cover"
+                unoptimized
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
             </div>
           </div>
         </section>
@@ -398,23 +410,42 @@ export default function SwosScene({ user }: SwosSceneProps) {
               </div>
             </div>
 
-            <div className={styles.securityTelemetry}>
-              <div className={styles.telemetryHeader}>
-                <span>// SWOS FORCES TELEMETRY</span>
-                <span className="blink">EMERGENCY STATE ACTIVE</span>
+            <div className="flex flex-col gap-6">
+              <div 
+                className="relative w-full aspect-[16/10] border border-border/10 rounded-lg overflow-hidden bg-black/40 cursor-zoom-in"
+                onClick={() => setActiveLightbox("/media/corporations/centrium-parade.jpg")}
+              >
+                <Image
+                  src="/media/corporations/centrium-parade.jpg"
+                  alt="Centrium Military Parade"
+                  fill
+                  className="object-cover"
+                  unoptimized
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                <div className="absolute bottom-2 left-3 font-mono text-[9px] text-[#ff3b3b] font-bold">
+                  // FORCES DIRECTORY // PARADE_GRID_2303
+                </div>
               </div>
-              <div className={styles.telemetryBody}>
-                <div className={styles.telemetryRow}>
-                  <span className={styles.telemetryLabel}>DEFENSE PROTOCOL</span>
-                  <span className={styles.telemetryValue}>D-9 ACTIVE</span>
+
+              <div className={styles.securityTelemetry}>
+                <div className={styles.telemetryHeader}>
+                  <span>// SWOS FORCES TELEMETRY</span>
+                  <span className="blink">EMERGENCY STATE ACTIVE</span>
                 </div>
-                <div className={styles.telemetryRow}>
-                  <span className={styles.telemetryLabel}>THREAT FACTOR</span>
-                  <span className={styles.telemetryValue}>SWOS FORCES ENGAGED</span>
-                </div>
-                <div className={styles.telemetryRow}>
-                  <span className={styles.telemetryLabel}>CORE INTEGRITY</span>
-                  <span className={styles.telemetryValue} style={{ color: "#ff3b3b" }}>34.2% (UNDER ATTACK)</span>
+                <div className={styles.telemetryBody}>
+                  <div className={styles.telemetryRow}>
+                    <span className={styles.telemetryLabel}>DEFENSE PROTOCOL</span>
+                    <span className={styles.telemetryValue}>D-9 ACTIVE</span>
+                  </div>
+                  <div className={styles.telemetryRow}>
+                    <span className={styles.telemetryLabel}>THREAT FACTOR</span>
+                    <span className={styles.telemetryValue}>SWOS FORCES ENGAGED</span>
+                  </div>
+                  <div className={styles.telemetryRow}>
+                    <span className={styles.telemetryLabel}>CORE INTEGRITY</span>
+                    <span className={styles.telemetryValue} style={{ color: "#ff3b3b" }}>34.2% (UNDER ATTACK)</span>
+                  </div>
                 </div>
               </div>
             </div>
