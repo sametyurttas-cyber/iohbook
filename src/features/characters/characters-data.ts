@@ -75,6 +75,7 @@ export const characters: CharacterProfile[] = [
     name: "Mina",
     accent: "#ff5b7f",
     image: "/media/characters/mina.jpg",
+    posterImage: "/media/characters/mina-poster.jpg",
     role: "Visual Tech / Tactical Defense",
     expertise: "Görsel Teknoloji, Taktik Analiz, Savunma",
     organization: "Independent / IOH Network",
