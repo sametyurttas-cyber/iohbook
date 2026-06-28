@@ -36,49 +36,17 @@ export function EncyclopediaWebGL({ hoveredIndex, pageContext = "portal" }: Ency
     camera.position.set(0, 0, 17);
 
     // Concept-specific custom shapes
-    function formBrain() {
+    function formStars() {
       const a = new Float32Array(COUNT * 3);
       for (let i = 0; i < COUNT; i++) {
         const offset = i * 3;
-        
-        if (i < COUNT * 0.15) {
-          const theta = Math.random() * Math.PI * 2;
-          const r = 0.8 + Math.random() * 0.6;
-          a[offset] = Math.cos(theta) * r;
-          a[offset + 1] = -3.2 - Math.random() * 2.5;
-          a[offset + 2] = -0.5 + Math.random() * 0.5;
-          continue;
-        }
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2.0 * Math.random() - 1.0);
+        const radius = 6.0 + Math.random() * 18.0; // Wide cosmic dispersion
 
-        const u = Math.random();
-        const v = Math.random();
-        const theta = u * 2.0 * Math.PI;
-        const phi = Math.acos(2.0 * v - 1.0);
-
-        const rx = 3.8;
-        const ry = 4.8;
-        const rz = 3.6;
-
-        const wrinkle = 1.0 + 
-          0.16 * Math.sin(6 * theta) * Math.sin(6 * phi) + 
-          0.1 * Math.sin(18 * theta) * Math.cos(18 * phi);
-
-        let x = rx * Math.sin(phi) * Math.cos(theta) * wrinkle;
-        let y = ry * Math.sin(phi) * Math.sin(theta) * wrinkle;
-        let z = rz * Math.cos(phi) * wrinkle;
-
-        const hemisphereGap = 0.35;
-        if (x > 0) {
-          x += hemisphereGap;
-        } else {
-          x -= hemisphereGap;
-        }
-
-        x *= 0.95;
-
-        a[offset] = x;
-        a[offset + 1] = y + 0.8;
-        a[offset + 2] = z;
+        a[offset] = radius * Math.sin(phi) * Math.cos(theta);
+        a[offset + 1] = radius * Math.sin(phi) * Math.sin(theta);
+        a[offset + 2] = radius * Math.cos(phi);
       }
       return a;
     }
@@ -156,27 +124,27 @@ export function EncyclopediaWebGL({ hoveredIndex, pageContext = "portal" }: Ency
 
     // Dynamic forms & colors registry depending on page context
     const FORMS = pageContext === "ai" ? [
-      formBrain(),
+      formStars(),
       formCorporateSphere(), // KAI (Nested Spheres)
       formCyberTunnel(),    // CoreWits (Tunnel)
       formStateShield(),    // Antivirus (Rings)
       formCube()            // KOWN (Cube)
     ] : [
-      formBrain(),
+      formStars(),
       formCyberTunnel(),
       formCorporateSphere(),
       formStateShield(),
-      formBrain()
+      formStars()
     ];
 
     const COLORS = pageContext === "ai" ? [
-      new THREE.Color("#ffffff"), // Neutral (White Brain)
+      new THREE.Color("#ffffff"), // Neutral (White Stars)
       new THREE.Color("#d8f3ff"), // KAI (Light Blue)
       new THREE.Color("#9be7ff"), // CoreWits (Cyan)
       new THREE.Color("#ff4d4d"), // Antivirus (Alarm Red)
       new THREE.Color("#b8bcc8")  // KOWN (Metal Gray)
     ] : [
-      new THREE.Color("#ffffff"), // Neutral (White Brain)
+      new THREE.Color("#ffffff"), // Neutral (White Stars)
       new THREE.Color("#e7c574"), // Gold (Karakterler)
       new THREE.Color("#ff5b5b"), // Red (Corporations)
       new THREE.Color("#6f9bff"), // Blue (SWOS)
