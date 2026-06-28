@@ -125,10 +125,10 @@ export function EncyclopediaWebGL({ hoveredIndex, pageContext = "portal" }: Ency
     // Dynamic forms & colors registry depending on page context
     const FORMS = pageContext === "ai" ? [
       formStars(),
-      formCorporateSphere(), // KAI (Nested Spheres)
-      formCyberTunnel(),    // CoreWits (Tunnel)
-      formStateShield(),    // Antivirus (Rings)
-      formCube()            // KOWN (Cube)
+      formStars(),
+      formStars(),
+      formStars(),
+      formStars()
     ] : [
       formStars(),
       formCyberTunnel(),
@@ -139,10 +139,10 @@ export function EncyclopediaWebGL({ hoveredIndex, pageContext = "portal" }: Ency
 
     const COLORS = pageContext === "ai" ? [
       new THREE.Color("#ffffff"), // Neutral (White Stars)
-      new THREE.Color("#d8f3ff"), // KAI (Light Blue)
-      new THREE.Color("#9be7ff"), // CoreWits (Cyan)
-      new THREE.Color("#ff4d4d"), // Antivirus (Alarm Red)
-      new THREE.Color("#b8bcc8")  // KOWN (Metal Gray)
+      new THREE.Color("#ffffff"),
+      new THREE.Color("#ffffff"),
+      new THREE.Color("#ffffff"),
+      new THREE.Color("#ffffff")
     ] : [
       new THREE.Color("#ffffff"), // Neutral (White Stars)
       new THREE.Color("#e7c574"), // Gold (Karakterler)
