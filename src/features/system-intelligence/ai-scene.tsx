@@ -56,6 +56,54 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
     }, 600);
   };
 
+  // Live Core Telemetry Panel state and hook
+  const [telemetryLogs, setTelemetryLogs] = useState<string[]>([]);
+  const terminalEndRef = useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    // Initial logs setup
+    const now = new Date();
+    const timeStr = now.toTimeString().split(" ")[0];
+    setTelemetryLogs([
+      `${timeStr} - [SYSTEM/INIT]: Core server matrix nodes fully populated.`,
+      `${timeStr} - [SYSTEM/AUTH]: SWOS security authorization keys validated.`,
+      `${timeStr} - [SYSTEM/KAI]: Core node active. Standby for quantum signal synchronization.`
+    ]);
+
+    const logPool = [
+      "[SYSTEM/KAI]: CoreWit grid re-indexing in Sector 7... COMPLETED",
+      "[WARN/ANTIVIRUS]: Threat pattern signature detected at firewall boundary",
+      "[OBEY/KOWN]: Tactical units 09-12 command sequence locked",
+      "[SYSTEM/COREWIT]: Processing ego sync backup payload for Node Algus... SUCCESS",
+      "[INFO/KAI]: Memory cohesion matrix audit triggered globally",
+      "[WARN/SWOS]: Signal mismatch detected on Sector 4 orbital vector",
+      "[INFO/COREWIT]: Flushing temporary cognitive registers... OK",
+      "[ALARM/ANTIVIRUS]: Erase reflex initialized on unauthorized daemon",
+      "[OBEY/KOWN]: Mining colony security grid units reinforcement deployed",
+      "[SYSTEM/KAI]: Syncing consciousness backup clusters... 100% SECURE"
+    ];
+
+    const timer = setInterval(() => {
+      const stamp = new Date();
+      const stampStr = stamp.toTimeString().split(" ")[0];
+      const randomLog = logPool[Math.floor(Math.random() * logPool.length)];
+      setTelemetryLogs(prev => {
+        const nextLogs = [...prev, `${stampStr} - ${randomLog}`];
+        if (nextLogs.length > 30) nextLogs.shift();
+        return nextLogs;
+      });
+    }, 2500);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  // Auto-scroll terminal log window when telemetryLogs updates
+  React.useEffect(() => {
+    if (terminalEndRef.current) {
+      terminalEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [telemetryLogs]);
+
   // Separate dossiers by class id
   const kai = aiClasses.find(c => c.id === "kai")!;
   const corewit = aiClasses.find(c => c.id === "corewit")!;
@@ -415,6 +463,46 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
               )}
             </div>
 
+          </div>
+        </section>
+
+        {/* KAI LIVE CORE TELEMETRY PANEL */}
+        <section className={styles.telemetrySection}>
+          <div className={styles.telemetryHeader}>
+            <h2 className={styles.sectionHeadline} style={{ margin: 0 }}>// SYSTEM LOG TELEMETRY NETWORK</h2>
+            <div className={styles.telemetryStatus}>
+              <span className={styles.telemetryPulse} />
+              <span>LIVE DATA FEED</span>
+            </div>
+          </div>
+          <div className={styles.telemetryTerminal}>
+            {telemetryLogs.map((log, idx) => {
+              const parts = log.split(" - ");
+              const time = parts[0];
+              const msg = parts.slice(1).join(" - ");
+              
+              // Color highlight flags based on prefix
+              let logStyle = {};
+              if (msg.includes("[WARN")) {
+                logStyle = { color: "#e7c574" };
+              } else if (msg.includes("[ALARM")) {
+                logStyle = { color: "#ff3131", fontWeight: "bold" };
+              } else if (msg.includes("[OBEY")) {
+                logStyle = { color: "#b8bcc8" };
+              } else if (msg.includes("[SYSTEM/KAI")) {
+                logStyle = { color: "#d8f3ff" };
+              } else if (msg.includes("[SYSTEM/COREWIT")) {
+                logStyle = { color: "#9be7ff" };
+              }
+
+              return (
+                <div key={idx} className={styles.telemetryLogLine} style={logStyle}>
+                  <span className={styles.telemetryLogTime}>[{time}]</span>
+                  <span className={styles.telemetryLogMsg}>{msg}</span>
+                </div>
+              );
+            })}
+            <div ref={terminalEndRef} />
           </div>
         </section>
 
