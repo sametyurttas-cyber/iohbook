@@ -59,8 +59,17 @@ export function CorporationsScene({ user }: CorporationsSceneProps) {
           <CorporateMap activeId="agrom" onSelect={() => {}} />
         </section>
 
+        {/* Corporate Union Section Header */}
+        <section className={styles.unionHeaderSection}>
+          <span className={styles.mapKicker}>ARCHIVE 04 / CONGLOMERATE INDEX</span>
+          <h2 className={styles.mapTitle}>Corporate Union</h2>
+          <p className={styles.mapDesc}>
+            System'i yöneten, sınırları ve yasaları belirleyen beş büyük oligarşik holdingin gizli dosyaları ve bölgesel güç dengeleri.
+          </p>
+        </section>
+
         {/* Company Dossiers Grid */}
-        <section className={styles.cardsContainer}>
+        <section className={styles.cardsContainer} style={{ marginTop: "1rem" }}>
           {corporations.map((corp, index) => (
             <CorporationCard 
               key={corp.id} 
