@@ -54,6 +54,7 @@ export default async function CollectionsPage() {
   return (
     <div className={styles.page}>
       <IohIndexStyles />
+      <style dangerouslySetInnerHTML={{ __html: "body{cursor:auto!important}a,button,[data-hover],[data-magnet]{cursor:pointer!important}" }} />
       <div className={styles.heroGridLines} aria-hidden="true" />
       <IohSceneHeader user={userView} />
       
