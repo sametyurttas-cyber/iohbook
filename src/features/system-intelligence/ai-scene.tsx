@@ -10,6 +10,7 @@ import {
 import { BooksIndexFooter } from "@/features/catalog/books-index-scene";
 import { EncyclopediaTracker } from "@/features/analytics/encyclopedia-tracker";
 import { EncyclopediaWebGL } from "@/features/encyclopedia/encyclopedia-webgl";
+import { IohIndexStyles } from "@/features/home/ioh-index-landing";
 import { aiClasses, matrixData, threatClasses, fieldBehaviors } from "./ai-data";
 import styles from "./system-intelligence.module.css";
 
