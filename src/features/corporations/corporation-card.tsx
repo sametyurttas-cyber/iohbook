@@ -246,7 +246,36 @@ export function CorporationCard({ company, index }: CorporationCardProps) {
           </summary>
           <div className={styles.classifiedContent}>
             <span className="text-red-500 font-mono block mb-2">// RESTRICTED INTEL:</span>
-            {company.classifiedNote}
+            <p className="mb-4">{company.classifiedNote}</p>
+            {company.images.destruction && company.images.destruction.length > 0 && (
+              <div className="mt-6 border-t border-red-500/10 pt-4">
+                <span className="text-red-500 font-mono text-[10px] block mb-3 uppercase">// DESTRUCTION ARCHIVE: AGROM CITY DELETION LOG</span>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {company.images.destruction.map((img, idx) => (
+                    <div key={idx} className="relative border border-red-500/20 bg-black/60 rounded p-2 flex flex-col gap-2">
+                      <div className="relative w-full aspect-[4/3] rounded bg-black/80 overflow-hidden">
+                        <Image
+                          src={img}
+                          alt={`Agrom City Destruction Stage ${idx + 1}`}
+                          fill
+                          className="object-contain p-1"
+                          sizes="(max-width: 768px) 100vw, 350px"
+                        />
+                      </div>
+                      <div className="font-mono text-[9px] text-red-400/80 px-1 leading-normal">
+                        <span className="text-red-500 block font-semibold mb-0.5">
+                          {idx === 0 && "LOG_STREET_CODE_DISSOLUTION"}
+                          {idx === 1 && "LOG_METEOR_BOMBARDMENT"}
+                          {idx === 2 && "LOG_CORE_GRID_DELETION"}
+                          {idx === 3 && "LOG_BINARY_PIXEL_COLLAPSE"}
+                        </span>
+                        Agrom City yıkım ve System silinme kayıtları. Veri bütünlüğü bozuldu.
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </details>
       )}

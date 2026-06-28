@@ -47,6 +47,7 @@ export type CompanyProfile = {
     cityDay?: string;
     cityCenter?: string;
     cityBrochure?: string;
+    destruction?: string[];
   };
 };
 
@@ -93,7 +94,13 @@ export const corporations: CompanyProfile[] = [
       magazine: "/media/corporations/agrom/magazine-cover.jpg",
       cityDay: "/media/corporations/agrom/city-day.jpg",
       cityCenter: "/media/corporations/agrom/city-center.jpg",
-      cityBrochure: "/media/corporations/agrom/city-brochure.jpg"
+      cityBrochure: "/media/corporations/agrom/city-brochure.jpg",
+      destruction: [
+        "/media/corporations/agrom/destruction/destroy-street-01.jpg",
+        "/media/corporations/agrom/destruction/destroy-aerial.jpg",
+        "/media/corporations/agrom/destruction/destroy-center-code.jpg",
+        "/media/corporations/agrom/destruction/destroy-street-02.jpg"
+      ]
     }
   },
   {
