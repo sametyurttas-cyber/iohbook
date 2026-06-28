@@ -849,6 +849,7 @@ export default function SwosScene({ user }: SwosSceneProps) {
             />
           </div>
         </div>
+      )}
       {/* Floating Live Quantum System Logs */}
       <div className={styles.liveLogsHud}>
         <div className={styles.hudHeader}>
