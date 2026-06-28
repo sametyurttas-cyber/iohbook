@@ -373,20 +373,17 @@ export default function SwosScene({ user }: SwosSceneProps) {
                 </div>
               </div>
             </div>
-
             <div className="flex flex-col gap-6">
               <div 
-                className="relative w-full aspect-[16/10] border border-border/10 rounded-lg overflow-hidden bg-black/40 cursor-zoom-in"
-                onClick={() => setActiveLightbox("/media/corporations/centrium-parade.jpg")}
+                className="relative w-full cursor-zoom-in"
+                onClick={() => setActiveLightbox("/media/corporations/centrium-parade-full.jpg")}
               >
-                <Image
-                  src="/media/corporations/centrium-parade.jpg"
+                <img
+                  src="/media/corporations/centrium-parade-full.jpg"
                   alt="Centrium Military Parade"
-                  fill
-                  className="object-cover"
-                  unoptimized
+                  className="w-full h-auto rounded-lg border border-border/10"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent pointer-events-none rounded-lg" />
                 <div className="absolute bottom-2 left-3 font-mono text-[9px] text-[#ff3b3b] font-bold">
                   // FORCES DIRECTORY // PARADE_GRID_2303
                 </div>
