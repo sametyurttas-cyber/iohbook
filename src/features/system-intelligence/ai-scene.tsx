@@ -53,6 +53,62 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
     }, 60);
   };
 
+  // System Core Connection Terminal Chat UI state
+  const [activeAi, setActiveAi] = useState<"kai" | "corewit" | "antivirus" | "kown">("kai");
+  const [chatInput, setChatInput] = useState("");
+  const [chatHistory, setChatHistory] = useState<Record<string, { sender: "user" | "ai"; text: string; time: string }[]>>({
+    kai: [{ sender: "ai", text: "[KAI_NODE_ONLINE]: Connection established. System Central mind ready. Ask anything about the calculation registries.", time: "20:00:00" }],
+    corewit: [{ sender: "ai", text: "[COREWIT_NODE_ONLINE]: PROCESS_OK // Altyapı veri işlemcisi hazır. İşlem talimatı bekleniyor.", time: "20:00:00" }],
+    antivirus: [{ sender: "ai", text: "[ANTIVIRUS_NODE_ONLINE]: SECURE_NODE // Tarama parametreleri stabil. Tehdit sorgulaması yapabilirsiniz.", time: "20:00:00" }],
+    kown: [{ sender: "ai", text: "[KOWN_NODE_ONLINE]: UNIT_OBEY // Askeri birlik komuta hattı aktif. Emirleri bekliyorum.", time: "20:00:00" }]
+  });
+  const [isTyping, setIsTyping] = useState(false);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  const handleSendMessage = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!chatInput.trim() || isTyping) return;
+
+    const now = new Date();
+    const timeStr = now.toTimeString().split(" ")[0];
+    const userMsg = { sender: "user", text: chatInput, time: timeStr };
+
+    setChatHistory(prev => ({
+      ...prev,
+      [activeAi]: [...prev[activeAi], userMsg]
+    }));
+    
+    const tempInput = chatInput;
+    setChatInput("");
+    setIsTyping(true);
+
+    setTimeout(() => {
+      let replyText = "";
+      if (activeAi === "kai") {
+        replyText = `[KAI NODE]: "${tempInput}" sorusu kuantum bellek havuzuna alındı. [ENTEGRASYON PROTOKOLÜ YAKINDA]: API entegrasyonu tamamlandığında bu sorguyu gerçek zamanlı yanıtlayacağım.`;
+      } else if (activeAi === "corewit") {
+        replyText = `[COREWIT NODE]: PROCESS_WARN // "${tempInput}" işleme alınamadı. [YAKINDA]: API bağlantı köprüsü entegrasyon aşamasında. Hata Kodu: IOH_COMING_SOON.`;
+      } else if (activeAi === "antivirus") {
+        replyText = `[ANTIVIRUS NODE]: INTERCEPT // "${tempInput}" tarandı. Tehdit düzeyi: NÖTR. [YAKINDA]: Gerçek zamanlı sorgu analizörü entegrasyon aşamasında.`;
+      } else {
+        replyText = `[KOWN NODE]: UNIT_OBEY // "${tempInput}" emri kayda alındı. [YAKINDA]: Askeri veri bağlantı entegrasyonu tamamlandığında taarruz/analiz hattı açılacak.`;
+      }
+
+      setChatHistory(prev => ({
+        ...prev,
+        [activeAi]: [...prev[activeAi], { sender: "ai", text: replyText, time: timeStr }]
+      }));
+      setIsTyping(false);
+    }, 1200);
+  };
+
+  // Auto-scroll chat window when history updates
+  React.useEffect(() => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [chatHistory, activeAi]);
+
   const runCoherenceTest = (e: React.FormEvent) => {
     e.preventDefault();
     if (!calcName.trim()) return;
@@ -781,6 +837,112 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
             </button>
           </div>
         </section>
+
+        {/* SYSTEM CORE CONNECTION TERMINAL */}
+        <section className={styles.chatSection}>
+          <h2 className={styles.sectionHeadline}>// 10. SYSTEM CORE CONNECTION GATEWAY</h2>
+          <p className={styles.decryptInstructions}>
+            System içinde aktif olarak çalışan 4 temel yapay zeka biriminden birine doğrudan bağlantı köprüsü kurun.
+            Makine katmanıyla doğrudan sorgu protokolünü başlatın.
+          </p>
+
+          <div className={styles.chatSelector}>
+            <button
+              onClick={() => setActiveAi("kai")}
+              className={`${styles.chatTab} ${activeAi === "kai" ? styles.chatTabActive : ""}`}
+              style={{ "--theme-color": kai.color } as React.CSSProperties}
+            >
+              <span className={styles.tabName}>KAI</span>
+              <span className={styles.tabStatus}>ONLINE // SYNC</span>
+            </button>
+            <button
+              onClick={() => setActiveAi("corewit")}
+              className={`${styles.chatTab} ${activeAi === "corewit" ? styles.chatTabActive : ""}`}
+              style={{ "--theme-color": corewit.color } as React.CSSProperties}
+            >
+              <span className={styles.tabName}>COREWIT</span>
+              <span className={styles.tabStatus}>ONLINE // COMPILING</span>
+            </button>
+            <button
+              onClick={() => setActiveAi("antivirus")}
+              className={`${styles.chatTab} ${activeAi === "antivirus" ? styles.chatTabActive : ""}`}
+              style={{ "--theme-color": antivirus.color } as React.CSSProperties}
+            >
+              <span className={styles.tabName}>ANTIVIRUS</span>
+              <span className={styles.tabStatus}>STANDBY // INTERCEPT</span>
+            </button>
+            <button
+              onClick={() => setActiveAi("kown")}
+              className={`${styles.chatTab} ${activeAi === "kown" ? styles.chatTabActive : ""}`}
+              style={{ "--theme-color": kown.color } as React.CSSProperties}
+            >
+              <span className={styles.tabName}>KOWN UNIT</span>
+              <span className={styles.tabStatus}>STANDBY // DEPLOYED</span>
+            </button>
+          </div>
+
+          <div 
+            className={styles.chatTerminal} 
+            style={{ "--theme-color": activeAi === "kai" ? kai.color : activeAi === "corewit" ? corewit.color : activeAi === "antivirus" ? antivirus.color : kown.color } as React.CSSProperties}
+          >
+            <div className={styles.chatTerminalHeader}>
+              <span>GATEWAY CONNECTION PORT: 0x88A7 // SECURE NODE</span>
+              <div className={styles.chatStatusLabel}>
+                <span className={styles.chatStatusPulse} />
+                <span>ACTIVE CONNECTED: {activeAi.toUpperCase()}</span>
+              </div>
+            </div>
+
+            <div className={styles.chatStream}>
+              {chatHistory[activeAi]?.map((msg: any, idx: number) => (
+                <div 
+                  key={idx} 
+                  className={`${styles.chatMsgRow} ${msg.sender === "user" ? styles.chatMsgRowUser : styles.chatMsgRowAi}`}
+                >
+                  <span className={styles.msgMeta}>
+                    {msg.sender === "user" ? "Ego Unit // Local" : `${activeAi.toUpperCase()} // System Node`} - {msg.time}
+                  </span>
+                  <div className={`${styles.chatBubble} ${msg.sender === "user" ? styles.chatBubbleUser : styles.chatBubbleAi}`}>
+                    {msg.text}
+                  </div>
+                </div>
+              ))}
+              {isTyping && (
+                <div className={`${styles.chatMsgRow} ${styles.chatMsgRowAi}`}>
+                  <span className={styles.msgMeta}>{activeAi.toUpperCase()} // System Node - ANALYZING SENSOR...</span>
+                  <div className={`${styles.chatBubble} ${styles.chatBubbleAi}`} style={{ opacity: 0.5 }}>
+                    [Connecting sync matrix. Processing core registry...]
+                  </div>
+                </div>
+              )}
+              <div ref={chatEndRef} />
+            </div>
+
+            <div className={styles.chatInputArea}>
+              <form onSubmit={handleSendMessage} className={styles.chatForm}>
+                <div className={styles.chatInputWrapper}>
+                  <span className={styles.chatInputPrefix}>{activeAi.toUpperCase()}_GATE &gt;</span>
+                  <input
+                    type="text"
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    placeholder="Ask a question or enter core directive..."
+                    className={styles.chatInput}
+                    disabled={isTyping}
+                  />
+                </div>
+                <button 
+                  type="submit" 
+                  className={styles.chatSendBtn}
+                  disabled={isTyping || !chatInput.trim()}
+                >
+                  SEND
+                </button>
+              </form>
+            </div>
+          </div>
+        </section>
+
 
         {/* 10 FINAL MANIFESTO */}
         <section className={styles.manifestoSection}>
