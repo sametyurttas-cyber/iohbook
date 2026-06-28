@@ -136,18 +136,32 @@ export function TeamConsole() {
           <span className="absolute bottom-2 right-2 w-3 h-3 border-b border-r border-[#e7c574]" />
 
           {/* Active Image stage */}
-          <div className="relative w-full aspect-[16/10] sm:aspect-[16/9.5] rounded-md overflow-hidden border border-border/10">
+          <div className="relative w-full h-[380px] sm:h-[480px] lg:h-[540px] rounded-md overflow-hidden border border-border/10 bg-[#06080d] flex items-center justify-center">
+            {/* Ambient blur glow layer behind image */}
             <Image
               src={activeFile.image}
-              alt={activeFile.title}
+              alt="ambient-glow"
               fill
-              className="object-cover transition-opacity duration-500 ease-in-out"
-              sizes="(max-width: 1024px) 100vw, 800px"
+              className="object-cover blur-2xl opacity-20 pointer-events-none select-none"
               priority
             />
-            {/* Grid interface scanline overlays */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
-            <div className="absolute top-4 left-4 font-mono text-[10px] text-paper/40 bg-black/60 px-2 py-1 rounded border border-border/10">
+            {/* Grid texture overlay */}
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(242,239,232,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(242,239,232,0.015)_1px,transparent_1px)] bg-[size:30px_30px] z-10 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent z-15 pointer-events-none" />
+
+            {/* Main contained image */}
+            <div className="relative w-full h-full z-20">
+              <Image
+                src={activeFile.image}
+                alt={activeFile.title}
+                fill
+                className="object-contain p-2 transition-all duration-300"
+                sizes="(max-width: 1024px) 100vw, 800px"
+                priority
+              />
+            </div>
+
+            <div className="absolute top-4 left-4 font-mono text-[9px] sm:text-[10px] text-paper/50 bg-black/80 px-2 py-1 rounded border border-border/10 z-30 select-none">
               RESOLUTION: 3840 x 2400 (4K)
             </div>
           </div>
