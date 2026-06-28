@@ -582,7 +582,7 @@
 
 .hqGrid {
   display: grid;
-  grid-template-columns: 0.7fr 1.3fr;
+  grid-template-columns: 1.1fr 0.9fr;
   gap: 4rem;
   align-items: center;
 }
@@ -590,7 +590,7 @@
 .hqImageWrapper {
   position: relative;
   width: 100%;
-  aspect-ratio: 1.2 / 1;
+  aspect-ratio: 3 / 4;
   border: 1px solid #30363d;
   border-radius: 12px;
   overflow: hidden;
