@@ -94,7 +94,7 @@ export const corporations: CompanyProfile[] = [
       magazine: "/media/corporations/agrom/magazine-cover.jpg",
       cityDay: "/media/corporations/agrom/city-day.jpg",
       cityCenter: "/media/corporations/agrom/city-center.jpg",
-      cityBrochure: "/media/corporations/agrom/city-brochure.jpg",
+      cityBrochure: "/media/corporations/agrom/city-brochure-v2.jpg",
       destruction: [
         "/media/corporations/agrom/destruction/destroy-street-01.jpg",
         "/media/corporations/agrom/destruction/destroy-aerial.jpg",
