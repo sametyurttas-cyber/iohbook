@@ -25,6 +25,11 @@ export function EncyclopediaScene({ user }: { user: IohSceneHeaderUser }) {
   return (
     <div className={styles.page}>
       <IohIndexStyles />
+      <style
+        dangerouslySetInnerHTML={{
+          __html: "body{cursor:auto!important}a,button,[data-hover],[data-magnet]{cursor:pointer!important}"
+        }}
+      />
       <div className={styles.vignette} aria-hidden="true" />
       <div className={styles.grain} aria-hidden="true" />
       
