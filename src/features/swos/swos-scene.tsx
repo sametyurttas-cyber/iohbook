@@ -45,28 +45,62 @@ export default function SwosScene({ user }: SwosSceneProps) {
         
         {/* 01. HERO — Resmî Devlet Giriş Ekranı */}
         <section className={styles.hero}>
-          <div className={styles.heroKicker}>
-            <span className={styles.kickerDot} />
-            <span>SWOS OFFICIAL STATE PORTAL</span>
+          {/* Cyber HUD Corner Elements */}
+          <div className={`${styles.hudCorner} ${styles.hudTopLeft}`} />
+          <div className={`${styles.hudCorner} ${styles.hudTopRight}`} />
+          <div className={`${styles.hudCorner} ${styles.hudBottomLeft}`} />
+          <div className={`${styles.hudCorner} ${styles.hudBottomRight}`} />
+
+          {/* Cyber Emblem / Seal Background */}
+          <div className={styles.heroEmblemContainer}>
+            <svg viewBox="0 0 200 200" className={styles.heroEmblem}>
+              <circle cx="100" cy="100" r="95" fill="none" stroke="currentColor" strokeWidth="0.5" strokeDasharray="3 3" opacity="0.15" />
+              <circle cx="100" cy="100" r="85" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.2" />
+              <circle cx="100" cy="100" r="75" fill="none" stroke="currentColor" strokeWidth="0.5" strokeDasharray="10 5" opacity="0.15" />
+              <line x1="100" y1="0" x2="100" y2="200" stroke="currentColor" strokeWidth="0.5" opacity="0.1" />
+              <line x1="0" y1="100" x2="200" y2="100" stroke="currentColor" strokeWidth="0.5" opacity="0.1" />
+              <polygon points="100,25 120,70 165,70 130,95 145,140 100,115 55,140 70,95 35,70 80,70" fill="none" stroke="currentColor" strokeWidth="0.75" opacity="0.15" />
+              <circle cx="100" cy="100" r="45" fill="none" stroke="currentColor" strokeWidth="0.5" opacity="0.15" />
+            </svg>
           </div>
-          <h1 className={styles.heroTitle}>SWOS</h1>
-          <p className={styles.heroSubtitle}>SYSTEM WORLD STATES UNION</p>
-          <p className={styles.heroSlogan}>
-            {isLeaked ? "CONTROL BEYOND RESISTANCE." : "ORDER BEYOND DEATH."}
-          </p>
-          <p className="max-width-[580px] mx-auto text-sm text-[#8b949e] leading-relaxed mb-8">
-            {isLeaked 
-              ? "Sistem genelinde genişleyen askeri polis devriyesi ve kuantum takip mekanizmalarıyla sarmalanmış federal kontrol aygıtı." 
-              : "System ve bağlı dünyaların güvenlik, düzen ve sürekliliğini koruyan en üst düzey federal otorite."
-            }
-          </p>
-          <div className={styles.heroActions}>
-            <a href="#state" className={`${styles.btnState} ${styles.btnPrimary}`}>
-              {isLeaked ? "ENTER DOSSIERS" : "ENTER STATE ARCHIVE"}
-            </a>
-            <a href="#capital" className={styles.btnState}>
-              VIEW CENTRIUM
-            </a>
+
+          <div className={styles.heroContentWrapper}>
+            <div className={styles.heroKicker}>
+              <span className={styles.kickerDot} />
+              <span>SWOS OFFICIAL STATE PORTAL</span>
+            </div>
+            
+            <div className={styles.titleWrapper}>
+              <span className={styles.bracketDecoration}>[</span>
+              <h1 className={styles.heroTitle}>SWOS</h1>
+              <span className={styles.bracketDecoration}>]</span>
+            </div>
+
+            <p className={styles.heroSubtitle}>SYSTEM WORLD STATES UNION</p>
+            
+            <div className={styles.sloganDividerContainer}>
+              <div className={styles.sloganDivider} />
+              <p className={styles.heroSlogan}>
+                {isLeaked ? "CONTROL BEYOND RESISTANCE." : "ORDER BEYOND DEATH."}
+              </p>
+              <div className={styles.sloganDivider} />
+            </div>
+
+            <p className="max-w-[650px] mx-auto text-base text-[#8b949e] leading-relaxed mb-10">
+              {isLeaked 
+                ? "Sistem genelinde genişleyen askeri polis devriyesi ve kuantum takip mekanizmalarıyla sarmalanmış federal kontrol aygıtı." 
+                : "System ve bağlı dünyaların güvenlik, düzen ve sürekliliğini koruyan en üst düzey federal otorite."
+              }
+            </p>
+
+            <div className={styles.heroActions}>
+              <a href="#state" className={`${styles.btnState} ${styles.btnPrimary}`}>
+                {isLeaked ? "ENTER DOSSIERS" : "ENTER STATE ARCHIVE"}
+              </a>
+              <a href="#capital" className={styles.btnState}>
+                VIEW CENTRIUM
+              </a>
+            </div>
           </div>
         </section>
 
