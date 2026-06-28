@@ -48,6 +48,7 @@ export type CompanyProfile = {
     cityCenter?: string;
     cityBrochure?: string;
     citySunset?: string;
+    cityExtra?: string;
     destruction?: string[];
   };
 };
@@ -192,7 +193,12 @@ export const corporations: CompanyProfile[] = [
     classifiedNote: "Tencon, ordu ve güvenlik alanında System'in asıl askeri gücüdür. Hack Wars arenalarında keşfedilen yetenekli hackerlar zorla orduya dahil edilir.",
     images: {
       portrait: "/media/corporations/tencon/xying-portrait.jpg",
-      magazine: "/media/corporations/tencon/magazine-cover.jpg"
+      magazine: "/media/corporations/tencon/magazine-cover.jpg",
+      cityDay: "/media/corporations/tencon/city-aerial.jpg",
+      cityCenter: "/media/corporations/tencon/city-arena.jpg",
+      cityBrochure: "/media/corporations/tencon/city-street-node.jpg",
+      citySunset: "/media/corporations/tencon/city-bangkok.jpg",
+      cityExtra: "/media/corporations/tencon/city-hongkong.jpg"
     }
   },
   {

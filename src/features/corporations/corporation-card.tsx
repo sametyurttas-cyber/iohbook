@@ -156,7 +156,7 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
       {company.images.cityDay && (
         <div className="mt-8 pt-8 border-t border-border/10">
           <span className={styles.secLabel}>{company.cityName.toUpperCase()} ATLAS DATABASE</span>
-          <div className={`grid gap-6 sm:grid-cols-2 mt-4 ${company.images.citySunset ? "lg:grid-cols-4" : "lg:grid-cols-3"}`}>
+          <div className={`grid gap-6 sm:grid-cols-2 mt-4 ${company.images.cityExtra ? "lg:grid-cols-5" : company.images.citySunset ? "lg:grid-cols-4" : "lg:grid-cols-3"}`}>
             
             {/* Day city viewport */}
             <div className="relative border border-border/10 bg-black/40 rounded-lg overflow-hidden p-2 flex flex-col gap-2">
@@ -175,11 +175,11 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
               </div>
               <div className="font-mono text-[10px] text-muted-foreground mt-1 px-1">
                 <span className="text-[#e7c574] block font-semibold mb-0.5">
-                  FILE_REF: {company.id === "agrom" ? "AC_DAY_01" : "OC_DAY_CANAL_01"}
+                  FILE_REF: {company.id === "agrom" ? "AC_DAY_01" : company.id === "nets" ? "OC_DAY_CANAL_01" : "TC_AERIAL_01"}
                 </span>
-                {company.id === "agrom" 
-                  ? "Agrom City dikey mimari ve sokak panoraması. Altın işlemeli spayrlar ve siber sancaklar görünür durumdadır." 
-                  : "Orion City kanal mimarisi ve şehir merkezi. Beyaz mermer saraylar ve parlayan siber sancaklar."}
+                {company.id === "agrom" && "Agrom City dikey mimari ve sokak panoraması. Altın işlemeli spayrlar ve siber sancaklar görünür durumdadır."}
+                {company.id === "nets" && "Orion City kanal mimarisi ve şehir merkezi. Beyaz mermer saraylar ve parlayan siber sancaklar."}
+                {company.id === "tencon" && "Tencon City Sector 17 genel görünümü ve Synapse Grid kuantum reaktör ağı şeması."}
               </div>
             </div>
 
@@ -201,11 +201,11 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
                 </div>
                 <div className="font-mono text-[10px] text-muted-foreground mt-1 px-1">
                   <span className="text-[#e7c574] block font-semibold mb-0.5">
-                    FILE_REF: {company.id === "agrom" ? "AC_AERIAL_02" : "OC_NIGHT_CANAL_02"}
+                    FILE_REF: {company.id === "agrom" ? "AC_AERIAL_02" : company.id === "nets" ? "OC_NIGHT_CANAL_02" : "TC_ARENA_02"}
                   </span>
-                  {company.id === "agrom" 
-                    ? "Merkez quantum sunucu kulesinin yörüngesel kalkan halkasıyla uydu kanallarından çekilmiş genel planı." 
-                    : "Orion City kanalları ve devasa holografik reklam panolarının mor ışık seli altındaki gece görünümü."}
+                  {company.id === "agrom" && "Merkez quantum sunucu kulesinin yörüngesel kalkan halkasıyla uydu kanallarından çekilmiş genel planı."}
+                  {company.id === "nets" && "Orion City kanalları ve devasa holografik reklam panolarının mor ışık seli altındaki gece görünümü."}
+                  {company.id === "tencon" && "Siber spor arenalarının ve KOWN robotik gladyatör dövüşlerinin yapıldığı devasa kubbeli Tencon Arena."}
                 </div>
               </div>
             )}
@@ -228,11 +228,11 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
                 </div>
                 <div className="font-mono text-[10px] text-muted-foreground mt-1 px-1">
                   <span className="text-[#e7c574] block font-semibold mb-0.5">
-                    FILE_REF: {company.id === "agrom" ? "AC_BROCHURE_03" : "OC_DAY_PALACE_03"}
+                    FILE_REF: {company.id === "agrom" ? "AC_BROCHURE_03" : company.id === "nets" ? "OC_DAY_PALACE_03" : "TC_STREET_03"}
                   </span>
-                  {company.id === "agrom" 
-                    ? "\"The future is here.\" - Corporate Union propaganda broşürü ve kentsel yaşam modülleri kılavuzu." 
-                    : "Nets Media Oligarchy ana yönetim sarayının dış cephesi ve gökyüzü ulaştırma hatları."}
+                  {company.id === "agrom" && "\"The future is here.\" - Corporate Union propaganda broşürü ve kentsel yaşam modülleri kılavuzu."}
+                  {company.id === "nets" && "Nets Media Oligarchy ana yönetim sarayının dış cephesi ve gökyüzü ulaştırma hatları."}
+                  {company.id === "tencon" && "Tencon City Alpha Bölgesi Node 17 ana caddeleri ve kuantum sunucu kuleleri."}
                 </div>
               </div>
             )}
@@ -255,9 +255,35 @@ export function CorporationCard({ company, index, onZoom }: CorporationCardProps
                 </div>
                 <div className="font-mono text-[10px] text-muted-foreground mt-1 px-1">
                   <span className="text-[#e7c574] block font-semibold mb-0.5">
-                    FILE_REF: OC_SUNSET_PALACE_04
+                    FILE_REF: {company.id === "nets" ? "OC_SUNSET_PALACE_04" : "TC_SECTOR_09"}
                   </span>
-                  Orion City gün batımı ve köprü geçiş hattının saray surları ile bütünleşen mor neon aydınlatması.
+                  {company.id === "nets" && "Orion City gün batımı ve köprü geçiş hattının saray surları ile bütünleşen mor neon aydınlatması."}
+                  {company.id === "tencon" && "Tencon kontrolündeki Bangkok Sektör 09. Yoğun nüfus baskısı altındaki cyberpunk sokaklar ve neural klinikler."}
+                </div>
+              </div>
+            )}
+
+            {/* Extra City viewport */}
+            {company.images.cityExtra && (
+              <div className="relative border border-border/10 bg-black/40 rounded-lg overflow-hidden p-2 flex flex-col gap-2">
+                <div 
+                  className="relative w-full aspect-[4/3] rounded-md overflow-hidden bg-black/60 cursor-zoom-in"
+                  onClick={() => onZoom(company.images.cityExtra!)}
+                >
+                  <Image
+                    src={company.images.cityExtra!}
+                    alt={`${company.cityName} extra view`}
+                    fill
+                    className="object-contain p-1"
+                    sizes="(max-width: 768px) 100vw, 320px"
+                    unoptimized
+                  />
+                </div>
+                <div className="font-mono text-[10px] text-muted-foreground mt-1 px-1">
+                  <span className="text-[#e7c574] block font-semibold mb-0.5">
+                    FILE_REF: TC_SECTOR_08
+                  </span>
+                  Tencon kontrolündeki Hong Kong Sektör 08. Devasa neon reklam panoları, siber pazar yerleri ve dikey mimari yapıları.
                 </div>
               </div>
             )}
