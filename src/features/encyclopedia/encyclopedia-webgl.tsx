@@ -249,10 +249,12 @@ export function EncyclopediaWebGL({ hoveredIndex, pageContext = "portal" }: Ency
 
       // Determine target state index based on hovered monitor
       let targetPhase = 0;
-      if (hoveredIndex === 0) targetPhase = 1;
-      else if (hoveredIndex === 1) targetPhase = 2;
-      else if (hoveredIndex === 2) targetPhase = 3;
-      else if (hoveredIndex === 3) targetPhase = 4;
+      if (pageContext === "portal") {
+        if (hoveredIndex === 0) targetPhase = 1;
+        else if (hoveredIndex === 1) targetPhase = 2;
+        else if (hoveredIndex === 2) targetPhase = 3;
+        else if (hoveredIndex === 3) targetPhase = 4;
+      }
 
       // Handle morphology transitions
       if (currentPhase !== targetPhase) {
