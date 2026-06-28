@@ -164,7 +164,7 @@ export const corporations: CompanyProfile[] = [
     displayName: "Tencon",
     leader: "Xying",
     leaderTitle: "KOWN King & AI Forger",
-    accent: "#4aa8ff", // Cyber Blue
+    accent: "#ff1e27", // Cyber Red
     cityName: "Tencon City",
     tagline: "Where war became a game, and games learned how to kill.",
     overview: "Savaş simülasyonları, gaming, antivirüs yazılımları ve KOWN koruyucu robot ünitelerini üreten askeri-teknoloji oligarşisi.",
@@ -189,8 +189,8 @@ export const corporations: CompanyProfile[] = [
     ],
     tags: ["KOWN Manufacturer", "Antivirus Producer", "Hack Wars", "AI Forge"],
     visualIdentity: {
-      colors: ["#4aa8ff", "#ff2a5f", "#0f1626"],
-      architecture: "Krom metal yüzeyler, neon mavi ve kırmızı çizgilerle tasarlanmış devasa kubbe arenalar ve yapay zeka dökümhaneleri."
+      colors: ["#ff1e27", "#0c0e14", "#1a080a"],
+      architecture: "Krom metal yüzeyler, neon kırmızı ve mat siyah çizgilerle tasarlanmış devasa kubbe arenalar ve yapay zeka dökümhaneleri."
     },
     classifiedNote: "Tencon, ordu ve güvenlik alanında System'in asıl askeri gücüdür. Hack Wars arenalarında keşfedilen yetenekli hackerlar zorla orduya dahil edilir.",
     images: {
