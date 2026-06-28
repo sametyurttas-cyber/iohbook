@@ -150,8 +150,7 @@ export function CharacterCard({ character, index }: CharacterCardProps) {
             </summary>
             <div className={styles.classifiedContent}>
               <p style={{ margin: 0, fontStyle: "italic", color: "rgba(242, 239, 232, 0.5)" }}>
-                // RECORD SHIELDED: Bu bölümdeki detaylı kurgu ve olay örgüsü detayları (spoiler), 
-                yazar tarafından sisteme girildikten sonra çözümlenecektir.
+                // RECORD SHIELDED: Detailed lore developments and storyline plot points (spoilers) will be decrypted once submitted to the network by the author.
               </p>
             </div>
           </details>

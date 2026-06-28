@@ -24,7 +24,7 @@ const teamFiles: TeamFile[] = [
     label: "FILE_01 / STRATEGY",
     title: "WAR ROOM COGNITIVE STRATEGY",
     image: "/media/characters/team-strategy.jpg",
-    description: "Saha operasyonu öncesi IOH System karargah planları üzerinde taktik koordinasyon analizi.",
+    description: "Tactical coordination analysis on the plans of the IOH System headquarters prior to field deployment.",
     metadata: {
       operation: "NIGHTFALL",
       clearance: "OMEGA",
@@ -37,7 +37,7 @@ const teamFiles: TeamFile[] = [
     label: "FILE_02 / CORE TEAM",
     title: "TEAM INTEGRATION MATRIX",
     image: "/media/characters/team-dossier.jpg",
-    description: "Beş zihnin siber ağlardaki uyum, ego senkronizasyonu ve sızma parametrelerinin genel analizi.",
+    description: "General analysis of coherence, ego synchronization, and infiltration parameters of the five minds across cyber networks.",
     metadata: {
       operation: "GENESIS_REB",
       clearance: "OMEGA",
@@ -50,7 +50,7 @@ const teamFiles: TeamFile[] = [
     label: "FILE_03 / TELEMETRY",
     title: "FIELD COMBAT RECORDS",
     image: "/media/characters/team-battle.jpg",
-    description: "CISA siber birlikleri, ağır mecha savunma üniteleri ve şehir sektörü taarruz kayıtları.",
+    description: "CISA cyber squads, heavy mecha defensive units, and urban sector assault records.",
     metadata: {
       operation: "STREET_SWEEP",
       clearance: "RESTRICTED",
@@ -63,7 +63,7 @@ const teamFiles: TeamFile[] = [
     label: "FILE_04 / ORBITAL",
     title: "ORBITAL DEFENSE SHIELD",
     image: "/media/characters/team-orbital.jpg",
-    description: "Uzay istasyonları, orbital lazer savunma uyduları ve küresel siber kalkan veritabanı logları.",
+    description: "Space stations, orbital laser defense satellites, and global cyber shield database logs.",
     metadata: {
       operation: "SKY_SHIELD",
       clearance: "OMEGA",

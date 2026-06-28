@@ -41,7 +41,7 @@ export function CharactersScene({ user }: CharactersSceneProps) {
           </div>
           <h1 className={styles.heroTitle}>THE TEAM</h1>
           <p className={styles.heroLead}>
-            System içinde unutulmuş değil; bastırılmış bir tehdit. Savaş alanının, kod mimarisinin ve insan direncinin beş farklı cephesi.
+            Not forgotten within the System, but a suppressed threat. Five distinct fronts of the battlefield, code architecture, and human resilience.
           </p>
         </section>
 
@@ -61,7 +61,7 @@ export function CharactersScene({ user }: CharactersSceneProps) {
           <span className={styles.overviewKicker}>TACTICAL ALLIANCE SCAN</span>
           <h2 className={styles.overviewTitle}>Five Minds. One System. No Exit.</h2>
           <p className={styles.overviewDesc}>
-            Farklı geçmişlerden gelen, ancak System'in sınırlarını zorlamak için bir araya gelmiş siber organizasyon.
+            A cyber organization originating from diverse backgrounds, united to push the boundaries of the System.
           </p>
           
           <TeamConsole />
