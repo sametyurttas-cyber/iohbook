@@ -167,12 +167,12 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
 
       {/* Sub-Header Navigation Bar */}
       <div className={styles.subHeader}>
-        <div className={styles.subHeaderInner}>
-          <span className={styles.systemStatus}>
+        <div className={`${styles.subHeaderInner} !px-0 md:!px-8`}>
+          <span className={`${styles.systemStatus} hidden md:flex`}>
             <span className={styles.statusPulse} />
             LORE DIRECTORY ONLINE // SECURE NODE PORTAL
           </span>
-          <nav className={styles.subHeaderNav}>
+          <nav className={`${styles.subHeaderNav} flex-1 overflow-x-auto whitespace-nowrap scrollbar-none px-4 justify-start md:justify-end gap-5 md:gap-7`}>
             <Link href="/encyclopedia" className={styles.subHeaderLink}>
               PORTAL INDEX
             </Link>
@@ -198,7 +198,7 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
         <section className={styles.heroSection}>
           {/* Background human silhouette code grid */}
           <div className={styles.quantumCoreBackground}>
-            <div className={styles.humanSilhouetteContainer}>
+            <div className={`${styles.humanSilhouetteContainer} max-w-full scale-[0.6] sm:scale-75 md:scale-100`}>
               <div className={styles.blueprintGridCircle} />
               <svg className={styles.silhouetteSvg} viewBox="0 0 100 150">
                 <path d="M50,10 C46,10 44,14 44,18 C44,22 46,26 50,26 C54,26 56,22 56,18 C56,14 54,10 50,10 Z" />
@@ -209,14 +209,16 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
             </div>
           </div>
 
-          <div className={styles.heroContent}>
+          <div className={`${styles.heroContent} px-4`}>
             <span className={styles.heroSubtitle}>SYSTEM INTELLIGENCE</span>
-            <h1 className={styles.heroTitle}>The Machine Layer of the System</h1>
-            <p className={styles.heroLead}>
+            <h1 className={`${styles.heroTitle} !text-2xl sm:!text-4xl md:!text-7xl !tracking-wide md:!tracking-[0.15em] !my-4 md:!my-6`}>
+              The Machine Layer of the System
+            </h1>
+            <p className={`${styles.heroLead} !text-sm sm:!text-base md:!text-xl !mb-6 md:!mb-14`}>
               The machine layer operating beneath human immortality.
             </p>
 
-            <div className={styles.heroDirectives}>
+            <div className={`${styles.heroDirectives} flex flex-col md:flex-row gap-3 md:gap-12 items-center justify-center`}>
               <div className={styles.directiveItem}>
                 <strong>KAI</strong> calculates.
               </div>
@@ -854,14 +856,14 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
 
         {/* SWOS DECRYPTION KEY NODE */}
         <section className={styles.decryptSection}>
-          <div className={styles.decryptHeader}>
-            <h2 className={styles.decryptTitle}>
+          <div className={`${styles.decryptHeader} flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between w-full pb-3 border-b border-[#ff3131]/15`}>
+            <h2 className={`${styles.decryptTitle} !leading-normal !text-[0.7rem] sm:!text-[0.8rem]`}>
               <svg className={styles.lockIcon} viewBox="0 0 24 24">
                 <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
               </svg>
               SWOS HIGH SECURITY DATA ARCHIVE // NODE: 0x88A7
             </h2>
-            <span className={styles.decryptStatusBadge}>
+            <span className={`${styles.decryptStatusBadge} self-start sm:self-auto`}>
               {isDecrypted ? "DECRYPTED" : isDecrypting ? "DECRYPTING..." : "LOCKED"}
             </span>
           </div>
@@ -1004,7 +1006,7 @@ export function AiScene({ user }: { user: IohSceneHeaderUser }) {
             <div className={styles.chatInputArea}>
               <form onSubmit={handleSendMessage} className={styles.chatForm}>
                 <div className={styles.chatInputWrapper}>
-                  <span className={styles.chatInputPrefix}>{activeAi.toUpperCase()}_GATE &gt;</span>
+                  <span className={`${styles.chatInputPrefix} hidden sm:inline-block`}>{activeAi.toUpperCase()}_GATE &gt;</span>
                   <input
                     type="text"
                     value={chatInput}

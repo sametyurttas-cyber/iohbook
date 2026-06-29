@@ -72,13 +72,13 @@ function TokenSaleHero() {
           <h1 className={styles.heroTitle} id="ts-hero-title" data-split>IOHCOIN</h1>
           <p className={styles.heroLead} id="ts-hero-lead">
             Every great world begins with a small signal.
-            <br />
+            <br className="hidden sm:inline" />
             IOHcoin is more than a digital asset. It is the first fragment of the future IOH civilization,
             the foundation of the metaverse layers yet to be opened,
             the beginning of a new digital economy, and the first piece of a world that does not yet exist.
-            <br />
+            <br className="hidden sm:inline" />
             Most people enter a world only after it has already been built.
-            <br />
+            <br className="hidden sm:inline" />
             Genesis Phase exists for those who were there while the world was still being created.
           </p>
           <div className={styles.heroActions} id="ts-hero-actions">

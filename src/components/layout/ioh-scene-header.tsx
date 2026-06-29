@@ -96,7 +96,7 @@ export function IohSceneHeader({ user }: { user: IohSceneHeaderUser }) {
       </nav>
       <div className={`head-actions ${styles.actions}`}>
         <div className={styles.mobileOnlyNav}>
-          <MobileNav />
+          <MobileNav user={user} />
         </div>
         {user ? (
           <div className={styles.profileWrapper} ref={dropdownRef}>

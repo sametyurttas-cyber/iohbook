@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+// Force recompile to refresh index drawer html strings
 import { IOH_INDEX_BODY, IOH_INDEX_CSS, IOH_INDEX_MODULE } from "@/features/home/ioh-index-html";
 
 declare global {
@@ -161,6 +162,29 @@ export function IohIndexLanding({ accountActionsHtml, user }: IohIndexLandingPro
     if (!user) return;
 
     const timer = setTimeout(() => {
+      // Dynamic mobile drawer footer replacement for logged in index user
+      const drawerFooter = document.querySelector('.mobile-drawer .drawer-footer');
+      if (drawerFooter) {
+        drawerFooter.innerHTML = `
+          <div style="margin-top: 1rem; border-top: 1px dashed rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 1.25rem; width: 100%; padding-left: 0.5rem;">
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.52rem; color: rgba(231,197,116,0.6); letter-spacing: 0.2em; margin-top: 1.25rem; margin-bottom: -0.25rem; text-transform: uppercase;">
+              // Oturum: ${user.displayName}
+            </div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; letter-spacing: 0.05em; color: rgba(242,239,232,0.6); text-transform: uppercase; user-select: none;">
+              IOH PUAN: ${user.points}
+            </div>
+            <a href="/collections" style="font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; letter-spacing: 0.05em; color: #f2efe8; text-decoration: none; text-transform: uppercase; display: block; transition: all 0.3s;" onmouseover="this.style.color='#e7c574'" onmouseout="this.style.color='#f2efe8'">
+              Koleksiyona Gir
+            </a>
+            <form action="/api/auth/sign-out" method="POST" style="margin: 0; width: 100%;">
+              <button type="submit" style="width: 100%; background: none; border: none; padding: 0; color: #ff5b5b; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; letter-spacing: 0.05em; text-transform: uppercase; text-align: left; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.color='#ff7d7d'" onmouseout="this.style.color='#ff5b5b'">
+                Oturumu Kapat
+              </button>
+            </form>
+          </div>
+        `;
+      }
+
       const userBtn = document.querySelector('.head-actions a[href="/account"]');
       if (!userBtn) return;
 

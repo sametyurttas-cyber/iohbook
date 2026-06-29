@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getHeaderUserView } from "@/features/auth/queries";
 import { CharactersScene } from "@/features/characters/characters-scene";
+// Force rebuild to compile details tag structural layout side-by-side grid wrapper changes
 import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildPageMetadata({

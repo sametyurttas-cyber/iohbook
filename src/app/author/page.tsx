@@ -24,6 +24,7 @@ export default async function AuthorPage() {
 
   return (
     <>
+      {/* Force rebuild to load updated redesigned mobile layout Author pages */}
       <IohIndexStyles />
       <style dangerouslySetInnerHTML={{ __html: "body{cursor:auto!important}a,button,[data-hover],[data-magnet]{cursor:pointer!important}" }} />
       <IohSceneHeader user={userView} />

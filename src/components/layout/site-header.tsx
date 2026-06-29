@@ -124,12 +124,19 @@ export async function SiteHeader() {
           </nav>
 
           <div className="flex items-center gap-2">
-            <MobileNav />
+            <MobileNav 
+              user={user ? {
+                displayName,
+                points: points?.balance ?? 0,
+                email: profile?.email ?? user.email ?? undefined,
+                orderCount
+              } : null}
+            />
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button
-                    className="inline-flex min-h-11 items-center gap-3 rounded-full border border-gold/25 bg-gold/10 px-3 py-2 text-left transition-colors hover:border-gold/45 hover:bg-gold/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="hidden lg:inline-flex min-h-11 items-center gap-3 rounded-full border border-gold/25 bg-gold/10 px-3 py-2 text-left transition-colors hover:border-gold/45 hover:bg-gold/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     type="button"
                   >
                     <span className="hidden max-w-28 truncate text-sm font-semibold text-paper sm:inline">

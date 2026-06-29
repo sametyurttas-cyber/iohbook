@@ -747,6 +747,7 @@
   text-transform: uppercase;
 }
 
+
 .threatDesc {
   font-size: 0.82rem;
   line-height: 1.5;
@@ -1543,5 +1544,29 @@
   
   .main {
     padding: 1.5rem 1rem;
+  }
+
+  .hudLabelText {
+    display: none;
+  }
+
+  .hierarchyDescription {
+    padding: 1.5rem;
+    min-height: 250px;
+  }
+
+  .simulatorSection {
+    padding: 1.25rem;
+    margin-bottom: 3.5rem;
+  }
+
+  .decryptSection {
+    padding: 1.25rem;
+    margin-bottom: 3.5rem;
+  }
+
+  .chatSection {
+    padding: 1.25rem;
+    margin-bottom: 3.5rem;
   }
 }

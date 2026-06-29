@@ -1,5 +1,6 @@
 import { type Metadata } from "next";
 import { getHeaderUserView } from "@/features/auth/queries";
+// Force rebuild to load updated redesigned mobile layout SWOS Hero typography
 import { buildPageMetadata } from "@/lib/seo";
 import SwosScene from "@/features/swos/swos-scene";
 

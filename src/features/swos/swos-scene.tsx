@@ -205,8 +205,11 @@ export default function SwosScene({ user }: SwosSceneProps) {
       <IohIndexStyles />
       <IohSceneHeader user={user} />
       <SwosWebGL />
-      
-
+      <style
+        dangerouslySetInnerHTML={{
+          __html: "body, html { cursor: auto !important; }"
+        }}
+      />
 
       <main className={styles.shell}>
         
@@ -410,8 +413,8 @@ export default function SwosScene({ user }: SwosSceneProps) {
           </div>
 
           <div className={styles.structureDiagram}>
-            <div className={styles.diagramRow}>
-              <div className={styles.diagramNode} style={{ borderColor: isLeaked ? "#ff3b3b" : "#7aa7ff" }}>
+            <div className={`${styles.diagramRow} flex flex-col md:flex-row items-center justify-center gap-12 md:gap-10 w-full mb-12 md:mb-14`}>
+              <div className={`${styles.diagramNode} w-full max-w-[220px] md:max-w-none`} style={{ borderColor: isLeaked ? "#ff3b3b" : "#7aa7ff" }}>
                 <span className={styles.nodeTitle}>PRESIDENT</span>
                 <span className={styles.nodeValue}>Matt</span>
                 <span className={styles.nodeLeader}>Supreme Command</span>
@@ -419,20 +422,20 @@ export default function SwosScene({ user }: SwosSceneProps) {
               </div>
             </div>
 
-            <div className={styles.diagramRow}>
-              <div className={styles.diagramNode}>
+            <div className={`${styles.diagramRow} flex flex-col md:flex-row items-center justify-center gap-12 md:gap-10 w-full mb-12 md:mb-14`}>
+              <div className={`${styles.diagramNode} w-full max-w-[220px] md:max-w-none`}>
                 <span className={styles.nodeTitle}>VICE PRESIDENT</span>
                 <span className={styles.nodeValue}>Jeff</span>
                 <span className={styles.nodeLeader}>Executive Deputy</span>
                 <div className={styles.diagramLineVertical} />
               </div>
-              <div className={styles.diagramNode}>
+              <div className={`${styles.diagramNode} w-full max-w-[220px] md:max-w-none`}>
                 <span className={styles.nodeTitle}>GENERAL SECRETARY</span>
                 <span className={styles.nodeValue}>Alice</span>
                 <span className={styles.nodeLeader}>Administration</span>
                 <div className={styles.diagramLineVertical} />
               </div>
-              <div className={styles.diagramNode}>
+              <div className={`${styles.diagramNode} w-full max-w-[220px] md:max-w-none`}>
                 <span className={styles.nodeTitle}>REPRESENTATIVE OF STATES</span>
                 <span className={styles.nodeValue}>Linda Olesiv</span>
                 <span className={styles.nodeLeader}>Federal Council</span>
@@ -440,13 +443,14 @@ export default function SwosScene({ user }: SwosSceneProps) {
               </div>
             </div>
 
-            <div className={styles.diagramRow}>
-              <div className={styles.diagramNode}>
+            <div className={`${styles.diagramRow} flex flex-col md:flex-row items-center justify-center gap-12 md:gap-10 w-full`}>
+              <div className={`${styles.diagramNode} w-full max-w-[220px] md:max-w-none`}>
                 <span className={styles.nodeTitle}>MINISTER OF DEFENSE</span>
                 <span className={styles.nodeValue}>Samuel Fox</span>
                 <span className={styles.nodeLeader}>Military Command</span>
+                <div className={`${styles.diagramLineVertical} md:hidden`} />
               </div>
-              <div className={styles.diagramNode}>
+              <div className={`${styles.diagramNode} w-full max-w-[220px] md:max-w-none`}>
                 <span className={styles.nodeTitle}>MINISTER OF ECONOMICS</span>
                 <span className={styles.nodeValue}>Sergei Petkov</span>
                 <span className={styles.nodeLeader}>Financial Control</span>
@@ -546,73 +550,79 @@ export default function SwosScene({ user }: SwosSceneProps) {
 
           {/* SWOS Tax Simulator Panel */}
           <div className={styles.taxSimulator}>
-            <div className={styles.simulatorHeader}>
-              <span className={styles.simulatorTitle}>// SWOS STATE TREASURY // TAX RESOLUTION WIDGET</span>
-              <span className={styles.simulatorCode}>SYS_TAX_82A</span>
+            <div className={`${styles.simulatorHeader} flex flex-col sm:flex-row gap-2 items-start sm:items-center justify-between p-4 sm:px-5 sm:py-3 w-full`}>
+              <span className={`${styles.simulatorTitle} text-[0.65rem] sm:text-xs tracking-[0.02em] sm:tracking-[0.05em] whitespace-normal break-words leading-relaxed`}>
+                // SWOS STATE TREASURY // TAX RESOLUTION WIDGET
+              </span>
+              <span className={`${styles.simulatorCode} text-[0.65rem] sm:text-xs font-mono font-bold text-[#7aa7ff]`}>
+                SYS_TAX_82A
+              </span>
             </div>
 
-            <div className={styles.simulatorBody}>
-              <div className={styles.simulatorLayout}>
+            <div className={`${styles.simulatorBody} p-4 sm:p-10 w-full`}>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 items-start w-full">
                 <div className={styles.simulatorFormCol}>
-                  <p className={styles.simulatorDesc}>
+                  <p className={`${styles.simulatorDesc} text-xs sm:text-sm`}>
                     Calculate the federal tax to be deducted from your mining activities or siber transfers, in accordance with state fiscal policies.
                   </p>
-                  <form onSubmit={handleCalculateTax} className={styles.simulatorForm}>
-                    <div className={styles.inputWrapper}>
-                      <span className={styles.inputPrefix}>IOH</span>
+                  <form onSubmit={handleCalculateTax} className="flex flex-col gap-4 w-full">
+                    <div className={`${styles.inputWrapper} flex items-center w-full`}>
+                      <span className={`${styles.inputPrefix} px-3 py-2.5 sm:px-5 sm:py-3`}>IOH</span>
                       <input
                         type="number"
-                        placeholder="ENTER IOHCOIN AMOUNT..."
+                        placeholder="ENTER AMOUNT..."
                         value={iohAmount}
                         onChange={(e) => setIohAmount(e.target.value)}
-                        className={styles.simulatorInput}
+                        className={`${styles.simulatorInput} flex-1 min-w-0 placeholder:text-[#555]`}
                         min="1"
                         step="any"
                         required
                       />
                     </div>
-                    <button type="submit" className={styles.simulatorButton}>
+                    <button type="submit" className={`${styles.simulatorButton} w-full text-center py-2.5 sm:py-3`}>
                       CALCULATE DEDUCTIONS
                     </button>
                   </form>
                 </div>
 
-                <div className={styles.simulatorResultCol}>
+                <div className={`${styles.simulatorResultCol} p-4 sm:p-6 min-h-[180px] sm:min-h-[220px] w-full mt-4 lg:mt-0`}>
                   {taxResult ? (
                     <div className={styles.taxDetails}>
-                      <div className={styles.taxRow}>
-                        <span>State Core Tax (State Share 34%):</span>
-                        <span className="text-[#ff3b3b] font-mono">-{taxResult.stateTax} IOH</span>
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 text-[0.7rem] sm:text-xs py-1 border-b border-white/5">
+                        <span className="text-[#8b949e]">State Core Tax (State Share 34%):</span>
+                        <span className="text-[#ff3b3b] font-mono font-bold">-{taxResult.stateTax} IOH</span>
                       </div>
-                      <div className={styles.taxRow}>
-                        <span>Military Defense Fund (War Contribution 10%):</span>
-                        <span className="text-[#ff3b3b] font-mono">-{taxResult.militaryFund} IOH</span>
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 text-[0.7rem] sm:text-xs py-1 border-b border-white/5">
+                        <span className="text-[#8b949e]">Military Defense Fund (War Contribution 10%):</span>
+                        <span className="text-[#ff3b3b] font-mono font-bold">-{taxResult.militaryFund} IOH</span>
                       </div>
-                      <div className={styles.taxRow}>
-                        <span>Presidential Directive Commission (Executive Share 5%):</span>
-                        <span className="text-[#ff3b3b] font-mono">-{taxResult.leaderShare} IOH</span>
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 text-[0.7rem] sm:text-xs py-1 border-b border-white/5">
+                        <span className="text-[#8b949e]">Presidential Directive Commission (Executive Share 5%):</span>
+                        <span className="text-[#ff3b3b] font-mono font-bold">-{taxResult.leaderShare} IOH</span>
                       </div>
-                      <div className={styles.taxRow}>
-                        <span>Vessel Ego Backup Fee (Backup Fee 3%):</span>
-                        <span className="text-[#ff3b3b] font-mono">-{taxResult.maintenanceFee} IOH</span>
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 text-[0.7rem] sm:text-xs py-1 border-b border-white/5">
+                        <span className="text-[#8b949e]">Vessel Ego Backup Fee (Backup Fee 3%):</span>
+                        <span className="text-[#ff3b3b] font-mono font-bold">-{taxResult.maintenanceFee} IOH</span>
                       </div>
                       
                       <div className={styles.taxDivider} />
 
-                      <div className={styles.taxRow}>
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 text-[0.7rem] sm:text-xs py-1">
                         <span className="font-semibold text-muted-foreground">Total Deductions (Total Deductions 52%):</span>
                         <span className="text-[#ff3b3b] font-mono font-bold">-{taxResult.total} IOH</span>
                       </div>
 
-                      <div className={styles.netBakiyeRow}>
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 text-[0.75rem] sm:text-sm py-2 mt-2 bg-[#7aa7ff]/5 px-2 rounded border border-[#7aa7ff]/10">
                         <span className="text-white font-bold">NET APPROVED BALANCE (Approved):</span>
-                        <span className="text-[#7aa7ff] font-mono font-bold text-lg">+{taxResult.net} IOH</span>
+                        <span className="text-[#7aa7ff] font-mono font-bold text-base sm:text-lg">+{taxResult.net} IOH</span>
                       </div>
                     </div>
                   ) : (
                     <div className={styles.emptyResults}>
                       <div className={styles.emptyScannerLine} />
-                      <span>AWAITING TRANSACTION VALUATION DATA...</span>
+                      <span className="text-xs sm:text-sm font-mono text-muted-foreground text-center">
+                        AWAITING TRANSACTION VALUATION DATA...
+                      </span>
                     </div>
                   )}
                 </div>
@@ -727,30 +737,33 @@ export default function SwosScene({ user }: SwosSceneProps) {
                 </div>
 
                 {/* İstihbarat Rapor Paneli */}
-                <div className={styles.radarDossier}>
+                <div className={`${styles.radarDossier} !h-auto !min-h-0 !p-4 md:!p-6 w-full`}>
                   {activeHotspot !== null ? (
                     (() => {
                       const spot = conflictHotspots.find(s => s.id === activeHotspot);
                       if (!spot) return null;
                       return (
-                        <div className={styles.dossierContent}>
-                          <div className={styles.dossierHeader}>
-                            <span className={styles.dossierAlertTitle} style={{ color: spot.color }}>
+                        <div className="flex flex-col gap-3 w-full">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 w-full pb-2 border-b border-white/5">
+                            <span className="font-mono text-[0.65rem] sm:text-xs font-bold tracking-wider" style={{ color: spot.color }}>
                               ✦ ALERT: {spot.status}
                             </span>
-                            <span className={styles.dossierThreatBadge} style={{ borderColor: spot.color, color: spot.color }}>
+                            <span className="font-mono text-[0.6rem] sm:text-[0.65rem] font-bold border px-1.5 py-0.5 rounded self-start sm:self-auto" style={{ borderColor: spot.color, color: spot.color }}>
                               THREAT: {spot.threat}
                             </span>
                           </div>
                           
-                          <h4 className={styles.dossierName}>{spot.name}</h4>
-                          <div className={styles.dossierDivider} />
+                          <h4 className="text-xs sm:text-sm font-bold tracking-wider text-white uppercase leading-snug">
+                            {spot.name}
+                          </h4>
                           
-                          <p className={styles.dossierDetails}>{spot.details}</p>
+                          <p className="text-[0.7rem] sm:text-xs text-[#8b949e] leading-relaxed py-1">
+                            {spot.details}
+                          </p>
 
-                          <div className={styles.dossierFooter}>
-                            <span className="font-mono text-[9px] text-muted-foreground">COORDINATES: {spot.x} / {spot.y}</span>
-                            <span className="font-mono text-[9px] text-[#ff3b3b] font-bold blink">MARTIAL LAW ACTIVE</span>
+                          <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2 pt-2 border-t border-white/5 w-full">
+                            <span className="font-mono text-[8px] sm:text-[9px] text-muted-foreground">COORDINATES: {spot.x} / {spot.y}</span>
+                            <span className="font-mono text-[8px] sm:text-[9px] text-[#ff3b3b] font-bold blink self-start sm:self-auto">MARTIAL LAW ACTIVE</span>
                           </div>
                         </div>
                       );
@@ -758,7 +771,7 @@ export default function SwosScene({ user }: SwosSceneProps) {
                   ) : (
                     <div className={styles.emptyDossier}>
                       <span className={styles.emptyScannerLine} />
-                      <span className="font-mono text-[10px]">SELECT ACTIVE PING COORDINATES FOR DECISION DIRECTIVES...</span>
+                      <span className="font-mono text-[10px] text-center">SELECT ACTIVE PING COORDINATES FOR DECISION DIRECTIVES...</span>
                     </div>
                   )}
                 </div>
@@ -809,43 +822,47 @@ export default function SwosScene({ user }: SwosSceneProps) {
 
           {/* Interactive Citizen Audit Terminal */}
           <div className={styles.auditTerminal}>
-            <div className={styles.terminalHeader}>
+            <div className={`${styles.terminalHeader} flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between p-4 sm:px-5 sm:py-3 w-full`}>
               <div className="flex items-center gap-1.5">
                 <span className={styles.terminalDotRed} />
                 <span className={styles.terminalDotYellow} />
                 <span className={styles.terminalDotGreen} />
               </div>
-              <span className={styles.terminalTitle}>SWOS // SECURE CITIZEN DATABASE QUERY</span>
-              <span className={styles.terminalSecure}>ENCRYPTED CONNECTION</span>
+              <span className={`${styles.terminalTitle} text-[0.65rem] sm:text-xs tracking-[0.02em] sm:tracking-[0.05em] whitespace-normal break-words leading-relaxed flex-1`}>
+                SWOS // SECURE CITIZEN DATABASE QUERY
+              </span>
+              <span className="text-[0.6rem] sm:text-[0.7rem] font-bold text-[#7aa7ff] font-mono border border-[#7aa7ff]/30 px-1.5 py-0.5 rounded self-start sm:self-auto">
+                ENCRYPTED
+              </span>
             </div>
 
-            <div className={styles.terminalBody}>
+            <div className={`${styles.terminalBody} p-4 sm:p-10 w-full`}>
               <p className={styles.terminalIntro}>
                 Enter your identity name to verify your citizenship status, threat coefficient index, and post-death digital ego transfer records in the state registries.
               </p>
 
-              <form onSubmit={handleAudit} className={styles.auditForm}>
+              <form onSubmit={handleAudit} className="flex flex-col gap-4 w-full">
                 <input
                   type="text"
                   placeholder="ENTER CITIZEN FULL NAME..."
                   value={citizenName}
                   onChange={(e) => setCitizenName(e.target.value)}
                   disabled={auditState === "scanning"}
-                  className={styles.auditInput}
+                  className={`${styles.auditInput} w-full px-4 py-2.5 sm:py-3 font-mono text-sm placeholder:text-[#555]`}
                 />
                 <button
                   type="submit"
                   disabled={auditState === "scanning" || !citizenName.trim()}
-                  className={styles.auditButton}
+                  className={`${styles.auditButton} w-full py-2.5 sm:py-3 font-mono font-bold text-xs uppercase tracking-wider text-center`}
                 >
                   {auditState === "scanning" ? "PROCESSING..." : "RUN SYSTEM AUDIT"}
                 </button>
               </form>
 
               {auditState === "scanning" && (
-                <div className={styles.terminalConsole}>
+                <div className={`${styles.terminalConsole} p-4 mt-4 font-mono text-[0.65rem] sm:text-xs leading-relaxed max-h-[180px] overflow-y-auto whitespace-pre-wrap break-all`}>
                   {auditProgress.map((log, idx) => (
-                    <div key={idx} className={styles.consoleLogLine}>
+                    <div key={idx} className="py-0.5 border-b border-white/[0.02]">
                       {log}
                     </div>
                   ))}
@@ -854,22 +871,22 @@ export default function SwosScene({ user }: SwosSceneProps) {
               )}
 
               {auditState === "done" && auditResult && (
-                <div className={styles.auditResultCard}>
-                  <div className={styles.resultHeader}>
-                    <h4>CITIZEN RECORD RETRIEVED</h4>
-                    <span className={styles.resultId}>{auditResult.id}</span>
+                <div className={`${styles.auditResultCard} p-4 sm:p-6 w-full mt-6`}>
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 border-b border-white/10 pb-3 mb-4">
+                    <h4 className="text-xs sm:text-sm font-bold tracking-wider text-[#7aa7ff]">CITIZEN RECORD RETRIEVED</h4>
+                    <span className="text-[0.65rem] sm:text-xs font-mono text-muted-foreground">{auditResult.id}</span>
                   </div>
 
-                  <div className={styles.resultGrid}>
-                    <div className={styles.resultRow}>
-                      <span className={styles.resultLabel}>CITIZEN NAME:</span>
-                      <span className={styles.resultValue}>{citizenName.toUpperCase()}</span>
+                  <div className="flex flex-col gap-3">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 border-b border-white/5 pb-2">
+                      <span className="text-[0.65rem] sm:text-xs text-muted-foreground font-mono">CITIZEN NAME:</span>
+                      <span className="text-xs sm:text-sm font-bold font-mono">{citizenName.toUpperCase()}</span>
                     </div>
 
-                    <div className={styles.resultRow}>
-                      <span className={styles.resultLabel}>SWOS STATUS:</span>
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 border-b border-white/5 pb-2">
+                      <span className="text-[0.65rem] sm:text-xs text-muted-foreground font-mono">SWOS STATUS:</span>
                       <span 
-                        className={styles.resultValue}
+                        className="text-xs sm:text-sm font-mono"
                         style={{ 
                           color: auditResult.status === "ACTIVE" ? "#7aa7ff" : 
                                  auditResult.status === "RESTRICTED" ? "#ffc83b" : 
@@ -881,15 +898,15 @@ export default function SwosScene({ user }: SwosSceneProps) {
                       </span>
                     </div>
 
-                    <div className={styles.resultRow}>
-                      <span className={styles.resultLabel}>CLEARANCE LEVEL:</span>
-                      <span className={styles.resultValue}>{auditResult.clearance}</span>
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 border-b border-white/5 pb-2">
+                      <span className="text-[0.65rem] sm:text-xs text-muted-foreground font-mono">CLEARANCE LEVEL:</span>
+                      <span className="text-xs sm:text-sm font-mono font-semibold">{auditResult.clearance}</span>
                     </div>
 
-                    <div className={styles.resultRow}>
-                      <span className={styles.resultLabel}>THREAT INDEX:</span>
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 border-b border-white/5 pb-2">
+                      <span className="text-[0.65rem] sm:text-xs text-muted-foreground font-mono">THREAT INDEX:</span>
                       <span 
-                        className={styles.resultValue}
+                        className="text-xs sm:text-sm font-mono font-semibold"
                         style={{ 
                           color: parseFloat(auditResult.threat) > 50 ? "#ff3b3b" : "#8b949e"
                         }}
@@ -898,15 +915,15 @@ export default function SwosScene({ user }: SwosSceneProps) {
                       </span>
                     </div>
 
-                    <div className={styles.resultRow}>
-                      <span className={styles.resultLabel}>DIGITAL EGO INTEGRITY:</span>
-                      <span className={styles.resultValue}>{auditResult.ego}</span>
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 border-b border-white/5 pb-2">
+                      <span className="text-[0.65rem] sm:text-xs text-muted-foreground font-mono">DIGITAL EGO INTEGRITY:</span>
+                      <span className="text-xs sm:text-sm font-mono">{auditResult.ego}</span>
                     </div>
 
-                    <div className={styles.resultRow}>
-                      <span className={styles.resultLabel}>DIRECTIVE ORDER:</span>
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
+                      <span className="text-[0.65rem] sm:text-xs text-muted-foreground font-mono">DIRECTIVE ORDER:</span>
                       <span 
-                        className={styles.resultValue}
+                        className="text-xs sm:text-sm font-mono font-semibold"
                         style={{ 
                           color: auditResult.status === "DEVIANT" || auditResult.status === "TERMINATED" ? "#ff3b3b" : "#7aa7ff"
                         }}
@@ -923,9 +940,9 @@ export default function SwosScene({ user }: SwosSceneProps) {
 
         {/* 11. “Public Order Broadcast” Bölümü */}
         <section className={styles.broadcastSection}>
-          <div className={styles.tickerContainer}>
-            <span className={styles.tickerLabel}>ALERT NOTICE</span>
-            <div className={styles.tickerTrack}>
+          <div className={`${styles.tickerContainer} flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-4 p-3 md:p-4 w-full`}>
+            <span className={`${styles.tickerLabel} self-start`}>ALERT NOTICE</span>
+            <div className={`${styles.tickerTrack} w-full overflow-hidden`}>
               <span>EMERGENCY CODE ACTIVE ✦ REPORT UNAUTHORIZED PORTAL ACTIVITY ✦ ALL CITIZENS STAY INDOORS DURING MATRIX FLUSH ✦ THREAT ACTORS DETECTED IN CENTRIUM ✦</span>
             </div>
           </div>
@@ -994,27 +1011,32 @@ export default function SwosScene({ user }: SwosSceneProps) {
             {swosData.crisisArchive.map((item) => (
               <div key={item.id} className={styles.crisisItem}>
                 <div 
-                  className={styles.crisisItemSummary}
+                  className={`${styles.crisisItemSummary} flex flex-col md:flex-row md:items-center justify-between p-4 md:px-8 md:py-5 gap-3 md:gap-4 w-full`}
                   onClick={() => setOpenCrisis(openCrisis === item.id ? null : item.id)}
                 >
-                  <div className={styles.crisisMeta}>
-                    <span className={styles.crisisId}>{item.id}</span>
-                    <span className={styles.crisisTitleText}>{item.title}</span>
+                  <div className="flex flex-row justify-between items-center w-full md:w-auto md:contents">
+                    <span className={`${styles.crisisId} text-xs font-mono text-[#8b949e]`}>{item.id}</span>
+                    <span className={`${styles.crisisSeverityBadge} ${item.severity === "critical" ? styles.severityCritical : styles.severityHigh} md:hidden`}>
+                      {item.severity}
+                    </span>
                   </div>
-                  <span className={`${styles.crisisSeverityBadge} ${item.severity === "critical" ? styles.severityCritical : styles.severityHigh}`}>
+                  <span className={`${styles.crisisTitleText} text-xs sm:text-sm font-semibold tracking-wider text-[#d8dee9] w-full md:w-auto text-left`}>
+                    {item.title}
+                  </span>
+                  <span className={`${styles.crisisSeverityBadge} ${item.severity === "critical" ? styles.severityCritical : styles.severityHigh} hidden md:inline-block`}>
                     {item.severity}
                   </span>
                 </div>
                 
                 {openCrisis === item.id && (
-                  <div className={styles.crisisItemContent}>
-                    <div className={styles.crisisColumn}>
-                      <h5 className="text-[#7aa7ff]">// OFFICIAL STATE LOG</h5>
-                      <p className="text-xs text-[#8b949e]">{item.publicVersion}</p>
+                  <div className={`${styles.crisisItemContent} grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 p-4 sm:p-8 w-full`}>
+                    <div className={`${styles.crisisColumn} w-full`}>
+                      <h5 className="text-[#7aa7ff] text-[0.7rem] sm:text-[0.75rem] font-mono">// OFFICIAL STATE LOG</h5>
+                      <p className="text-xs text-[#8b949e] leading-relaxed">{item.publicVersion}</p>
                     </div>
-                    <div className={styles.crisisColumn} style={{ borderLeft: "1px solid rgba(48, 54, 61, 0.4)", paddingLeft: "2rem" }}>
-                      <h5 className="text-[#ff3b3b]">// LEAKED SYSTEM REALITY</h5>
-                      <p className="text-xs text-red-400/80">{item.classifiedVersion}</p>
+                    <div className={`${styles.crisisColumn} w-full border-t md:border-t-0 md:border-l border-[#30363d]/50 pt-4 md:pt-0 md:pl-8`}>
+                      <h5 className="text-[#ff3b3b] text-[0.7rem] sm:text-[0.75rem] font-mono">// LEAKED SYSTEM REALITY</h5>
+                      <p className="text-xs text-red-400/80 leading-relaxed">{item.classifiedVersion}</p>
                     </div>
                   </div>
                 )}
@@ -1078,14 +1100,14 @@ export default function SwosScene({ user }: SwosSceneProps) {
         </div>
       )}
       {/* Floating Live Quantum System Logs */}
-      <div className={styles.liveLogsHud}>
+      <div className={`${styles.liveLogsHud} !fixed !bottom-4 !left-4 !right-auto !w-[280px] md:!bottom-8 md:!left-8 md:!w-[330px] pointer-events-none`}>
         <div className={styles.hudHeader}>
           <span className={styles.hudStatusDot} />
           <span>LIVE QUANTUM TELEMETRY</span>
         </div>
         <div className={styles.hudBody}>
           {liveLogs.map((log, idx) => (
-            <div key={idx} className={styles.hudLogLine}>
+            <div key={idx} className={`${styles.hudLogLine} whitespace-pre-wrap break-all text-[0.55rem] tracking-tight py-0.5 opacity-80`}>
               {log}
             </div>
           ))}

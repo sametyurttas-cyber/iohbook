@@ -17,9 +17,7 @@
   }
 
   .cta {
-    padding: 0.62rem 0.85rem;
-    font-size: 0.55rem;
-    letter-spacing: 0.18em;
+    display: none !important;
   }
 
   .collectionAction {

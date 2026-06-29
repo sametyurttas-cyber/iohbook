@@ -82,10 +82,10 @@ export function GenesisCountdown() {
         )}
 
         <p className={styles.countdownDescription}>
-          The Genesis Phase will not last forever.
-          <br />
-          When the countdown reaches zero, IOH Points are planned to evolve into IOHcoin, ecosystem transfers will activate, and the next chapter of the IOH Universe will begin.
-          <br />
+          The Genesis Phase will not last forever.{" "}
+          <br className="hidden sm:inline" />
+          When the countdown reaches zero, IOH Points are planned to evolve into IOHcoin, ecosystem transfers will activate, and the next chapter of the IOH Universe will begin.{" "}
+          <br className="hidden sm:inline" />
           Some will discover the world after it opens. Others will remember helping build it before the gates ever existed.
         </p>
       </div>

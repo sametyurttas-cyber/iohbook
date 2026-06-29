@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { TokenSaleScene } from "@/features/token-sale/token-sale-scene";
 import { buildPageMetadata } from "@/lib/seo";
 
+// Force rebuild to load updated redesigned mobile layout Token Sale fluid countdown
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = buildPageMetadata({

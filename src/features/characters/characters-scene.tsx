@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+// Force cache refresh for characters scene page
 import { type IohSceneHeaderUser } from "@/components/layout/ioh-scene-header";
 import { IohSceneHeader } from "@/components/layout/ioh-scene-header";
 import { BooksIndexFooter } from "@/features/catalog/books-index-scene";

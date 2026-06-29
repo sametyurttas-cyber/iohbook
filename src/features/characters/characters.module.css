@@ -421,6 +421,8 @@
   font-size: 0.72rem;
   letter-spacing: 0.15em;
   color: var(--char-accent);
+  flex-wrap: wrap;
+  gap: 0.6rem;
 }
 
 .posterSummary::-webkit-details-marker {
@@ -502,6 +504,16 @@
   align-items: center;
   gap: 0.6rem;
   font-weight: bold;
+  flex-wrap: wrap;
+  white-space: normal;
+  word-break: break-word;
+  min-width: 0;
+  flex: 1;
+}
+.summaryLabel span {
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.4;
 }
 
 .summaryStatus {
@@ -605,7 +617,6 @@
   z-index: 6;
 }
 
-/* Responsive configurations */
 @media (max-width: 1024px) {
   .cardBodyGrid {
     grid-template-columns: 240px 1fr;
@@ -616,6 +627,9 @@
     gap: 2.5rem;
   }
   .tagsCloud {
+    grid-column: span 2;
+  }
+  .posterBlock {
     grid-column: span 2;
   }
   .classifiedBlock {
@@ -657,7 +671,37 @@
   .tagsCloud {
     grid-column: span 1;
   }
+  .posterBlock {
+    grid-column: span 1;
+  }
   .classifiedBlock {
     grid-column: span 1;
+  }
+  .posterSummary, .classifiedSummary {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 1rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+  }
+  .summaryLabel {
+    flex-wrap: wrap;
+    white-space: normal;
+    min-width: 0;
+    width: 100%;
+  }
+  .summaryLabel span {
+    white-space: normal;
+    word-break: break-word;
+    display: block;
+    line-height: 1.4;
+  }
+  .posterContent {
+    padding: 1rem;
+  }
+  .posterImageWrapper {
+    max-width: 280px;
+    margin: 0 auto;
   }
 }

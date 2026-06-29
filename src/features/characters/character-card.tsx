@@ -116,16 +116,20 @@ export function CharacterCard({ character, index }: CharacterCardProps) {
 
         {/* 4. Poster Visual Archive details */}
         {character.posterImage && (
-          <div className={styles.posterBlock}>
-            <details className={styles.posterToggle}>
-              <summary className={styles.posterSummary}>
-                <div className={styles.summaryLabel}>
-                  <span>[▼] ACCESS NEXUS ARCHIVE DATABASE POSTER (MAGAZINE)</span>
+          <div className={`${styles.posterBlock} w-full`}>
+            <details className={`${styles.posterToggle} max-w-[280px] md:max-w-none mx-auto w-full`}>
+              <summary className="list-none outline-none focus:outline-none cursor-pointer p-0 bg-transparent block [&::-webkit-details-marker]:hidden">
+                <div className={`${styles.posterSummary} flex flex-row items-center justify-between p-4 md:px-6 md:py-4 w-full`}>
+                  <div className={`${styles.summaryLabel} flex flex-wrap gap-2 items-center min-w-0 flex-1`}>
+                    <span className="font-mono text-[0.6rem] md:text-[0.72rem] tracking-normal md:tracking-[0.15em] whitespace-normal break-words leading-relaxed">
+                      [▼] ACCESS NEXUS ARCHIVE (MAGAZINE)
+                    </span>
+                  </div>
+                  <span className={styles.posterStatus}>DECRYPTED</span>
                 </div>
-                <span className={styles.posterStatus}>DECRYPTED</span>
               </summary>
-              <div className={styles.posterContent}>
-                <div className={styles.posterImageWrapper}>
+              <div className={styles.posterContent} style={{ padding: "1rem" }}>
+                <div className={`${styles.posterImageWrapper} w-full`}>
                   <Image
                     src={character.posterImage}
                     alt={`${character.name} database poster`}
@@ -140,13 +144,17 @@ export function CharacterCard({ character, index }: CharacterCardProps) {
         )}
 
         {/* 5. Classified Details Spoiler */}
-        <div className={styles.classifiedBlock}>
-          <details className={styles.classifiedToggle}>
-            <summary className={styles.classifiedSummary}>
-              <div className={styles.summaryLabel}>
-                <span>[▼] ACCESS CLASSIFIED REVELATIONS</span>
+        <div className={`${styles.classifiedBlock} w-full`}>
+          <details className={`${styles.classifiedToggle} max-w-[280px] md:max-w-none mx-auto w-full`}>
+            <summary className="list-none outline-none focus:outline-none cursor-pointer p-0 bg-transparent block [&::-webkit-details-marker]:hidden">
+              <div className={`${styles.classifiedSummary} flex flex-row items-center justify-between p-4 md:px-6 md:py-4 w-full`}>
+                <div className={`${styles.summaryLabel} flex flex-wrap gap-2 items-center min-w-0 flex-1`}>
+                  <span className="font-mono text-[0.6rem] md:text-[0.72rem] tracking-normal md:tracking-[0.15em] whitespace-normal break-words leading-relaxed">
+                    [▼] ACCESS CLASSIFIED REVELATIONS
+                  </span>
+                </div>
+                <span className={styles.summaryStatus}>ENCRYPTED / SPOILER_LOCKED</span>
               </div>
-              <span className={styles.summaryStatus}>ENCRYPTED / SPOILER_LOCKED</span>
             </summary>
             <div className={styles.classifiedContent}>
               <p style={{ margin: 0, fontStyle: "italic", color: "rgba(242, 239, 232, 0.5)" }}>
