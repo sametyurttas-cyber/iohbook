@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import styles from "./ioh-scene-header.module.css";
 import { signOut } from "@/features/auth/actions";
+import { MobileNav } from "./mobile-nav";
 
 export type IohSceneHeaderUser = {
   displayName: string;
@@ -94,6 +95,9 @@ export function IohSceneHeader({ user }: { user: IohSceneHeaderUser }) {
         })}
       </nav>
       <div className={`head-actions ${styles.actions}`}>
+        <div className={styles.mobileOnlyNav}>
+          <MobileNav />
+        </div>
         {user ? (
           <div className={styles.profileWrapper} ref={dropdownRef}>
             <button

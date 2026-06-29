@@ -233,3 +233,13 @@
   background: rgba(255, 255, 255, 0.08);
   margin: 0.25rem 0;
 }
+
+.mobileOnlyNav {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .mobileOnlyNav {
+    display: block;
+  }
+}
