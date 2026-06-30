@@ -820,8 +820,13 @@
     padding: 5rem 0 6rem;
   }
 
-  .heroPortrait {
+  .portraitWrapper {
     max-width: 18rem;
+    margin-inline: auto;
+  }
+
+  .heroPortrait {
+    max-width: 100%;
   }
 
   .heroImage {
