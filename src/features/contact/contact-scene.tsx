@@ -61,6 +61,12 @@ const directLinks = [
     value: "@iohbook"
   },
   {
+    href: "https://x.com/iohchain",
+    label: "Twitter / 𝕏",
+    note: "Duyuru ve ekosistem guncellemeleri.",
+    value: "@iohchain"
+  },
+  {
     href: "/",
     label: "Website",
     note: "IOH Universe ana sayfa.",

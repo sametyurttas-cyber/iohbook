@@ -417,7 +417,7 @@ function TokenSaleCommunity() {
               </div>
             </a>
 
-            <a href="https://x.com/iohbook" target="_blank" rel="noopener noreferrer" className={styles.communityLinkCard} data-hover data-magnet>
+            <a href="https://x.com/iohchain" target="_blank" rel="noopener noreferrer" className={styles.communityLinkCard} data-hover data-magnet>
               <div className={styles.communityCardHeader}>
                 <span className={styles.communityPlatformSymbol}>𝕏</span>
                 <span className={styles.communityNodeTag}>BROADCAST FEED</span>
