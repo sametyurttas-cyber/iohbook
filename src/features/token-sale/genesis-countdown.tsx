@@ -55,28 +55,28 @@ export function GenesisCountdown() {
               <span className={styles.countdownNumber}>
                 {String(timeLeft.days).padStart(3, "0")}
               </span>
-              <span className={styles.countdownLabel}>GÜN</span>
+              <span className={styles.countdownLabel}>DAYS</span>
             </div>
             <div className={styles.countdownDivider}>:</div>
             <div className={styles.countdownBox}>
               <span className={styles.countdownNumber}>
                 {String(timeLeft.hours).padStart(2, "0")}
               </span>
-              <span className={styles.countdownLabel}>SAAT</span>
+              <span className={styles.countdownLabel}>HRS</span>
             </div>
             <div className={styles.countdownDivider}>:</div>
             <div className={styles.countdownBox}>
               <span className={styles.countdownNumber}>
                 {String(timeLeft.minutes).padStart(2, "0")}
               </span>
-              <span className={styles.countdownLabel}>DK</span>
+              <span className={styles.countdownLabel}>MINS</span>
             </div>
             <div className={styles.countdownDivider}>:</div>
             <div className={styles.countdownBox}>
               <span className={styles.countdownNumber}>
                 {String(timeLeft.seconds).padStart(2, "0")}
               </span>
-              <span className={styles.countdownLabel}>SN</span>
+              <span className={styles.countdownLabel}>SECS</span>
             </div>
           </div>
         )}
