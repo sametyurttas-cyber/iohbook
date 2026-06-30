@@ -255,3 +255,20 @@ export async function sendAccountSecurityEmail(input: { email: string; message: 
     to: input.email
   });
 }
+
+export async function sendWelcomeEmail(input: {
+  email: string;
+  userName: string;
+  profileId: string;
+}) {
+  return sendNewTransactionalEmail({
+    templateKey: "welcome",
+    to: input.email,
+    profileId: input.profileId,
+    variables: {
+      userName: input.userName || "Değerli Okurumuz",
+      email: input.email,
+      accountUrl: `${buildSiteUrl()}/account`
+    }
+  });
+}

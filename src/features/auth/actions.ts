@@ -10,7 +10,7 @@ import {
 } from "@/features/auth/error-utils";
 import { trackServerAnalyticsEvent } from "@/features/analytics/business-events";
 import { mergeAnonymousCartIntoProfileCart } from "@/features/cart/merge";
-import { sendAccountSecurityEmail, sendPasswordResetEmail } from "@/features/email/events";
+import { sendAccountSecurityEmail, sendPasswordResetEmail, sendWelcomeEmail } from "@/features/email/events";
 import { awardSignupBonus } from "@/features/points/service";
 import {
   clearReferralCodeCookie,
@@ -188,10 +188,18 @@ export async function signUpWithPassword(formData: FormData) {
       });
     }
     try {
-      await awardSignupBonus({
+      const pointsResult = await awardSignupBonus({
         profileId: data.user.id,
         supabase: serviceSupabase
       });
+
+      if (pointsResult && pointsResult.applied) {
+        await sendWelcomeEmail({
+          email: data.user.email || "",
+          userName: fullName || "Değerli Okurumuz",
+          profileId: data.user.id
+        });
+      }
     } catch (error) {
       captureError(error, {
         operation: "points.signup_bonus",

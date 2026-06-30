@@ -4,6 +4,7 @@ import { createSupabaseServiceRoleClient } from "@/lib/supabase/service-role";
 import { awardSignupBonus } from "@/features/points/service";
 import { createReferralFromCode, awardReferralIfEligible } from "@/features/referrals/service";
 import { getReferralCodeFromCookie, clearReferralCodeCookie } from "@/features/referrals/cookie";
+import { sendWelcomeEmail } from "@/features/email/events";
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -18,10 +19,20 @@ export async function GET(request: Request) {
       
       // 1. Award Signup points bonus
       try {
-        await awardSignupBonus({
+        const pointsResult = await awardSignupBonus({
           profileId: data.user.id,
           supabase: serviceSupabase
         });
+
+        // If the signup bonus was successfully applied, this is a new registration. Send welcome email!
+        if (pointsResult && pointsResult.applied) {
+          const userName = data.user.user_metadata?.full_name || data.user.email || "Değerli Okurumuz";
+          await sendWelcomeEmail({
+            email: data.user.email || "",
+            userName,
+            profileId: data.user.id
+          });
+        }
       } catch (pointsError) {
         console.error("Failed to award signup bonus for OAuth:", pointsError);
       }
