@@ -239,3 +239,32 @@ export async function requestPasswordReset(formData: FormData) {
 
   redirect("/forgot-password?sent=1");
 }
+
+export async function signInWithGoogle(formData: FormData) {
+  const next = String(formData.get("next") ?? "/account");
+  let redirectPath = next;
+  if (!isSafeRedirectPath(redirectPath)) {
+    redirectPath = "/account";
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const siteUrl = buildSiteUrl();
+
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: `${siteUrl}/api/auth/callback?next=${encodeURIComponent(redirectPath)}`,
+      queryParams: {
+        prompt: "select_account"
+      }
+    }
+  });
+
+  if (error) {
+    redirect(`/sign-in?error=oauth-failed&next=${encodeURIComponent(redirectPath)}`);
+  }
+
+  if (data.url) {
+    redirect(data.url);
+  }
+}
