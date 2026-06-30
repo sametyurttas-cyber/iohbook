@@ -5,49 +5,9 @@ import { getHeaderUserView } from "@/features/auth/queries";
 import { IohIndexStyles } from "@/features/home/ioh-index-landing";
 import styles from "./contact-scene.module.css";
 import { IohSceneHeader } from "@/components/layout/ioh-scene-header";
-
-const channels = [
-  {
-    description:
-      "Basin, roportaj ve yayin talepleri icin merkezi kanal. IOH Universe ve yazar hakkinda resmi bilgi almak icin kullanilir.",
-    method: "press@iohuniverse.com",
-    number: "01",
-    tag: "PRESS",
-    title: "Basin ve Roportajlar"
-  },
-  {
-    description:
-      "Yayinci, marka, koleksiyon ve dijital is birligi talepleri icin dogrudan baglanti noktasi.",
-    method: "hello@iohuniverse.com",
-    number: "02",
-    tag: "PARTNERS",
-    title: "Is Birligi Talepleri"
-  },
-  {
-    description:
-      "Siparis, dijital teslimat, indirme erisimi ve hesap konularinda okuyucu destegi.",
-    method: "destek@iohuniverse.com",
-    number: "03",
-    tag: "READER",
-    title: "Okuyucu Destegi"
-  },
-  {
-    description:
-      "Site erisimi, odeme hatlari ve teknik sorunlar icin ayri destek kanali.",
-    method: "tech@iohuniverse.com",
-    number: "04",
-    tag: "TECH",
-    title: "Teknik ve Site Destegi"
-  }
-] as const;
+import { ContactForm } from "./contact-form";
 
 const directLinks = [
-  {
-    href: "mailto:contact@iohuniverse.com",
-    label: "Email",
-    note: "Genel iletisim ve yonlendirme.",
-    value: "contact@iohuniverse.com"
-  },
   {
     href: "https://t.me/+U38BUu-Jlfg4ZGU0",
     label: "Telegram",
@@ -78,8 +38,6 @@ function Kicker({ children }: { children: ReactNode }) {
   return <p className={styles.kicker}>{children}</p>;
 }
 
-
-
 function ContactHero() {
   return (
     <section className={styles.hero} id="contact">
@@ -87,10 +45,10 @@ function ContactHero() {
       <div className={styles.heroGlow} aria-hidden="true" />
       <div className={`${styles.shell} ${styles.heroShell}`}>
         <Kicker>SIGNAL ROOM</Kicker>
-        <h1 className={styles.heroTitle}>Dogru konu icin dogru kanal</h1>
+        <h1 className={styles.heroTitle}>Sinyal Odası</h1>
         <p className={styles.heroLead}>
-          IOH Universe ile ilgili tum iletisim talepleri icin merkezi baglanti
-          noktasi. Talebinizi dogru kanala yonlendirerek en hizli yaniti alin.
+          IOH Universe ile ilgili tüm iletişim talepleri için doğrudan sinyal gönderin. 
+          Mesajınız veritabanımıza kilitlenecek ve operasyon birimimiz tarafından incelenecektir.
         </p>
       </div>
       <aside className={styles.infoPanel}>
@@ -108,15 +66,15 @@ function ContactHero() {
             <span className={`${styles.infoValue} ${styles.infoValueGold}`}>Aktif</span>
           </div>
           <div className={styles.infoRow}>
-            <span className={styles.infoLabel}>Yanit suresi</span>
-            <span className={styles.infoValue}>1–3 Is Gunu</span>
+            <span className={styles.infoLabel}>Yanıt Süresi</span>
+            <span className={styles.infoValue}>24 Saat</span>
           </div>
         </div>
         <div className={styles.infoChannels}>
-          <span className={styles.infoChannelTag}>Basin</span>
-          <span className={styles.infoChannelTag}>Is Birligi</span>
-          <span className={styles.infoChannelTag}>Okuyucu Destegi</span>
-          <span className={styles.infoChannelTag}>Teknik Destek</span>
+          <span className={styles.infoChannelTag}>Support</span>
+          <span className={styles.infoChannelTag}>Partnership</span>
+          <span className={styles.infoChannelTag}>Press</span>
+          <span className={styles.infoChannelTag}>Tech</span>
         </div>
       </aside>
     </section>
@@ -127,42 +85,31 @@ function ContactMarquee() {
   return (
     <div className={styles.marquee} aria-hidden="true">
       <div>
-        <span>IOH SIGNAL ROOM / ILETISIM MERKEZI / DOGRU KANAL / HIZLI YANIT /</span>
-        <span>IOH SIGNAL ROOM / ILETISIM MERKEZI / DOGRU KANAL / HIZLI YANIT /</span>
+        <span>IOH SIGNAL ROOM / TRANSMIT DIRECT MESSAGE / SECURED CONNECTION / NO MIDDLEMAN /</span>
+        <span>IOH SIGNAL ROOM / TRANSMIT DIRECT MESSAGE / SECURED CONNECTION / NO MIDDLEMAN /</span>
       </div>
     </div>
   );
 }
 
-function ContactChannels() {
+function ContactFormSection() {
   return (
-    <section className={styles.channels} id="channels">
+    <section className="py-20 border-b border-[rgba(242,239,232,0.08)] bg-[#05060a]/40" id="form-section">
       <div className={styles.shell}>
-        <div className={styles.channelsHeader}>
-          <Kicker>01 / ILETISIM KANALLARI</Kicker>
-          <div>
-            <h2>DOGRU KANAL, HIZLI YANIT</h2>
-            <p className={styles.channelsLead}>
-              Her talep turu icin ayri bir kanal tutulur. Dogru kanala yazmak,
-              yanit suresini kisa tutar.
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <div className="lg:col-span-4 space-y-4 font-mono">
+            <Kicker>01 / TRANSMISSION GATE</Kicker>
+            <h2 className="text-xl font-bold uppercase tracking-widest text-[#f2efe8] leading-tight">
+              DOĞRUDAN MESAJ İLETİMİ
+            </h2>
+            <p className="text-xs text-[#9297a6] leading-relaxed">
+              Herhangi bir mail sunucusu veya aracı kullanmadan mesajınızı doğrudan IOH çekirdek veritabanına iletin. 
+              Güvenli veri kuyruğumuz sayesinde her sinyal doğrudan admin yönetim paneline ulaşır.
             </p>
           </div>
-        </div>
-        <div className={styles.channelGrid}>
-          {channels.map((channel) => (
-            <article className={styles.channelCard} key={channel.number}>
-              <div className={styles.channelCardTop}>
-                <span className={styles.channelNumber}>/ {channel.number}</span>
-                <span className={styles.channelTag}>{channel.tag}</span>
-              </div>
-              <h3 className={styles.channelTitle}>{channel.title}</h3>
-              <p className={styles.channelDesc}>{channel.description}</p>
-              <div className={styles.channelMethod}>
-                <span className={styles.channelMethodLabel}>E-posta</span>
-                <span className={styles.channelMethodValue}>{channel.method}</span>
-              </div>
-            </article>
-          ))}
+          <div className="lg:col-span-8">
+            <ContactForm />
+          </div>
         </div>
       </div>
     </section>
@@ -173,7 +120,7 @@ function ContactDirect() {
   return (
     <section className={styles.direct} id="direct">
       <div className={styles.shell}>
-        <Kicker>02 / DOGRUDAN ILETISIM</Kicker>
+        <Kicker>02 / SOSYAL BAĞLANTILAR</Kicker>
         <div className={styles.directInner}>
           {directLinks.map((link) => (
             <article className={styles.directCard} key={link.label}>
@@ -208,7 +155,7 @@ export async function ContactScene() {
       <main className={styles.main} id="main-content">
         <ContactHero />
         <ContactMarquee />
-        <ContactChannels />
+        <ContactFormSection />
         <ContactDirect />
         <BooksIndexFooter />
       </main>
