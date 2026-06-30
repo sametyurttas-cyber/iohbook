@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import {
   getSignInRedirectError,
   getSignUpRedirectError,
@@ -22,7 +23,17 @@ import { captureError } from "@/lib/observability";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/service-role";
 
-function buildSiteUrl() {
+async function buildSiteUrl() {
+  const headersList = await headers();
+  const host = headersList.get("host");
+
+  if (host) {
+    const protocol = headersList.get("x-forwarded-proto") || "https";
+    // Check if localhost to use http
+    const isLocal = host.includes("localhost") || host.includes("127.0.0.1");
+    return `${isLocal ? "http" : protocol}://${host}`;
+  }
+
   return (
     process.env.NEXT_PUBLIC_SITE_URL ??
     process.env.VERCEL_URL?.replace(/^/, "https://") ??
@@ -223,7 +234,7 @@ export async function requestPasswordReset(formData: FormData) {
   const { data, error } = await supabase.auth.admin.generateLink({
     email,
     options: {
-      redirectTo: `${buildSiteUrl()}/account/profile`
+      redirectTo: `${await buildSiteUrl()}/account/profile`
     },
     type: "recovery"
   });
@@ -248,7 +259,7 @@ export async function signInWithGoogle(formData: FormData) {
   }
 
   const supabase = await createSupabaseServerClient();
-  const siteUrl = buildSiteUrl();
+  const siteUrl = await buildSiteUrl();
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",

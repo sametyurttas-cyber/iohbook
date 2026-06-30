@@ -37,8 +37,17 @@ export async function GET(request: Request) {
       } catch (referralError) {
         console.error("Failed to handle referral for OAuth:", referralError);
       }
+      const forwardedHost = request.headers.get("x-forwarded-host");
+      const host = request.headers.get("host");
+      const isLocal = host?.includes("localhost") || host?.includes("127.0.0.1");
 
-      return NextResponse.redirect(`${origin}${next}`);
+      if (isLocal) {
+        return NextResponse.redirect(`${origin}${next}`);
+      } else if (forwardedHost) {
+        return NextResponse.redirect(`https://${forwardedHost}${next}`);
+      } else {
+        return NextResponse.redirect(`${origin}${next}`);
+      }
     }
   }
 
