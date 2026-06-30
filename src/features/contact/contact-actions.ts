@@ -77,7 +77,9 @@ export async function submitContactMessageAction(input: ContactMessageInput) {
       status: "unread"
     });
 
-    if (error) throw error;
+    if (error) {
+      return { ok: false, error: `Database error: ${error.message || JSON.stringify(error)}` };
+    }
 
     return { ok: true };
   } catch (err) {
@@ -111,7 +113,9 @@ export async function getContactMessagesAction(filters: {
     }
 
     const { data, error } = await query;
-    if (error) throw error;
+    if (error) {
+      return { ok: false, error: `Database error: ${error.message || JSON.stringify(error)}` };
+    }
 
     return { ok: true, data: data || [] };
   } catch (err) {
@@ -137,7 +141,9 @@ export async function updateContactMessageStatusAction(
       .update({ status })
       .eq("id", id);
 
-    if (error) throw error;
+    if (error) {
+      return { ok: false, error: `Database error: ${error.message || JSON.stringify(error)}` };
+    }
 
     revalidatePath("/admin/contact");
     return { ok: true };
@@ -161,7 +167,9 @@ export async function updateContactMessageNotesAction(id: string, notes: string)
       .update({ admin_notes: notes || null })
       .eq("id", id);
 
-    if (error) throw error;
+    if (error) {
+      return { ok: false, error: `Database error: ${error.message || JSON.stringify(error)}` };
+    }
 
     revalidatePath("/admin/contact");
     return { ok: true };
