@@ -539,9 +539,9 @@ export async function sendTestEmail(to: string, templateKey: string) {
       downloadUrl: "https://iohbook.local/account/downloads",
       pointsAmount: 30,
       verificationTitle: "Amazon Review Verification",
-      adminReply: "Harika bir inceleme olmuş, teşekkür ederiz!",
+      adminReply: "Great review, thank you!",
       accountUrl: "https://iohbook.local/account",
-      pointsReason: "Amazon yorum doğrulaması",
+      pointsReason: "Amazon review verification",
       currentBalance: 45
     }
   });
