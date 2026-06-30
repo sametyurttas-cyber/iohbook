@@ -528,6 +528,7 @@ export async function sendTransactionalEmail(input: {
 }
 
 export async function sendTestEmail(to: string, templateKey: string) {
+  const isRejected = templateKey.includes("rejected");
   return sendTransactionalEmail({
     templateKey,
     to,
@@ -539,7 +540,9 @@ export async function sendTestEmail(to: string, templateKey: string) {
       downloadUrl: "https://iohbook.local/account/downloads",
       pointsAmount: 30,
       verificationTitle: "Amazon Review Verification",
-      adminReply: "Great review, thank you!",
+      adminReply: isRejected
+        ? "The profile link provided does not contain a review for this book."
+        : "Great review, thank you!",
       accountUrl: "https://iohbook.local/account",
       pointsReason: "Amazon review verification",
       currentBalance: 45
