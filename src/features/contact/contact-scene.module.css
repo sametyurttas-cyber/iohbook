@@ -134,12 +134,14 @@
 
 .heroGridContainer {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: 4rem;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 2rem;
   align-items: center;
   position: relative;
   z-index: 3;
   width: 100%;
+  max-width: 1060px;
+  margin-inline: auto;
 }
 
 .heroShell {
