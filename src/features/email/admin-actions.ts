@@ -109,25 +109,20 @@ export async function searchProfilesAction(query: string) {
 }
 
 export async function sendManualEmailAction(input: {
-  profileId: string;
-  to: string;
+  profileId?: string;
+  to?: string;
   subject: string;
   body: string;
   templateKey?: string;
+  sendToAll?: boolean;
 }) {
   const staff = await requireStaff(["owner", "admin_ops"]);
   if (!staff) {
     return { ok: false, error: "Bu işlem için yetkiniz bulunmamaktadır." };
   }
 
-  const to = input.to?.trim();
   const subject = input.subject?.trim();
   const body = input.body;
-  const profileId = input.profileId;
-
-  if (!to || !to.includes("@")) {
-    return { ok: false, error: "Geçersiz veya eksik alıcı e-posta adresi." };
-  }
 
   if (!subject) {
     return { ok: false, error: "E-posta konusu boş bırakılamaz." };
@@ -137,12 +132,73 @@ export async function sendManualEmailAction(input: {
     return { ok: false, error: "E-posta içeriği boş bırakılamaz." };
   }
 
+  const supabase = createSupabaseServiceRoleClient();
+
+  if (input.sendToAll) {
+    try {
+      const { data: allProfiles, error: fetchErr } = await supabase
+        .from("profiles")
+        .select("id, email, full_name")
+        .not("email", "is", null);
+
+      if (fetchErr) throw fetchErr;
+
+      if (!allProfiles || allProfiles.length === 0) {
+        return { ok: false, error: "Sistemde tanımlı e-posta adresi olan hiçbir kullanıcı bulunamadı." };
+      }
+
+      let successCount = 0;
+      let failCount = 0;
+
+      // Loop and send emails dynamically
+      for (const profile of allProfiles) {
+        if (!profile.email) continue;
+        try {
+          const result = await sendTransactionalEmail({
+            templateKey: input.templateKey || "manual_email",
+            to: profile.email,
+            profileId: profile.id,
+            variables: {
+              subject,
+              body,
+              userName: profile.full_name || "Değerli Okurumuz",
+              email: profile.email,
+              accountUrl: `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.iohcoin.com"}/account`
+            }
+          });
+          if (result.ok) successCount++;
+          else failCount++;
+        } catch (err) {
+          console.error(`Bulk send error for profile ${profile.id}:`, err);
+          failCount++;
+        }
+      }
+
+      revalidatePath("/admin/emails");
+      revalidatePath("/admin/emails/logs");
+      return { 
+        ok: true, 
+        message: `Toplu e-posta gönderimi tamamlandı. Başarılı: ${successCount}, Başarısız: ${failCount}` 
+      };
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error("sendManualEmailAction bulk failed", err);
+      return { ok: false, error: `Toplu gönderim sırasında sunucu hatası: ${msg}` };
+    }
+  }
+
+  const to = input.to?.trim();
+  const profileId = input.profileId;
+
+  if (!to || !to.includes("@")) {
+    return { ok: false, error: "Geçersiz veya eksik alıcı e-posta adresi." };
+  }
+
   if (!profileId) {
     return { ok: false, error: "Geçerli bir kullanıcı seçilmelidir." };
   }
 
   try {
-    const supabase = createSupabaseServiceRoleClient();
     const { data: profile, error: profileErr } = await supabase
       .from("profiles")
       .select("email")

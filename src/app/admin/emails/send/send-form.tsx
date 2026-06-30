@@ -36,6 +36,7 @@ export function SendForm({ templates, adminEmail, adminProfileId, canSend }: Sen
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
   const [templateKey, setTemplateKey] = useState("");
+  const [sendToAll, setSendToAll] = useState(false);
 
   const [isPending, startTransition] = useTransition();
   const [status, setStatus] = useState<"idle" | "success" | "error" | "sending" | "testing">("idle");
@@ -100,8 +101,8 @@ export function SendForm({ templates, adminEmail, adminProfileId, canSend }: Sen
 
     let previewHtml = body;
     const replacements: Record<string, string> = {
-      userName: selectedUser?.full_name || "Değerli Okurumuz",
-      email: to || "alici@example.com",
+      userName: sendToAll ? "Değerli Okurumuz (Dinamik)" : (selectedUser?.full_name || "Değerli Okurumuz"),
+      email: sendToAll ? "[Alıcının E-postası]" : (to || "alici@example.com"),
       orderCode: "IOH-TEST-123",
       bookTitle: "GODCODE",
       downloadUrl: "https://iohbook.local/account/downloads",
@@ -124,19 +125,21 @@ export function SendForm({ templates, adminEmail, adminProfileId, canSend }: Sen
 
   const handleSendClick = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedUser) {
-      setStatus("error");
-      setMessage("Lütfen göndermeden önce geçerli bir kullanıcı seçin.");
-      return;
-    }
-    if (!to || !to.includes("@")) {
-      setStatus("error");
-      setMessage("Geçersiz e-posta adresi.");
-      return;
+    if (!sendToAll) {
+      if (!selectedUser) {
+        setStatus("error");
+        setMessage("Lütfen göndermeden önce geçerli bir kullanıcı seçin.");
+        return;
+      }
+      if (!to || !to.includes("@")) {
+        setStatus("error");
+        setMessage("Geçersiz e-posta adresi.");
+        return;
+      }
     }
     if (!subject.trim()) {
       setStatus("error");
-      setMessage("E-posta konusu boş bırakılamaz.");
+      setMessage("E-posta konusu boş bırakızamaz.");
       return;
     }
     if (!body.trim()) {
@@ -152,27 +155,29 @@ export function SendForm({ templates, adminEmail, adminProfileId, canSend }: Sen
   const handleSendConfirm = () => {
     setShowConfirm(false);
     setStatus("sending");
-    setMessage("E-posta gönderiliyor...");
+    setMessage(sendToAll ? "Toplu e-posta gönderiliyor (Bu işlem biraz zaman alabilir)..." : "E-posta gönderiliyor...");
 
     startTransition(async () => {
       try {
         const res = await sendManualEmailAction({
-          profileId: selectedUser!.id,
-          to,
+          profileId: sendToAll ? undefined : selectedUser!.id,
+          to: sendToAll ? undefined : to,
           subject,
           body,
-          templateKey: templateKey || undefined
+          templateKey: templateKey || undefined,
+          sendToAll
         });
 
         if (res.ok) {
           setStatus("success");
-          setMessage("E-posta başarıyla gönderildi ve log tablosuna kaydedildi.");
+          setMessage(res.message || "E-posta başarıyla gönderildi.");
           // Clear inputs
           setSelectedUser(null);
           setTo("");
           setSubject("");
           setBody("");
           setTemplateKey("");
+          setSendToAll(false);
         } else {
           setStatus("error");
           setMessage(res.error || "E-posta gönderimi sırasında bir hata oluştu.");
@@ -248,62 +253,107 @@ export function SendForm({ templates, adminEmail, adminProfileId, canSend }: Sen
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
         {/* Form Container */}
         <div className="border border-[rgba(242,239,232,0.08)] bg-[#0d0e12] p-6 rounded-lg space-y-6">
-          {/* User Search */}
-          <div>
-            <label className="block text-xs font-mono text-[#8a8fa0] uppercase tracking-wider mb-2">Alıcı Kullanıcı Ara</label>
-            <div className="flex gap-2 relative">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => handleSearch(e.target.value)}
-                placeholder="E-posta veya isim yazın (en az 2 karakter)..."
-                disabled={!canSend}
-                className="w-full bg-[#08090d] border border-[rgba(242,239,232,0.12)] text-[#f2efe8] px-4 py-2 text-sm rounded focus:outline-none focus:border-[#e7c574]/50 transition-all font-mono"
-              />
-              {isSearching && (
-                <span className="absolute right-3 top-2.5 text-xs text-[#8a8fa0] font-mono">Aranıyor...</span>
+          {/* Gönderim Türü Seçimi */}
+          <div className="flex flex-col gap-2 bg-[#08090d] p-4 rounded border border-[rgba(242,239,232,0.08)]">
+            <span className="text-xs font-mono text-[#8a8fa0] uppercase tracking-wider mb-1">Gönderim Türü</span>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setSendToAll(false)}
+                className={`px-4 py-2 text-xs font-mono uppercase tracking-wider rounded transition-all cursor-pointer ${
+                  !sendToAll
+                    ? "bg-[#e7c574]/15 border border-[#e7c574] text-[#e7c574]"
+                    : "border border-[rgba(242,239,232,0.12)] text-[#8a8fa0] hover:text-[#f2efe8] hover:border-[rgba(242,239,232,0.3)]"
+                }`}
+              >
+                Tek Kullanıcı
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setSendToAll(true);
+                  setSelectedUser(null);
+                  setTo("");
+                }}
+                className={`px-4 py-2 text-xs font-mono uppercase tracking-wider rounded transition-all cursor-pointer ${
+                  sendToAll
+                    ? "bg-[#e7c574]/15 border border-[#e7c574] text-[#e7c574]"
+                    : "border border-[rgba(242,239,232,0.12)] text-[#8a8fa0] hover:text-[#f2efe8] hover:border-[rgba(242,239,232,0.3)]"
+                }`}
+              >
+                Tüm Kullanıcılar (Toplu Mail)
+              </button>
+            </div>
+          </div>
+
+          {/* User Search or Bulk Alert */}
+          {!sendToAll ? (
+            <div>
+              <label className="block text-xs font-mono text-[#8a8fa0] uppercase tracking-wider mb-2">Alıcı Kullanıcı Ara</label>
+              <div className="flex gap-2 relative">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => handleSearch(e.target.value)}
+                  placeholder="E-posta veya isim yazın (en az 2 karakter)..."
+                  disabled={!canSend}
+                  className="w-full bg-[#08090d] border border-[rgba(242,239,232,0.12)] text-[#f2efe8] px-4 py-2 text-sm rounded focus:outline-none focus:border-[#e7c574]/50 transition-all font-mono"
+                />
+                {isSearching && (
+                  <span className="absolute right-3 top-2.5 text-xs text-[#8a8fa0] font-mono">Aranıyor...</span>
+                )}
+              </div>
+              
+              {searchResults.length > 0 && (
+                <div className="absolute z-10 w-[90%] lg:w-[45%] max-h-60 overflow-y-auto border border-[rgba(242,239,232,0.12)] bg-[#0b0c10] rounded mt-1 shadow-2xl font-mono text-xs">
+                  {searchResults.map((user) => (
+                    <button
+                      key={user.id}
+                      type="button"
+                      onClick={() => selectUser(user)}
+                      className="w-full text-left px-4 py-3 hover:bg-[#e7c574]/10 text-[#f2efe8] border-b border-[rgba(242,239,232,0.04)] transition-all"
+                    >
+                      <div className="font-bold">{user.full_name || "İsimsiz Kullanıcı"}</div>
+                      <div className="text-gray-500 text-[10px]">{user.email}</div>
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {selectedUser ? (
+                <div className="mt-2 flex items-center justify-between p-3 border border-green-900/30 bg-green-950/10 rounded text-xs font-mono">
+                  <div>
+                    <span className="text-[#8a8fa0]">Seçilen Alıcı:</span>{" "}
+                    <strong className="text-[#f2efe8]">{selectedUser.full_name || "İsimsiz"}</strong> ({selectedUser.email})
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedUser(null);
+                      setTo("");
+                    }}
+                    className="text-red-400 hover:text-red-300 hover:underline transition-all cursor-pointer"
+                  >
+                    Seçimi Kaldır
+                  </button>
+                </div>
+              ) : (
+                <div className="mt-2 text-xs font-mono text-amber-500/80">
+                  * Mail göndermek için veritabanından bir kullanıcı bulup seçmelisiniz.
+                </div>
               )}
             </div>
-            
-            {searchResults.length > 0 && (
-              <div className="absolute z-10 w-[90%] lg:w-[45%] max-h-60 overflow-y-auto border border-[rgba(242,239,232,0.12)] bg-[#0b0c10] rounded mt-1 shadow-2xl font-mono text-xs">
-                {searchResults.map((user) => (
-                  <button
-                    key={user.id}
-                    type="button"
-                    onClick={() => selectUser(user)}
-                    className="w-full text-left px-4 py-3 hover:bg-[#e7c574]/10 text-[#f2efe8] border-b border-[rgba(242,239,232,0.04)] transition-all"
-                  >
-                    <div className="font-bold">{user.full_name || "İsimsiz Kullanıcı"}</div>
-                    <div className="text-gray-500 text-[10px]">{user.email}</div>
-                  </button>
-                ))}
+          ) : (
+            <div className="p-4 border border-amber-900/30 bg-amber-950/10 rounded text-xs font-mono text-amber-400/90 leading-relaxed space-y-2">
+              <div className="font-bold flex items-center gap-1.5 text-amber-500">
+                <span>⚠️</span> TOPLU GÖNDERİM MODU AKTİF
               </div>
-            )}
-
-            {selectedUser ? (
-              <div className="mt-2 flex items-center justify-between p-3 border border-green-900/30 bg-green-950/10 rounded text-xs font-mono">
-                <div>
-                  <span className="text-[#8a8fa0]">Seçilen Alıcı:</span>{" "}
-                  <strong className="text-[#f2efe8]">{selectedUser.full_name || "İsimsiz"}</strong> ({selectedUser.email})
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedUser(null);
-                    setTo("");
-                  }}
-                  className="text-red-400 hover:text-red-300 hover:underline transition-all"
-                >
-                  Seçimi Kaldır
-                </button>
-              </div>
-            ) : (
-              <div className="mt-2 text-xs font-mono text-amber-500/80">
-                * Mail göndermek için veritabanından bir kullanıcı bulup seçmelisiniz.
-              </div>
-            )}
-          </div>
+              <p>Bu e-posta, sistemde tanımlı e-posta adresi olan <strong>tüm kullanıcılara</strong> ayrı ayrı gönderilecektir.</p>
+              <p className="text-[10px] text-amber-500/60">
+                İçerikte <code>{"{{userName}}"}</code> ve <code>{"{{email}}"}</code> gibi şablon alanları kullanabilirsiniz.
+              </p>
+            </div>
+          )}
 
           {/* Template Select */}
           <div>
@@ -412,19 +462,32 @@ export function SendForm({ templates, adminEmail, adminProfileId, canSend }: Sen
       {showConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
           <div className="w-full max-w-lg border border-[#e7c574]/30 bg-[#0d0e12] p-6 rounded-lg shadow-2xl relative">
-            <h3 className="text-lg font-mono text-[#e7c574] mb-4">Manuel Gönderim Onayı</h3>
-            <p className="text-xs text-[#8a8fa0] mb-4">
-              Aşağıdaki kayıtlı kullanıcıya manuel olarak e-posta gönderilecektir. Lütfen bilgileri kontrol edin:
+            <h3 className="text-lg font-mono text-[#e7c574] mb-4">
+              {sendToAll ? "🚨 TOPLU GÖNDERİM ONAYI" : "Manuel Gönderim Onayı"}
+            </h3>
+            <p className="text-xs text-[#8a8fa0] mb-4 leading-relaxed">
+              {sendToAll 
+                ? "DİKKAT: Bu işlem onaylandığında e-posta veritabanındaki TÜM e-postası kayıtlı kullanıcılara gönderilecektir. Devam etmek istiyor musunuz?" 
+                : "Aşağıdaki kayıtlı kullanıcıya manuel olarak e-posta gönderilecektir. Lütfen bilgileri kontrol edin:"}
             </p>
             <div className="border border-[rgba(242,239,232,0.08)] bg-[#08090d] p-4 rounded mb-6 text-xs font-mono space-y-3">
-              <div>
-                <span className="text-[#8a8fa0]">Alıcı Adı:</span>{" "}
-                <span className="text-[#f2efe8]">{selectedUser?.full_name || "Belirtilmemiş"}</span>
-              </div>
-              <div>
-                <span className="text-[#8a8fa0]">E-posta Adresi:</span>{" "}
-                <span className="text-[#f2efe8]">{to}</span>
-              </div>
+              {sendToAll ? (
+                <div>
+                  <span className="text-red-400 font-bold">ALICI GRUBU:</span>{" "}
+                  <span className="text-[#f2efe8] font-bold">TÜM SİTE KULLANICILARI (TOPLU MAİL)</span>
+                </div>
+              ) : (
+                <>
+                  <div>
+                    <span className="text-[#8a8fa0]">Alıcı Adı:</span>{" "}
+                    <span className="text-[#f2efe8]">{selectedUser?.full_name || "Belirtilmemiş"}</span>
+                  </div>
+                  <div>
+                    <span className="text-[#8a8fa0]">E-posta Adresi:</span>{" "}
+                    <span className="text-[#f2efe8]">{to}</span>
+                  </div>
+                </>
+              )}
               <div>
                 <span className="text-[#8a8fa0]">Konu Başlığı:</span>{" "}
                 <span className="text-[#f2efe8]">{subject}</span>
@@ -438,16 +501,20 @@ export function SendForm({ templates, adminEmail, adminProfileId, canSend }: Sen
               <button
                 type="button"
                 onClick={() => setShowConfirm(false)}
-                className="px-4 py-2 rounded border border-[rgba(242,239,232,0.12)] text-[#8a8fa0] hover:text-[#f2efe8] hover:border-[rgba(242,239,232,0.3)] transition-all"
+                className="px-4 py-2 rounded border border-[rgba(242,239,232,0.12)] text-[#8a8fa0] hover:text-[#f2efe8] hover:border-[rgba(242,239,232,0.3)] transition-all cursor-pointer"
               >
                 İptal Et
               </button>
               <button
                 type="button"
                 onClick={handleSendConfirm}
-                className="px-4 py-2 rounded bg-[#e7c574] text-[#08090d] font-bold hover:bg-[#d4b363] transition-all"
+                className={`px-4 py-2 rounded font-bold transition-all cursor-pointer ${
+                  sendToAll 
+                    ? "bg-red-600 text-white hover:bg-red-700" 
+                    : "bg-[#e7c574] text-[#08090d] hover:bg-[#d4b363]"
+                }`}
               >
-                Onayla ve Gönder
+                {sendToAll ? "Evet, Herkese Gönder" : "Onayla ve Gönder"}
               </button>
             </div>
           </div>
