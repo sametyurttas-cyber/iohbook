@@ -389,7 +389,7 @@ function TokenSaleCommunity() {
             Genesis is only the first brick. Connect with other creators, developers, and readers to shape the future of the IOH Universe. Join the alliance today.
           </p>
           <div className={styles.communityLinks} id="ts-community-links">
-            <a href="https://t.me/iohbook" target="_blank" rel="noopener noreferrer" className={styles.communityLinkCard} data-hover data-magnet>
+            <a href="https://t.me/+U38BUu-Jlfg4ZGU0" target="_blank" rel="noopener noreferrer" className={styles.communityLinkCard} data-hover data-magnet>
               <div className={styles.communityCardHeader}>
                 <span className={styles.communityPlatformSymbol}>TG</span>
                 <span className={styles.communityNodeTag}>TELEGRAM NODE</span>
