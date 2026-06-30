@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { searchProfilesAction, sendManualEmailAction } from "@/features/email/admin-actions";
 
 type ProfileResult = {
@@ -27,6 +28,8 @@ type SendFormProps = {
 };
 
 export function SendForm({ templates, adminEmail, adminProfileId, canSend }: SendFormProps) {
+  const searchParams = useSearchParams();
+
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<ProfileResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -42,6 +45,26 @@ export function SendForm({ templates, adminEmail, adminProfileId, canSend }: Sen
   const [status, setStatus] = useState<"idle" | "success" | "error" | "sending" | "testing">("idle");
   const [message, setMessage] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
+
+  useEffect(() => {
+    const queryTo = searchParams.get("to");
+    const querySubject = searchParams.get("subject");
+    if (queryTo) {
+      setTo(queryTo);
+      // Auto-search profile
+      searchProfilesAction(queryTo).then((res) => {
+        if (res.ok && res.data && res.data.length > 0) {
+          const match = res.data.find((p: any) => p.email.toLowerCase() === queryTo.toLowerCase());
+          if (match) {
+            setSelectedUser(match);
+          }
+        }
+      });
+    }
+    if (querySubject) {
+      setSubject(querySubject);
+    }
+  }, [searchParams]);
 
   const handleSearch = async (val: string) => {
     setSearchQuery(val);
@@ -126,14 +149,9 @@ export function SendForm({ templates, adminEmail, adminProfileId, canSend }: Sen
   const handleSendClick = (e: React.FormEvent) => {
     e.preventDefault();
     if (!sendToAll) {
-      if (!selectedUser) {
-        setStatus("error");
-        setMessage("Lütfen göndermeden önce geçerli bir kullanıcı seçin.");
-        return;
-      }
       if (!to || !to.includes("@")) {
         setStatus("error");
-        setMessage("Geçersiz e-posta adresi.");
+        setMessage("Lütfen geçerli bir alıcı e-posta adresi girin.");
         return;
       }
     }
@@ -160,7 +178,7 @@ export function SendForm({ templates, adminEmail, adminProfileId, canSend }: Sen
     startTransition(async () => {
       try {
         const res = await sendManualEmailAction({
-          profileId: sendToAll ? undefined : selectedUser!.id,
+          profileId: sendToAll ? undefined : (selectedUser?.id || undefined),
           to: sendToAll ? undefined : to,
           subject,
           body,

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { requireEmailStaff, listAdminEmailTemplates } from "@/features/email/admin-queries";
 import { getCurrentUser } from "@/features/auth/queries";
@@ -98,12 +99,14 @@ export default async function AdminEmailSendPage() {
 
       <div className="px-8 max-w-[1480px] mx-auto mb-12">
         <EmailSubNav active="send" />
-        <SendForm
-          templates={templates}
-          adminEmail={user?.email || ""}
-          adminProfileId={user?.id || ""}
-          canSend={canSend}
-        />
+        <Suspense fallback={<div className="text-xs font-mono text-[#8a8fa0] p-8 border border-[rgba(242,239,232,0.08)] bg-[#0d0e12] rounded text-center">Yükleniyor...</div>}>
+          <SendForm
+            templates={templates}
+            adminEmail={user?.email || ""}
+            adminProfileId={user?.id || ""}
+            canSend={canSend}
+          />
+        </Suspense>
       </div>
     </main>
   );

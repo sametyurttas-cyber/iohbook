@@ -194,29 +194,32 @@ export async function sendManualEmailAction(input: {
     return { ok: false, error: "Geçersiz veya eksik alıcı e-posta adresi." };
   }
 
-  if (!profileId) {
-    return { ok: false, error: "Geçerli bir kullanıcı seçilmelidir." };
+  if (profileId) {
+    try {
+      const { data: profile, error: profileErr } = await supabase
+        .from("profiles")
+        .select("email")
+        .eq("id", profileId)
+        .maybeSingle();
+
+      if (profileErr || !profile) {
+        return { ok: false, error: "Seçilen kullanıcı veritabanında bulunamadı." };
+      }
+
+      if (!profile.email) {
+        return { ok: false, error: "Seçilen kullanıcının tanımlı bir e-posta adresi bulunmamaktadır." };
+      }
+
+      if (profile.email.toLowerCase() !== to.toLowerCase()) {
+        return { ok: false, error: "Seçilen kullanıcının e-posta adresi belirtilen adres ile eşleşmiyor." };
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      return { ok: false, error: `Sunucu hatası: ${msg}` };
+    }
   }
 
   try {
-    const { data: profile, error: profileErr } = await supabase
-      .from("profiles")
-      .select("email")
-      .eq("id", profileId)
-      .maybeSingle();
-
-    if (profileErr || !profile) {
-      return { ok: false, error: "Seçilen kullanıcı veritabanında bulunamadı." };
-    }
-
-    if (!profile.email) {
-      return { ok: false, error: "Seçilen kullanıcının tanımlı bir e-posta adresi bulunmamaktadır." };
-    }
-
-    if (profile.email.toLowerCase() !== to.toLowerCase()) {
-      return { ok: false, error: "Seçilen kullanıcının e-posta adresi belirtilen adres ile eşleşmiyor." };
-    }
-
     // Send the manual transactional email
     const result = await sendTransactionalEmail({
       templateKey: input.templateKey || "manual_email",
