@@ -11,25 +11,25 @@ const directLinks = [
   {
     href: "https://t.me/+U38BUu-Jlfg4ZGU0",
     label: "Telegram",
-    note: "Resmi IOH duyuru ve yardimlasma kanali.",
+    note: "Official IOH announcements and community channel.",
     value: "Telegram Channel"
   },
   {
     href: "https://instagram.com/iohbook",
     label: "Instagram",
-    note: "Gorsel arsiv, duyurular ve konsept tasarimlar.",
+    note: "Visual archives, announcements, and conceptual designs.",
     value: "@iohbook"
   },
   {
     href: "https://x.com/iohchain",
     label: "Twitter / 𝕏",
-    note: "Duyuru ve ekosistem guncellemeleri.",
+    note: "Announcements and ecosystem updates.",
     value: "@iohchain"
   },
   {
     href: "/",
     label: "Website",
-    note: "IOH Universe ana sayfa.",
+    note: "IOH Universe home page.",
     value: "IOH Universe"
   }
 ] as const;
@@ -44,41 +44,46 @@ function ContactHero() {
       <div className={styles.heroGhost} aria-hidden="true">CONTACT</div>
       <div className={styles.heroGlow} aria-hidden="true" />
       
-      {/* Left Column: Title, Description and Telemetry Stats */}
-      <div className={`${styles.shell} ${styles.heroShell}`}>
-        <Kicker>SIGNAL ROOM</Kicker>
-        <h1 className={styles.heroTitle}>Sinyal Odası</h1>
-        <p className={styles.heroLead}>
-          IOH Universe ile ilgili tüm iletişim ve destek talepleriniz için doğrudan sinyal hattı. 
-          Herhangi bir e-posta istemcisi kullanmadan mesajınızı doğrudan veritabanımıza iletebilirsiniz.
-        </p>
+      {/* Centered Grid wrapper using the default site margin shell width */}
+      <div className={`${styles.shell} ${styles.heroGridContainer}`}>
+        
+        {/* Left Column: Title, Description and Telemetry Stats */}
+        <div className={styles.heroShell}>
+          <Kicker>SIGNAL ROOM</Kicker>
+          <h1 className={styles.heroTitle}>Signal Room</h1>
+          <p className={styles.heroLead}>
+            Direct communication and support channels for the IOH Universe. 
+            You can transmit your message directly into our core database queue.
+          </p>
 
-        <div className="mt-8 border-t border-[rgba(242,239,232,0.08)] pt-6 max-w-[400px]">
-          <div className={styles.infoRow}>
-            <span className={styles.infoLabel}>Yazar</span>
-            <span className={styles.infoValue}>Samet Yurttas</span>
-          </div>
-          <div className={styles.infoRow}>
-            <span className={styles.infoLabel}>Durum</span>
-            <span className={`${styles.infoValue} ${styles.infoValueGold}`}>Aktif</span>
-          </div>
-          <div className={styles.infoRow}>
-            <span className={styles.infoLabel}>Yanıt Süresi</span>
-            <span className={styles.infoValue}>24 Saat</span>
+          <div className="mt-8 border-t border-[rgba(242,239,232,0.08)] pt-6 max-w-[400px]">
+            <div className={styles.infoRow}>
+              <span className={styles.infoLabel}>Author</span>
+              <span className={styles.infoValue}>Samet Yurttas</span>
+            </div>
+            <div className={styles.infoRow}>
+              <span className={styles.infoLabel}>Status</span>
+              <span className={`${styles.infoValue} ${styles.infoValueGold}`}>Active</span>
+            </div>
+            <div className={styles.infoRow}>
+              <span className={styles.infoLabel}>Response Time</span>
+              <span className={styles.infoValue}>24 Hours</span>
+            </div>
           </div>
         </div>
+
+        {/* Right Column: Contact Message Form in visual glassmorphic panel */}
+        <aside className={styles.infoPanel}>
+          <div className={styles.infoHead}>
+            <Kicker>01 / TRANSMISSION GATE</Kicker>
+            <h2 className={styles.infoTitle}>Direct Signal Transmission</h2>
+          </div>
+          <div className="pt-6">
+            <ContactForm />
+          </div>
+        </aside>
+
       </div>
-
-      {/* Right Column: Contact Message Form in dynamic visual container */}
-      <aside className={styles.infoPanel}>
-        <div className={styles.infoHead}>
-          <Kicker>01 / TRANSMISSION GATE</Kicker>
-          <h2 className={styles.infoTitle}>Doğrudan Sinyal İletimi</h2>
-        </div>
-        <div className="pt-6">
-          <ContactForm />
-        </div>
-      </aside>
     </section>
   );
 }
@@ -98,7 +103,7 @@ function ContactDirect() {
   return (
     <section className={styles.direct} id="direct">
       <div className={styles.shell}>
-        <Kicker>02 / SOSYAL BAĞLANTILAR</Kicker>
+        <Kicker>02 / DIRECT CHANNELS</Kicker>
         <div className={styles.directInner}>
           {directLinks.map((link) => (
             <article className={styles.directCard} key={link.label}>

@@ -5,11 +5,11 @@ import { submitContactMessageAction } from "./contact-actions";
 import styles from "./contact-scene.module.css";
 
 const PURPOSE_OPTIONS = [
-  { value: "support", label: "01 // READER SUPPORT (Puan & Kitap)", kicker: "Okuyucu Destek Talebi" },
-  { value: "partnership", label: "02 // ALLIANCE & PARTNERS (Ortaklık)", kicker: "İş Birliği Talebi" },
-  { value: "press", label: "03 // BRAND & PRESS (Tanıtım & Basın)", kicker: "Yayın ve Basın Talebi" },
-  { value: "tech", label: "04 // SYSTEM / TECH (Teknik Hatalar)", kicker: "Teknik Destek Talebi" },
-  { value: "other", label: "05 // OTHER CHANNELS (Diğer Konular)", kicker: "Diğer Talepler" }
+  { value: "support", label: "01 // READER SUPPORT (Points & Books)", kicker: "Reader Support Request" },
+  { value: "partnership", label: "02 // ALLIANCE & PARTNERS (Partnerships)", kicker: "Partnership Request" },
+  { value: "press", label: "03 // BRAND & PRESS (Press & Media)", kicker: "Press Request" },
+  { value: "tech", label: "04 // SYSTEM / TECH (Technical Issues)", kicker: "Tech Support Request" },
+  { value: "other", label: "05 // OTHER CHANNELS (Other Inquiries)", kicker: "Other Request" }
 ] as const;
 
 export function ContactForm() {
@@ -26,18 +26,18 @@ export function ContactForm() {
     e.preventDefault();
     if (!name.trim() || name.trim().length < 2) {
       setStatus("error");
-      setErrorMsg("Lütfen geçerli bir isim girin (en az 2 karakter).");
+      setErrorMsg("Please enter a valid name (at least 2 characters).");
       return;
     }
     const emailRegex = /^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
     if (!email.trim() || !emailRegex.test(email.trim())) {
       setStatus("error");
-      setErrorMsg("Lütfen geçerli bir e-posta adresi girin.");
+      setErrorMsg("Please enter a valid email address.");
       return;
     }
     if (!message.trim() || message.trim().length < 10) {
       setStatus("error");
-      setErrorMsg("Lütfen geçerli bir mesaj girin (en az 10 karakter).");
+      setErrorMsg("Please enter a valid message (at least 10 characters).");
       return;
     }
 
@@ -62,11 +62,11 @@ export function ContactForm() {
           setMessage("");
         } else {
           setStatus("error");
-          setErrorMsg(res.error || "Sinyal gönderilemedi.");
+          setErrorMsg(res.error || "Failed to transmit signal.");
         }
       } catch (err) {
         setStatus("error");
-        setErrorMsg("Sunucu hatası oluştu.");
+        setErrorMsg("A server error occurred.");
       }
     });
   };
@@ -77,15 +77,15 @@ export function ContactForm() {
         <div className="text-4xl animate-bounce">⚡</div>
         <h3 className="text-lg text-[#e7c574] font-bold uppercase tracking-widest">SIGNAL TRANSFERRED</h3>
         <p className="text-xs text-[#9297a6] leading-relaxed">
-          Sinyal başarıyla kilitlendi ve veritabanımıza güvenli bir şekilde kaydedildi. <br />
-          Operasyon birimimiz 24 saat içinde belirttiğiniz mail adresine dönüş sağlayacaktır.
+          Signal successfully locked and saved to our database. <br />
+          Our operations unit will reply to your return email address within 24 hours.
         </p>
         <button
           type="button"
           onClick={() => setStatus("idle")}
           className="px-6 py-2.5 rounded text-xs font-mono uppercase tracking-wider bg-[#e7c574] text-[#08090d] font-bold hover:bg-[#d4b363] transition-all cursor-pointer"
         >
-          Yeni Sinyal Gönder
+          Transmit New Signal
         </button>
       </div>
     );
@@ -95,33 +95,33 @@ export function ContactForm() {
     <form onSubmit={handleSubmit} className="border border-[rgba(242,239,232,0.08)] bg-[#0d0e12] p-6 rounded-lg space-y-5 font-mono text-xs max-w-xl mx-auto shadow-2xl">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-[#8a8fa0] uppercase tracking-wider mb-2">Kimliğiniz (Name / Alias)</label>
+          <label className="block text-[#8a8fa0] uppercase tracking-wider mb-2">Your Identity (Name / Alias)</label>
           <input
             type="text"
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
             disabled={isPending}
-            placeholder="İsminiz..."
+            placeholder="Your name..."
             className="w-full bg-[#08090d] border border-[rgba(242,239,232,0.12)] text-[#f2efe8] px-4 py-2.5 rounded focus:outline-none focus:border-[#e7c574]/50 transition-all"
           />
         </div>
         <div>
-          <label className="block text-[#8a8fa0] uppercase tracking-wider mb-2">Sinyal Adresi (Email)</label>
+          <label className="block text-[#8a8fa0] uppercase tracking-wider mb-2">Return Address (Email)</label>
           <input
             type="email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             disabled={isPending}
-            placeholder="E-posta adresiniz..."
+            placeholder="Your email address..."
             className="w-full bg-[#08090d] border border-[rgba(242,239,232,0.12)] text-[#f2efe8] px-4 py-2.5 rounded focus:outline-none focus:border-[#e7c574]/50 transition-all"
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-[#8a8fa0] uppercase tracking-wider mb-2">İletişim Amacı (Purpose Nodes)</label>
+        <label className="block text-[#8a8fa0] uppercase tracking-wider mb-2">Transmission Node (Purpose)</label>
         <select
           value={purpose}
           onChange={(e) => setPurpose(e.target.value as any)}
@@ -137,26 +137,26 @@ export function ContactForm() {
       </div>
 
       <div>
-        <label className="block text-[#8a8fa0] uppercase tracking-wider mb-2">Konu Başlığı (Subject - İsteğe Bağlı)</label>
+        <label className="block text-[#8a8fa0] uppercase tracking-wider mb-2">Subject (Optional)</label>
         <input
           type="text"
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
           disabled={isPending}
-          placeholder="İletişim konusu..."
+          placeholder="Topic of communication..."
           className="w-full bg-[#08090d] border border-[rgba(242,239,232,0.12)] text-[#f2efe8] px-4 py-2.5 rounded focus:outline-none focus:border-[#e7c574]/50 transition-all"
         />
       </div>
 
       <div>
-        <label className="block text-[#8a8fa0] uppercase tracking-wider mb-2">Mesaj İçeriği (Transmission Body)</label>
+        <label className="block text-[#8a8fa0] uppercase tracking-wider mb-2">Transmission Body (Message)</label>
         <textarea
           required
           rows={6}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           disabled={isPending}
-          placeholder="Mesajınızı buraya yazın..."
+          placeholder="Type your message here..."
           className="w-full bg-[#08090d] border border-[rgba(242,239,232,0.12)] text-[#f2efe8] px-4 py-3 rounded focus:outline-none focus:border-[#e7c574]/50 transition-all leading-relaxed"
         />
       </div>
