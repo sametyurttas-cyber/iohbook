@@ -229,7 +229,7 @@ export const technologies = [
 
 export const timeline = [
   {
-    event: "The first conceptual notes of immortal online humanity are recorded.",
+    event: "The first conceptual notes of IOH are recorded.",
     title: "The Question",
     year: "2007"
   },

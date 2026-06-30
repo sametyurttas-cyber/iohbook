@@ -188,7 +188,7 @@ function AuthorManifestoSection() {
               his stories.
             </p>
             <p>
-              Through the IOH (Immortal Online Humanity) universe, he imagines
+              Through the IOH universe, he imagines
               a future where death is no longer permanent and human existence
               extends beyond the limits of the physical world.
             </p>

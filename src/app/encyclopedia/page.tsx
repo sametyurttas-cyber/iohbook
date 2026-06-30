@@ -26,7 +26,7 @@ export default async function EncyclopediaPage() {
             "@type": "CollectionPage",
             about: [
               "IOH Universe",
-              "Immortal Online Humanity",
+              "IOH",
               "science fiction characters",
               "future cities",
               "fictional technology"
