@@ -25,30 +25,29 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
   return (
     <main className="flex min-h-screen items-center justify-center px-4 py-16" id="main-content">
       <PublicAtmosphere />
-      <div className="w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-950/80 p-8 backdrop-blur-md shadow-2xl">
+      <div className="w-full max-w-md rounded-[18px] border border-white/10 bg-gradient-to-br from-white/[0.035] to-transparent bg-[#05060a]/80 p-8 backdrop-blur-md shadow-[0_24px_80px_rgba(0,0,0,0.5)]">
         <div className="mb-8">
-          <Link className="text-sm font-semibold tracking-wider text-zinc-400 hover:text-white transition-colors uppercase" href="/">
-            IOH Universe
+          <Link className="inline-flex items-baseline gap-1 text-white no-underline" href="/">
+            <b className="text-sm tracking-[0.14em] uppercase font-bold">IOH</b>
+            <span className="font-mono text-[0.58rem] tracking-[0.34em] text-zinc-500 uppercase">UNIVERSE</span>
           </Link>
-          <h1 className="mt-3 font-sans text-2xl font-bold text-white tracking-tight">Giriş Yap</h1>
-          <p className="mt-2 text-sm text-zinc-400">
-            Devam etmek için hesabınızla oturum açın.
-          </p>
+          <h1 className="mt-6 font-display text-2xl font-bold text-white tracking-tight uppercase">Giriş Yap</h1>
+          <p className="mt-2 font-mono text-[0.62rem] tracking-[0.2em] text-zinc-400 uppercase">// SECURE_LOGIN_GATEWAY</p>
         </div>
 
         {params?.["pending-confirmation"] ? (
-          <p className="mb-6 rounded-lg border border-zinc-800 bg-zinc-900/50 p-4 text-xs text-zinc-300 leading-relaxed font-sans">
+          <p className="mb-6 rounded-lg border border-white/10 bg-white/[0.02] p-4 text-xs text-zinc-300 leading-relaxed font-mono">
             Kayıt oluşturuldu. {params?.email ? `${params.email} adresini kontrol edip ` : ""}
             e-posta doğrulamasını tamamladıktan sonra giriş yapabilirsiniz.
           </p>
         ) : null}
         {params?.confirmed ? (
-          <p className="mb-6 rounded-lg border border-zinc-800 bg-zinc-900/50 p-4 text-xs text-zinc-300 leading-relaxed font-sans">
+          <p className="mb-6 rounded-lg border border-white/10 bg-white/[0.02] p-4 text-xs text-zinc-300 leading-relaxed font-mono">
             E-posta doğrulandı. Artık giriş yapabilirsiniz.
           </p>
         ) : null}
         {params?.error ? (
-          <p className="mb-6 rounded-lg border border-red-950/30 bg-red-950/10 p-4 text-xs text-red-400 leading-relaxed font-sans">
+          <p className="mb-6 rounded-lg border border-red-950/30 bg-red-950/10 p-4 text-xs text-red-400 leading-relaxed font-mono">
             {params.error === "email-not-confirmed"
               ? "Bu hesap için e-posta doğrulaması gerekiyor."
               : params.error === "oauth-failed"
@@ -64,30 +63,30 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
             name="email" 
             placeholder="E-posta adresi" 
             type="email" 
-            className="border-zinc-800 bg-zinc-900/30 text-white focus-visible:ring-zinc-700 focus-visible:border-zinc-700 focus-visible:ring-1 rounded-lg placeholder:text-zinc-600"
+            className="border-white/10 bg-white/[0.02] text-white focus-visible:ring-[#f2c96d]/40 focus-visible:border-[#f2c96d]/40 focus-visible:ring-1 rounded-lg placeholder:text-zinc-600 font-mono text-sm py-5"
           />
           <Input
             autoComplete="current-password"
             name="password"
             placeholder="Şifre"
             type="password"
-            className="border-zinc-800 bg-zinc-900/30 text-white focus-visible:ring-zinc-700 focus-visible:border-zinc-700 focus-visible:ring-1 rounded-lg placeholder:text-zinc-600"
+            className="border-white/10 bg-white/[0.02] text-white focus-visible:ring-[#f2c96d]/40 focus-visible:border-[#f2c96d]/40 focus-visible:ring-1 rounded-lg placeholder:text-zinc-600 font-mono text-sm py-5"
           />
-          <Button type="submit" className="w-full bg-white hover:bg-zinc-200 text-zinc-950 font-medium py-3 rounded-lg transition-colors cursor-pointer border-none shadow-sm font-sans">
+          <Button type="submit" className="w-full bg-[#f2c96d] hover:bg-[#f5dca0] text-[#0a0805] font-mono text-xs font-bold tracking-[0.25em] uppercase py-6 rounded-full transition-all duration-300 border-none cursor-pointer shadow-lg shadow-[#f2c96d]/5">
             Giriş Yap
           </Button>
         </form>
 
         <div className="relative my-6 flex items-center justify-center">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-zinc-800" />
+            <div className="w-full border-t border-white/10" />
           </div>
-          <span className="relative bg-zinc-950 px-3 text-xs text-zinc-500 font-sans">veya</span>
+          <span className="relative bg-[#05060a] px-3 text-[0.62rem] text-zinc-500 font-mono uppercase tracking-[0.2em]">// VEYA</span>
         </div>
 
         <form action={signInWithGoogle}>
           <input name="next" type="hidden" value={next} />
-          <Button type="submit" variant="outline" className="w-full flex items-center justify-center gap-3 border border-zinc-800 hover:border-zinc-700 bg-zinc-900/20 hover:bg-zinc-900/50 text-white font-sans text-sm py-3 rounded-lg transition-all duration-300 cursor-pointer shadow-sm">
+          <Button type="submit" variant="outline" className="w-full flex items-center justify-center gap-3 border border-white/10 hover:border-white/20 bg-white/[0.02] hover:bg-white/[0.06] text-white font-mono text-xs tracking-[0.2em] uppercase py-6 rounded-full transition-all duration-300 cursor-pointer shadow-sm">
             <svg className="w-4 h-4" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
               <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -98,17 +97,17 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
           </Button>
         </form>
 
-        <div className="mt-8 flex flex-col gap-2 text-sm text-zinc-400 font-sans border-t border-zinc-800/50 pt-6">
+        <div className="mt-8 flex flex-col gap-2 text-xs text-zinc-400 font-mono border-t border-white/10 pt-6">
           <p>
             Hesabınız yok mu?{" "}
             <Link
-              className="text-white hover:underline transition-colors font-medium"
+              className="text-white hover:text-[#f2c96d] transition-colors"
               href={next ? `/sign-up?next=${encodeURIComponent(next)}` : "/sign-up"}
             >
               Kayıt olun
             </Link>
           </p>
-          <Link className="text-zinc-500 hover:text-white transition-colors text-xs" href="/forgot-password">
+          <Link className="text-zinc-500 hover:text-white transition-colors" href="/forgot-password">
             Şifremi unuttum
           </Link>
         </div>

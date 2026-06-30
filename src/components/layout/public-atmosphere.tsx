@@ -1,10 +1,16 @@
 export function PublicAtmosphere() {
   return (
-    <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-[-1] overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-10%,rgba(242,201,109,0.16),transparent_26rem),radial-gradient(circle_at_86%_22%,rgba(70,189,235,0.12),transparent_30rem),radial-gradient(circle_at_14%_72%,rgba(214,74,58,0.1),transparent_28rem)]" />
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,5,7,0.08),rgba(5,5,7,0.8)),radial-gradient(circle_at_center,transparent_0,rgba(0,0,0,0.72)_78%)]" />
-      <div className="absolute inset-0 opacity-[0.055] [background-image:linear-gradient(rgba(255,255,255,.8)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.8)_1px,transparent_1px)] [background-size:72px_72px]" />
-      <div className="absolute inset-0 opacity-[0.16] [background-image:radial-gradient(rgba(255,255,255,.68)_0.65px,transparent_0.65px)] [background-size:3px_3px]" />
+    <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-[-1] overflow-hidden bg-[#05060a]">
+      {/* Dynamic Cosmic Glows */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-10%,rgba(242,201,109,0.08),transparent_35rem),radial-gradient(circle_at_86%_22%,rgba(111,155,255,0.06),transparent_35rem),radial-gradient(circle_at_14%_72%,rgba(255,91,91,0.05),transparent_30rem)]" />
+      
+      {/* Vignette Overlay */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_70%_at_50%_45%,transparent_55%,rgba(2,3,6,0.75)_100%)]" />
+      
+      {/* Noise Grain Overlay */}
+      <div 
+        className="absolute inset-[-50%] w-[200%] h-[200%] opacity-[0.035] pointer-events-none bg-[url('data:image/svg+xml,%3Csvg_xmlns=\'http://www.w3.org/2000/svg\'_width=\'240\'_height=\'240\'%3E%3Cfilter_id=\'n\'%3E%3CfeTurbulence_type=\'fractalNoise\'_baseFrequency=\'0.9\'_numOctaves=\'2\'/%3E%3C/filter%3E%3Crect_width=\'240\'_height=\'240\'_filter=\'url(%23n)\'/%3E%3C/svg%3E')]"
+      />
     </div>
   );
 }
