@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSupabaseServiceRoleClient } from "@/lib/supabase/service-role";
 import { awardSignupBonus } from "@/features/points/service";
+import { createReferralFromCode, awardReferralIfEligible } from "@/features/referrals/service";
+import { getReferralCodeFromCookie, clearReferralCodeCookie } from "@/features/referrals/cookie";
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -12,8 +14,10 @@ export async function GET(request: Request) {
     const supabase = await createSupabaseServerClient();
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error && data?.user) {
+      const serviceSupabase = createSupabaseServiceRoleClient();
+      
+      // 1. Award Signup points bonus
       try {
-        const serviceSupabase = createSupabaseServiceRoleClient();
         await awardSignupBonus({
           profileId: data.user.id,
           supabase: serviceSupabase
@@ -21,6 +25,19 @@ export async function GET(request: Request) {
       } catch (pointsError) {
         console.error("Failed to award signup bonus for OAuth:", pointsError);
       }
+
+      // 2. Handle Referral tracking and award points to referrer and referred
+      try {
+        const referralCode = await getReferralCodeFromCookie();
+        if (referralCode) {
+          await createReferralFromCode(data.user.id, referralCode, serviceSupabase);
+          await awardReferralIfEligible(data.user.id, serviceSupabase);
+          await clearReferralCodeCookie();
+        }
+      } catch (referralError) {
+        console.error("Failed to handle referral for OAuth:", referralError);
+      }
+
       return NextResponse.redirect(`${origin}${next}`);
     }
   }
