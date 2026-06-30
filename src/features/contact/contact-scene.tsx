@@ -49,10 +49,16 @@ const directLinks = [
     value: "contact@iohuniverse.com"
   },
   {
-    href: "/journal",
-    label: "Topluluk",
-    note: "Telegram kanali ileride duyurulacak.",
-    value: "Telegram (ileride)"
+    href: "https://t.me/+U38BUu-Jlfg4ZGU0",
+    label: "Telegram",
+    note: "Resmi IOH duyuru ve yardimlasma kanali.",
+    value: "Telegram Channel"
+  },
+  {
+    href: "https://instagram.com/iohbook",
+    label: "Instagram",
+    note: "Gorsel arsiv, duyurular ve konsept tasarimlar.",
+    value: "@iohbook"
   },
   {
     href: "/",
@@ -166,7 +172,12 @@ function ContactDirect() {
           {directLinks.map((link) => (
             <article className={styles.directCard} key={link.label}>
               <span className={styles.directLabel}>{link.label}</span>
-              <Link className={styles.directValue} href={link.href}>
+              <Link 
+                className={styles.directValue} 
+                href={link.href}
+                target={link.href.startsWith("http") ? "_blank" : undefined}
+                rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
+              >
                 {link.value}
               </Link>
               <span className={styles.directNote}>{link.note}</span>
